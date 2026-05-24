@@ -21,3 +21,14 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     assert submission.startswith("event_id\tis_bot\n")
     assert "evt_1" in submission
 
+
+def test_pipeline_handles_empty_input(tmp_path: Path) -> None:
+    raw = tmp_path / "clicks.tsv"
+    raw.write_text("", encoding="utf-8")
+
+    summary = run_pipeline(raw, tmp_path)
+
+    assert summary["total_events"] == 0
+    assert summary["bot_events"] == 0
+    assert summary["threshold"] == 0.0
+    assert (tmp_path / "submission.tsv").read_text(encoding="utf-8") == "event_id\tis_bot\n"

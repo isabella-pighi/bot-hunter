@@ -26,7 +26,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".") -> dict[s
         event.combined_score = (0.58 * event.heuristic_score) + (0.42 * event.ml_score)
         combined.append(event.combined_score)
 
-    cutoff = _quantile(combined, 0.975)
+    cutoff = _quantile(combined, 0.975) if combined else 0.0
     for event in events:
         event.is_bot = 1 if event.combined_score >= cutoff or event.heuristic_score >= 0.62 else 0
 

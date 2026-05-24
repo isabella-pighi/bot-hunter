@@ -29,8 +29,12 @@ class Handler(BaseHTTPRequestHandler):
             if not input_path:
                 self._send_json({"error": "Pass ?input=/path/to/raw.tsv"}, status=400)
                 return
-            summary = run_pipeline(input_path, ROOT)
-            self._send_json(summary)
+            try:
+                summary = run_pipeline(input_path, ROOT)
+            except (OSError, ValueError) as exc:
+                self._send_json({"error": str(exc)}, status=400)
+            else:
+                self._send_json(summary)
         else:
             self.send_error(404)
 
@@ -116,9 +120,18 @@ def _dashboard_html() -> str:
     </section>
   </main>
   <script>
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[ch]);
+    }
     async function load() {
       const [summary, events] = await Promise.all([fetch('/api/summary').then(r => r.json()), fetch('/api/events').then(r => r.json())]);
-      if (summary.error) { document.getElementById('metrics').innerHTML = `<div class="card">${summary.error}</div>`; return; }
+      if (summary.error) { document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(summary.error)}</div>`; return; }
       renderSummary(summary);
       renderEvents(events);
     }
@@ -136,20 +149,25 @@ def _dashboard_html() -> str:
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);
-      document.getElementById(id).innerHTML = rows.map(r => `<div class="label">${r[0]} (${r[1].toLocaleString()})</div><div class="bar"><span style="width:${100*r[1]/max}%"></span></div>`).join('');
+      document.getElementById(id).innerHTML = rows.map(r => `<div class="label">${escapeHtml(r[0])} (${r[1].toLocaleString()})</div><div class="bar"><span style="width:${100*r[1]/max}%"></span></div>`).join('');
     }
     function renderEvents(events) {
       document.getElementById('events').innerHTML = events.slice(0, 80).map(e => `<tr>
-        <td>${e.event_id}</td><td>${e.event_time}</td><td>${e.region}<br>${e.browser} / ${e.os}</td>
-        <td>${e.domain}</td><td>${e.query}</td>
-        <td class="score bot">combined ${e.combined_score}<br>rules ${e.heuristic_score}<br>ml ${e.ml_score}</td>
-        <td>${(e.reasons || []).join('<br>')}</td>
+        <td>${escapeHtml(e.event_id)}</td><td>${escapeHtml(e.event_time)}</td><td>${escapeHtml(e.region)}<br>${escapeHtml(e.browser)} / ${escapeHtml(e.os)}</td>
+        <td>${escapeHtml(e.domain)}</td><td>${escapeHtml(e.query)}</td>
+        <td class="score bot">combined ${escapeHtml(e.combined_score)}<br>rules ${escapeHtml(e.heuristic_score)}<br>ml ${escapeHtml(e.ml_score)}</td>
+        <td>${(e.reasons || []).map(escapeHtml).join('<br>')}</td>
       </tr>`).join('');
     }
     async function runPipeline() {
       const input = encodeURIComponent(document.getElementById('inputPath').value);
       document.getElementById('metrics').innerHTML = '<div class="card">Running pipeline...</div>';
-      await fetch('/run?input=' + input);
+      const response = await fetch('/run?input=' + input);
+      if (!response.ok) {
+        const payload = await response.json();
+        document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(payload.error || 'Pipeline run failed')}</div>`;
+        return;
+      }
       await load();
     }
     load();
@@ -170,4 +188,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

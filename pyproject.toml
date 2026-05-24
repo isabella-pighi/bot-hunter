@@ -4,6 +4,16 @@ version = "0.1.0"
 description = "Dependency-light bot click anomaly detection with a local HTTP dashboard."
 requires-python = ">=3.10"
 
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.setuptools.packages.find]
+include = ["bot_hunter*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
+pythonpath = ["."]
