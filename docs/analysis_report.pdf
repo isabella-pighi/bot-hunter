@@ -1,0 +1,651 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 2208 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+( Bot Hunter Analysis Report) Tj
+T*
+() Tj
+T*
+( 1. Classifiers) Tj
+T*
+() Tj
+T*
+(The application implements two classifiers. The first is a rules-based classifier that) Tj
+T*
+(scores repeated query/domain pairs, repeated queries, high-volume domains, dense) Tj
+T*
+(region/browser/OS clusters, exact time-to-click reuse, same-second bursts, and) Tj
+T*
+(implausibly fast clicks. The second is an unsupervised k-means anomaly model over) Tj
+T*
+(standardized behavioral features. Events far from their closest centroid receive higher) Tj
+T*
+(anomaly scores.) Tj
+T*
+() Tj
+T*
+( 2. Anomalies found) Tj
+T*
+() Tj
+T*
+(The run analyzed 149,239 events and flagged 3,781 events as bots \(2.53%\). The strongest) Tj
+T*
+(explainable patterns were:) Tj
+T*
+() Tj
+T*
+(- repeated query: 3,583 events) Tj
+T*
+(- very short query: 2,089 events) Tj
+T*
+(- repeated query/domain pair: 2,015 events) Tj
+T*
+(- same-second click burst: 1,952 events) Tj
+T*
+(- heavy region/browser/os cluster: 1,889 events) Tj
+T*
+(- high-volume clicked domain: 1,661 events) Tj
+T*
+(- extreme time-to-click: 167 events) Tj
+T*
+(- implausibly fast click: 27 events) Tj
+T*
+() Tj
+T*
+(The dashboard exposes these same signals with sample events so a business user can) Tj
+T*
+(inspect the likely automated behavior without reading model internals.) Tj
+T*
+() Tj
+T*
+( 3. Filtering options) Tj
+T*
+() Tj
+T*
+(Practical filters for similar datasets include dropping or quarantining traffic from) Tj
+T*
+(repeated query/domain pairs, repeated exact ttc values, dense same-second bursts, and) Tj
+T*
+(events above the combined anomaly threshold. For ad-billing workflows, the safest) Tj
+T*
+(starting point is to quarantine high-confidence bot traffic for review, then move to) Tj
+T*
+(automatic suppression once performance is validated against labeled outcomes or) Tj
+T*
+(chargeback evidence.) Tj
+T*
+() Tj
+T*
+( 4. Rationale and generalization) Tj
+T*
+() Tj
+T*
+(The heuristic model is transparent and easy to convert into policy. The k-means model) Tj
+T*
+(catches multivariate oddities that a small rule set may miss. Both should generalize) Tj
+T*
+(when bot traffic is repetitive or mechanically timed, but they may miss human-like bots) Tj
+T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2167 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(and may over-flag legitimate campaigns that naturally produce high repetition. The) Tj
+T*
+(thresholds should be recalibrated when traffic mix, geography, or ad inventory changes) Tj
+T*
+(materially.) Tj
+T*
+() Tj
+T*
+( 5. Probability assessment) Tj
+T*
+() Tj
+T*
+(The estimated probability that a flagged event is fraudulent is 69%. This is not label-) Tj
+T*
+(calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
+T*
+(signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
+T*
+(score are more likely to be fraudulent than events flagged by only one weak signal. The) Tj
+T*
+(report therefore treats probability as an operational confidence estimate, not a) Tj
+T*
+(measured ground truth metric.) Tj
+T*
+() Tj
+T*
+( 6. Recommended actions) Tj
+T*
+() Tj
+T*
+(Assuming false positives and false negatives are roughly equal in cost, the submitted) Tj
+T*
+(binary prediction uses the combined score threshold rather than only the highest-) Tj
+T*
+(confidence intersection. For business action, use three tiers: suppress the highest) Tj
+T*
+(combined-score traffic, quarantine medium-confidence traffic for review, and monitor) Tj
+T*
+(low-confidence anomalies until labels are available.) Tj
+T*
+() Tj
+T*
+( 7. Future work) Tj
+T*
+() Tj
+T*
+(With more time, I would add labeled validation data, campaign-level normalization,) Tj
+T*
+(browser/user-agent fingerprinting if available, time-series burst detection by) Tj
+T*
+(inventory, calibrated probabilities, and a feedback loop from manual review decisions.) Tj
+T*
+() Tj
+T*
+( 8. Submission) Tj
+T*
+() Tj
+T*
+(The repository includes submission.tsv with event_id and is_bot, using the final binary) Tj
+T*
+(prediction.) Tj
+T*
+() Tj
+T*
+(json) Tj
+T*
+({) Tj
+T*
+(  "input_path": "/Users/isabella/Downloads/bot-hunter-dataset.tsv",) Tj
+T*
+(  "total_events": 149239,) Tj
+T*
+(  "bot_events": 3781,) Tj
+T*
+(  "bot_rate": 0.02533520058429767,) Tj
+T*
+(  "threshold": 0.5833619587504523,) Tj
+T*
+(  "heuristic_flag_rate": 0.006794470614249626,) Tj
+T*
+(  "ml_tail_rate": 0.015002780774462439,) Tj
+T*
+(  "estimated_precision": 0.6924702459666754,) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 1045 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(  "feature_names": [) Tj
+T*
+(    "log_domain_count",) Tj
+T*
+(    "log_query_count",) Tj
+T*
+(    "log_query_domain_count",) Tj
+T*
+(    "log_device_count",) Tj
+T*
+(    "log_same_second_count",) Tj
+T*
+(    "log_ttc_count",) Tj
+T*
+(    "ttc_seconds",) Tj
+T*
+(    "query_terms",) Tj
+T*
+(    "query_chars",) Tj
+T*
+(    "has_bkl",) Tj
+T*
+(    "has_om",) Tj
+T*
+(    "kp",) Tj
+T*
+(    "sld",) Tj
+T*
+(    "hour",) Tj
+T*
+(    "is_mobile_search") Tj
+T*
+(  ],) Tj
+T*
+(  "top_reasons": [) Tj
+T*
+(    [) Tj
+T*
+(      "repeated query",) Tj
+T*
+(      3583) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "very short query",) Tj
+T*
+(      2089) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "repeated query/domain pair",) Tj
+T*
+(      2015) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "same-second click burst",) Tj
+T*
+(      1952) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "heavy region/browser/os cluster",) Tj
+T*
+(      1889) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "high-volume clicked domain",) Tj
+T*
+(      1661) Tj
+T*
+(    ],) Tj
+T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 881 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(    [) Tj
+T*
+(      "extreme time-to-click",) Tj
+T*
+(      167) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "implausibly fast click",) Tj
+T*
+(      27) Tj
+T*
+(    ]) Tj
+T*
+(  ],) Tj
+T*
+(  "top_domains": [) Tj
+T*
+(    [) Tj
+T*
+(      "www.amazon.de",) Tj
+T*
+(      5543) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.amazon.co.uk",) Tj
+T*
+(      4623) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.amazon.ca",) Tj
+T*
+(      4480) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.booking.com",) Tj
+T*
+(      3640) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.amazon.es",) Tj
+T*
+(      2230) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "duckduckgo.com",) Tj
+T*
+(      1816) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.amazon.fr",) Tj
+T*
+(      1573) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.amazon.com",) Tj
+T*
+(      1550) Tj
+T*
+(    ],) Tj
+T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 828 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(    [) Tj
+T*
+(      "www.amazon.it",) Tj
+T*
+(      1321) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.yidio.com",) Tj
+T*
+(      1301) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.preis.de",) Tj
+T*
+(      911) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "www.flicksmore.com",) Tj
+T*
+(      748) Tj
+T*
+(    ]) Tj
+T*
+(  ],) Tj
+T*
+(  "top_queries": [) Tj
+T*
+(    [) Tj
+T*
+(      "nomnem",) Tj
+T*
+(      1226) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "splenocyte",) Tj
+T*
+(      531) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "pluralizes",) Tj
+T*
+(      391) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "neti biscot",) Tj
+T*
+(      316) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "spurge",) Tj
+T*
+(      258) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "solely",) Tj
+T*
+(      246) Tj
+T*
+(    ],) Tj
+T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 805 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(    [) Tj
+T*
+(      "gangdom",) Tj
+T*
+(      246) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "valgoid kae",) Tj
+T*
+(      239) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "censer amatorial callainite",) Tj
+T*
+(      216) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "orlo pliny",) Tj
+T*
+(      213) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "nana",) Tj
+T*
+(      212) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "vaunt",) Tj
+T*
+(      212) Tj
+T*
+(    ]) Tj
+T*
+(  ],) Tj
+T*
+(  "bot_regions": [) Tj
+T*
+(    [) Tj
+T*
+(      "Earth",) Tj
+T*
+(      1817) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "Mars",) Tj
+T*
+(      1772) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "Mercury",) Tj
+T*
+(      56) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "Venus",) Tj
+T*
+(      52) Tj
+T*
+(    ],) Tj
+T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 202 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(    [) Tj
+T*
+(      "Jupiter",) Tj
+T*
+(      44) Tj
+T*
+(    ],) Tj
+T*
+(    [) Tj
+T*
+(      "Saturn",) Tj
+T*
+(      40) Tj
+T*
+(    ]) Tj
+T*
+(  ]) Tj
+T*
+(}) Tj
+T*
+() Tj
+T*
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+xref
+0 18
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000155 00000 n 
+0000000225 00000 n 
+0000002485 00000 n 
+0000002611 00000 n 
+0000004830 00000 n 
+0000004956 00000 n 
+0000006053 00000 n 
+0000006179 00000 n 
+0000007112 00000 n 
+0000007240 00000 n 
+0000008120 00000 n 
+0000008248 00000 n 
+0000009105 00000 n 
+0000009233 00000 n 
+0000009487 00000 n 
+trailer << /Size 18 /Root 1 0 R >>
+startxref
+9615
+%%EOF

@@ -1,0 +1,187 @@
+{
+  "input_path": "/Users/isabella/Downloads/bot-hunter-dataset.tsv",
+  "total_events": 149239,
+  "bot_events": 3781,
+  "bot_rate": 0.02533520058429767,
+  "threshold": 0.5833619587504523,
+  "heuristic_flag_rate": 0.006794470614249626,
+  "ml_tail_rate": 0.015002780774462439,
+  "estimated_precision": 0.6924702459666754,
+  "feature_names": [
+    "log_domain_count",
+    "log_query_count",
+    "log_query_domain_count",
+    "log_device_count",
+    "log_same_second_count",
+    "log_ttc_count",
+    "ttc_seconds",
+    "query_terms",
+    "query_chars",
+    "has_bkl",
+    "has_om",
+    "kp",
+    "sld",
+    "hour",
+    "is_mobile_search"
+  ],
+  "top_reasons": [
+    [
+      "repeated query",
+      3583
+    ],
+    [
+      "very short query",
+      2089
+    ],
+    [
+      "repeated query/domain pair",
+      2015
+    ],
+    [
+      "same-second click burst",
+      1952
+    ],
+    [
+      "heavy region/browser/os cluster",
+      1889
+    ],
+    [
+      "high-volume clicked domain",
+      1661
+    ],
+    [
+      "extreme time-to-click",
+      167
+    ],
+    [
+      "implausibly fast click",
+      27
+    ]
+  ],
+  "top_domains": [
+    [
+      "www.amazon.de",
+      5543
+    ],
+    [
+      "www.amazon.co.uk",
+      4623
+    ],
+    [
+      "www.amazon.ca",
+      4480
+    ],
+    [
+      "www.booking.com",
+      3640
+    ],
+    [
+      "www.amazon.es",
+      2230
+    ],
+    [
+      "duckduckgo.com",
+      1816
+    ],
+    [
+      "www.amazon.fr",
+      1573
+    ],
+    [
+      "www.amazon.com",
+      1550
+    ],
+    [
+      "www.amazon.it",
+      1321
+    ],
+    [
+      "www.yidio.com",
+      1301
+    ],
+    [
+      "www.preis.de",
+      911
+    ],
+    [
+      "www.flicksmore.com",
+      748
+    ]
+  ],
+  "top_queries": [
+    [
+      "nomnem",
+      1226
+    ],
+    [
+      "splenocyte",
+      531
+    ],
+    [
+      "pluralizes",
+      391
+    ],
+    [
+      "neti biscot",
+      316
+    ],
+    [
+      "spurge",
+      258
+    ],
+    [
+      "solely",
+      246
+    ],
+    [
+      "gangdom",
+      246
+    ],
+    [
+      "valgoid kae",
+      239
+    ],
+    [
+      "censer amatorial callainite",
+      216
+    ],
+    [
+      "orlo pliny",
+      213
+    ],
+    [
+      "nana",
+      212
+    ],
+    [
+      "vaunt",
+      212
+    ]
+  ],
+  "bot_regions": [
+    [
+      "Earth",
+      1817
+    ],
+    [
+      "Mars",
+      1772
+    ],
+    [
+      "Mercury",
+      56
+    ],
+    [
+      "Venus",
+      52
+    ],
+    [
+      "Jupiter",
+      44
+    ],
+    [
+      "Saturn",
+      40
+    ]
+  ]
+}

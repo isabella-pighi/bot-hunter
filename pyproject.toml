@@ -1,0 +1,9 @@
+[project]
+name = "bot-hunter"
+version = "0.1.0"
+description = "Dependency-light bot click anomaly detection with a local HTTP dashboard."
+requires-python = ">=3.10"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
