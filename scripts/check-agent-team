@@ -32,6 +32,20 @@ else
   missing=1
 fi
 
+if command -v claude >/dev/null 2>&1 && claude mcp list 2>/dev/null | grep -q "memory: .*✓ Connected"; then
+  printf "ok: Claude memory MCP connected\n"
+else
+  printf "missing: Claude memory MCP not connected\n"
+  missing=1
+fi
+
+if command -v codex >/dev/null 2>&1 && codex mcp list 2>/dev/null | grep -q "^memory"; then
+  printf "ok: Codex memory MCP configured\n"
+else
+  printf "missing: Codex memory MCP not configured\n"
+  missing=1
+fi
+
 printf "\nrepo:\n"
 git status --short --branch
 

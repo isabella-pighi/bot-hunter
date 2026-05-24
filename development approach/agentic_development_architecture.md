@@ -129,7 +129,7 @@ Exact command flags may vary by local HCOM, Claude Code, and Codex CLI versions.
 
 This folder also includes role prompts in `development approach/prompts/`. The helper scripts pass these prompts to HCOM with `--hcom-system-prompt`, so each agent starts with the expected role and handoff discipline.
 
-Claude Code also has access to a project-scoped MCP memory server through `.mcp.json`. The server uses `@modelcontextprotocol/server-memory` and stores its local knowledge graph in `.mcp-memory/claude-memory.jsonl`. That file is ignored by git; use it for working memory, not for durable project documentation that should be shared through the repository.
+Claude Code has access to a project-scoped MCP memory server through `.mcp.json`. Codex CLI has a separate MCP registry, so run `./scripts/setup-memory-mcp` once on a development machine to configure Codex to use the same memory server. Both configurations use `@modelcontextprotocol/server-memory` and store the local knowledge graph in `.mcp-memory/claude-memory.jsonl`. That file is ignored by git; use it for working memory, not for durable project documentation that should be shared through the repository.
 
 ## Handoff Protocol
 

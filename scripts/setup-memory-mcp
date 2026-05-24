@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+mkdir -p .mcp-memory
+
+claude mcp add-json -s project memory '{"type":"stdio","command":"bunx","args":["-y","@modelcontextprotocol/server-memory"],"env":{"MEMORY_FILE_PATH":".mcp-memory/claude-memory.jsonl"}}' >/dev/null 2>&1 || true
+codex mcp add memory --env "MEMORY_FILE_PATH=$(pwd)/.mcp-memory/claude-memory.jsonl" -- bunx -y @modelcontextprotocol/server-memory >/dev/null 2>&1 || true
+
+./scripts/check-agent-team
+

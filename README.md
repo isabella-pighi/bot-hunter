@@ -32,6 +32,7 @@ Open `http://127.0.0.1:8000` to inspect the dashboard.
 This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
 
 ```bash
+./scripts/setup-memory-mcp
 ./scripts/check-agent-team
 ./scripts/start-agent-team
 ```
