@@ -12,6 +12,29 @@ HCOM is used as the coordination layer: each agent runs in its own terminal, but
 - Preserve human control over scope, merges, pushes, and final product decisions.
 - Make the workflow reproducible for future Bot Hunter changes.
 
+## Fit for Bot Hunter
+
+This approach is a strong fit for Bot Hunter because the project combines implementation work with judgement-heavy analysis. The code needs to parse data, run classifiers, generate `submission.tsv`, and serve a local dashboard, but the deliverable also depends on methodology, probability claims, business recommendations, and a written explanation. Those are exactly the places where an independent reviewer can catch weak assumptions.
+
+Using different model families is valuable here. A single agent can overfit to its own explanation of why a classifier, threshold, or probability estimate is reasonable. Having one agent implement and another review creates a second pass on questions such as:
+
+- Are the anomaly signals actually supported by the data?
+- Does the report overstate confidence in the absence of labels?
+- Does `submission.tsv` match the current classifier logic?
+- Are generated artifacts reproducible from the source code?
+- Are threshold choices and false-positive tradeoffs clearly stated?
+- Does the dashboard communicate results to a business user without requiring data science context?
+
+The recommended default is Codex CLI as the coder and Claude Code as the reviewer. Codex is well suited to terminal-driven implementation, local edits, test runs, and commits. Claude is well suited to broad critique of methodology, report clarity, probability reasoning, and business-facing recommendations. This pairing can be reversed when the task is mainly architecture or long-context design exploration.
+
+HCOM is appropriate because the goal is not a large autonomous platform. The useful property is lightweight local coordination: tagged agents, explicit messages, activity awareness, and review handoffs inside the same repository. The value comes from disciplined communication, not from having more agents for its own sake.
+
+The main risk is process overhead. A full orchestrator, coder, and reviewer loop is worthwhile for changes that affect predictions, probability estimates, report conclusions, or generated deliverables. It is probably unnecessary for small copy edits or low-risk documentation changes.
+
+The second risk is false confidence. Agreement between two agents is not statistical validation. For this project, the reviewer should explicitly challenge any claim that sounds measured but is not label-calibrated. In particular, fraud probability estimates should be treated as operational confidence estimates unless future work adds ground truth labels, chargeback evidence, or manual review outcomes.
+
+The practical recommendation is to keep this workflow lightweight and gated. Use HCOM for communication and state, but require concrete evidence at every review point: the diff, commands run, artifact changes, reviewer findings, and either resolution or explicit human waiver. The human owner remains responsible for the final product decision.
+
 ## Roles
 
 ### Human Owner
@@ -227,4 +250,3 @@ git diff
 Use Codex CLI as coder and Claude Code as reviewer for implementation-heavy work. Reverse the pairing when the task is mostly design exploration or long-context architecture analysis, with Claude drafting the approach and Codex reviewing operational feasibility.
 
 The important property is independence: the reviewer should not be asked to defend the coder's earlier reasoning. It should inspect the repository state and produce its own judgement.
-
