@@ -41,4 +41,3 @@ Open `http://127.0.0.1:8000` to inspect the dashboard.
 The heuristic classifier focuses on business-explainable signals: repeated query/ad pairs, repeated exact click times, unusually high-volume domains or device combinations, second-level bursts, and implausibly fast clicks. These are common traits of scripted traffic and can be converted directly into operational filters.
 
 The ML classifier uses k-means over standardized behavioral features, then treats events farthest from their closest centroid as anomalous. It is unsupervised because the brief does not include labels. K-means is intentionally simple, transparent, and fast enough for this dataset size without external dependencies.
-
