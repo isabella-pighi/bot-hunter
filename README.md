@@ -35,6 +35,7 @@ Open `http://127.0.0.1:8000` to inspect the dashboard.
 - `docs/analysis_report.md`: written response to the brief.
 - `docs/analysis_report.html`: browser-printable report.
 - `docs/analysis_report.pdf`: lightweight PDF report.
+- `docs/agentic_development_architecture.md`: proposed Claude Code, Codex CLI, HCOM, and reviewer/coder workflow.
 
 ## Classifier rationale
 
