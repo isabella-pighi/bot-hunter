@@ -27,6 +27,17 @@ python3 -m bot_hunter.web --port 8000
 
 Open `http://127.0.0.1:8000` to inspect the dashboard.
 
+## Agentic development team
+
+This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
+
+```bash
+./scripts/check-agent-team
+./scripts/start-agent-team
+```
+
+Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. Role prompts live in `agents/`, and the architecture is documented in `docs/agentic_development_architecture.md`.
+
 ## Generated files
 
 - `submission.tsv`: final binary predictions with `event_id` and `is_bot`.
@@ -36,6 +47,7 @@ Open `http://127.0.0.1:8000` to inspect the dashboard.
 - `docs/analysis_report.html`: browser-printable report.
 - `docs/analysis_report.pdf`: lightweight PDF report.
 - `docs/agentic_development_architecture.md`: proposed Claude Code, Codex CLI, HCOM, and reviewer/coder workflow.
+- `agents/` and `scripts/`: role prompts and helper scripts for starting the local agentic development team.
 
 ## Classifier rationale
 

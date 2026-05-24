@@ -89,22 +89,34 @@ Run each agent from the project root so they share the same repository context:
 cd /Users/isabella/bot-hunter
 ```
 
+Check local prerequisites:
+
+```bash
+./scripts/check-agent-team
+```
+
 Start the coder:
 
 ```bash
-HCOM_TAG=coder hcom codex
+./scripts/start-coder
 ```
 
 Start the reviewer:
 
 ```bash
-HCOM_TAG=reviewer hcom claude
+./scripts/start-reviewer
+```
+
+Start both default agents:
+
+```bash
+./scripts/start-agent-team
 ```
 
 Optional orchestrator:
 
 ```bash
-HCOM_TAG=orchestrator hcom codex
+./scripts/start-orchestrator
 ```
 
 For headless review, the reviewer can be started with a standing instruction:
@@ -114,6 +126,8 @@ HCOM_TAG=reviewer hcom claude -p "Act as read-only reviewer. Watch for coder han
 ```
 
 Exact command flags may vary by local HCOM, Claude Code, and Codex CLI versions. The stable requirements are the tags, shared working directory, and explicit handoff messages.
+
+The repository also includes role prompts in `agents/`. The helper scripts pass these prompts to HCOM with `--hcom-system-prompt`, so each agent starts with the expected role and handoff discipline.
 
 ## Handoff Protocol
 

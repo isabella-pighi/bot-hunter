@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+ROOT="$(pwd)"
+
+if ! command -v hcom >/dev/null 2>&1; then
+  echo "hcom is not installed. Install it first, then rerun this script."
+  exit 1
+fi
+
+if ! command -v codex >/dev/null 2>&1; then
+  echo "codex is not installed or not on PATH."
+  exit 1
+fi
+
+export HCOM_TAG="${HCOM_TAG:-orchestrator}"
+PROMPT="$(cat agents/orchestrator_prompt.md)"
+exec hcom codex --tag "$HCOM_TAG" --dir "$ROOT" --hcom-system-prompt "$PROMPT"

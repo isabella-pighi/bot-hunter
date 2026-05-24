@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(dirname "$0")/.."
+
+./scripts/check-agent-team
+
+echo "Starting coder and reviewer through HCOM..."
+hcom codex --tag coder --dir "$(pwd)" --hcom-system-prompt "$(cat agents/coder_prompt.md)"
+hcom claude --tag reviewer --dir "$(pwd)" --hcom-system-prompt "$(cat agents/reviewer_prompt.md)"
+
+echo
+echo "Optional orchestrator:"
+echo "  ./scripts/start-orchestrator"
