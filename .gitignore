@@ -6,4 +6,5 @@ data/*.tsv
 data/*.csv
 !submission.tsv
 artifacts/events.jsonl
-
+.mcp-memory/*.jsonl
+.mcp-memory/*.json

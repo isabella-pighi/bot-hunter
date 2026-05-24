@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "memory": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-memory"
+      ],
+      "env": {
+        "MEMORY_FILE_PATH": ".mcp-memory/claude-memory.jsonl"
+      }
+    }
+  }
+}

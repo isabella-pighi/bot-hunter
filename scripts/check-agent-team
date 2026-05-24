@@ -16,12 +16,21 @@ check_cmd() {
 check_cmd hcom
 check_cmd codex
 check_cmd claude
+check_cmd bunx
 check_cmd git
 
 printf "\nversions:\n"
 if command -v hcom >/dev/null 2>&1; then hcom --version || true; fi
 if command -v codex >/dev/null 2>&1; then codex --version || true; fi
 if command -v claude >/dev/null 2>&1; then claude --version || true; fi
+
+printf "\nmcp:\n"
+if [ -f .mcp.json ]; then
+  printf "ok: .mcp.json present\n"
+else
+  printf "missing: .mcp.json\n"
+  missing=1
+fi
 
 printf "\nrepo:\n"
 git status --short --branch
@@ -32,4 +41,3 @@ if [ "$missing" -ne 0 ]; then
 fi
 
 printf "\nAgent team prerequisites are present.\n"
-
