@@ -15,5 +15,5 @@ if ! command -v claude >/dev/null 2>&1; then
 fi
 
 export HCOM_TAG="${HCOM_TAG:-reviewer}"
-PROMPT="$(cat agents/reviewer_prompt.md)"
+PROMPT="$(cat 'development approach/prompts/reviewer_prompt.md')"
 exec hcom claude --tag "$HCOM_TAG" --dir "$ROOT" --hcom-system-prompt "$PROMPT"

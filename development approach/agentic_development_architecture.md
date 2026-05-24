@@ -127,7 +127,7 @@ HCOM_TAG=reviewer hcom claude -p "Act as read-only reviewer. Watch for coder han
 
 Exact command flags may vary by local HCOM, Claude Code, and Codex CLI versions. The stable requirements are the tags, shared working directory, and explicit handoff messages.
 
-The repository also includes role prompts in `agents/`. The helper scripts pass these prompts to HCOM with `--hcom-system-prompt`, so each agent starts with the expected role and handoff discipline.
+This folder also includes role prompts in `development approach/prompts/`. The helper scripts pass these prompts to HCOM with `--hcom-system-prompt`, so each agent starts with the expected role and handoff discipline.
 
 ## Handoff Protocol
 

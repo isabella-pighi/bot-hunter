@@ -15,5 +15,5 @@ if ! command -v codex >/dev/null 2>&1; then
 fi
 
 export HCOM_TAG="${HCOM_TAG:-coder}"
-PROMPT="$(cat agents/coder_prompt.md)"
+PROMPT="$(cat 'development approach/prompts/coder_prompt.md')"
 exec hcom codex --tag "$HCOM_TAG" --dir "$ROOT" --hcom-system-prompt "$PROMPT"

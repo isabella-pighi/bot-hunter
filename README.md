@@ -36,7 +36,7 @@ This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
 ./scripts/start-agent-team
 ```
 
-Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. Role prompts live in `agents/`, and the architecture is documented in `docs/agentic_development_architecture.md`.
+Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. Development team documentation and role prompts live in `development approach/`.
 
 ## Generated files
 
@@ -46,8 +46,8 @@ Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orc
 - `docs/analysis_report.md`: written response to the brief.
 - `docs/analysis_report.html`: browser-printable report.
 - `docs/analysis_report.pdf`: lightweight PDF report.
-- `docs/agentic_development_architecture.md`: proposed Claude Code, Codex CLI, HCOM, and reviewer/coder workflow.
-- `agents/` and `scripts/`: role prompts and helper scripts for starting the local agentic development team.
+- `development approach/`: proposed Claude Code, Codex CLI, HCOM, reviewer/coder workflow, and role prompts.
+- `scripts/`: helper scripts for starting the local agentic development team.
 
 ## Classifier rationale
 
