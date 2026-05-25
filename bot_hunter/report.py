@@ -23,6 +23,10 @@ def _markdown(summary: dict[str, object]) -> str:
     reason_lines = "\n".join(f"- {reason}: {count:,} events" for reason, count in top_reasons)
     if not reason_lines:
         reason_lines = "- No dominant heuristic reason was found."
+    tier_counts = summary.get("tier_counts", {})
+    tier_lines = "\n".join(
+        f"- {tier}: {int(tier_counts.get(tier, 0)):,} events" for tier in ("suppress", "quarantine", "monitor")
+    )
 
     return f"""# Bot Hunter Analysis Report
 
@@ -40,7 +44,11 @@ The dashboard exposes these same signals with sample events so a business user c
 
 ## 3. Filtering options
 
-Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. For ad-billing workflows, the safest starting point is to quarantine high-confidence bot traffic for review, then move to automatic suppression once performance is validated against labeled outcomes or chargeback evidence.
+Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. Bot Hunter assigns operational tiers without changing the binary `is_bot` prediction:
+
+{tier_lines}
+
+Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
 
 ## 4. Rationale and generalization
 
@@ -52,7 +60,7 @@ The estimated probability that a flagged event is fraudulent is {precision:.0%}.
 
 ## 6. Recommended actions
 
-Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress the highest combined-score traffic, quarantine medium-confidence traffic for review, and monitor low-confidence anomalies until labels are available.
+Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress bot events with the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the remaining bot events for review; and monitor traffic that is not selected for bot action while retaining it for drift checks and future labels.
 
 ## 7. Future work
 
@@ -60,7 +68,7 @@ With more time, I would add labeled validation data, campaign-level normalizatio
 
 ## 8. Submission
 
-The repository includes `submission.tsv` with `event_id` and `is_bot`, using the final binary prediction.
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier.
 
 ```json
 {json.dumps(summary, indent=2)[:3000]}

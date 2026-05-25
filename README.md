@@ -135,6 +135,16 @@ combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
 
 An event is flagged as a bot if it is above the combined-score threshold or if the heuristic score is high enough on its own.
 
+#### Operational confidence tiers
+
+The binary `is_bot` field remains the compatibility decision: `1` means Bot Hunter selected the event as likely bot traffic and `0` means it did not. Bot Hunter also assigns an `operational_tier` so business workflows can separate action from model output:
+
+- `suppress`: high-confidence bot traffic. These events are flagged as bots and have a strong combined score, a strong heuristic score, or agreement between heuristic and anomaly scores. Use this tier for automatic suppression only after policy approval.
+- `quarantine`: lower-confidence bot traffic. These events are still `is_bot=1`, but they do not meet the stronger suppress conditions. Hold them for review, sampling, or delayed billing decisions.
+- `monitor`: traffic not selected for bot action. These events are `is_bot=0`; keep them for trends, drift checks, and future labels.
+
+These tiers are operational confidence buckets, not measured precision. They are derived from the same unlabeled scores and are intended to guide workflow severity. The pipeline writes tier counts to `artifacts/summary.json`, includes each event's tier in `submission.tsv`, and exposes sampled tiers in `artifacts/sample_events.json` and the dashboard.
+
 #### Precision and confidence
 
 Bot Hunter does not currently calculate true precision for the heuristic, k-means, Isolation Forest, or combined methods because the dataset does not include ground-truth labels. True precision requires known true positives and false positives:

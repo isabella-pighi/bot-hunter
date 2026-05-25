@@ -34,6 +34,7 @@ class ClickEvent:
     ml_score: float = 0.0
     combined_score: float = 0.0
     is_bot: int = 0
+    operational_tier: str = "monitor"
     reasons: list[str] = field(default_factory=list)
     rule_contributions: list[RuleContribution] = field(default_factory=list)
 
@@ -156,6 +157,7 @@ def iter_event_dicts(events: Iterable[ClickEvent]) -> Iterable[dict[str, object]
             "ml_score": round(event.ml_score, 4),
             "combined_score": round(event.combined_score, 4),
             "is_bot": event.is_bot,
+            "operational_tier": event.operational_tier,
             "reasons": event.reasons,
             "rule_contributions": [
                 {

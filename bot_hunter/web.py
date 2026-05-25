@@ -151,10 +151,14 @@ def _dashboard_html() -> str:
       <div class="card"><h2>Top Bot Signals</h2><div id="reasons"></div></div>
       <div class="card"><h2>Flagged Regions</h2><div id="regions"></div></div>
     </section>
+    <section class="card" style="margin-bottom:20px;">
+      <h2>Operational Tiers</h2>
+      <div id="tiers"></div>
+    </section>
     <section class="card">
       <h2>Highest Risk Events</h2>
       <table>
-        <thead><tr><th>Event</th><th>Time</th><th>Device</th><th>Domain</th><th>Query</th><th>Scores</th><th>Reasons</th></tr></thead>
+        <thead><tr><th>Event</th><th>Time</th><th>Device</th><th>Domain</th><th>Query</th><th>Scores</th><th>Tier</th><th>Reasons</th></tr></thead>
         <tbody id="events"></tbody>
       </table>
     </section>
@@ -186,6 +190,7 @@ def _dashboard_html() -> str:
       document.getElementById('metrics').innerHTML = metrics.map(([k,v]) => `<div class="card"><div class="label">${k}</div><div class="metric">${v}</div></div>`).join('');
       renderBars('reasons', s.top_reasons || []);
       renderBars('regions', s.bot_regions || []);
+      renderBars('tiers', Object.entries(s.tier_counts || {}));
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);
@@ -196,6 +201,7 @@ def _dashboard_html() -> str:
         <td>${escapeHtml(e.event_id)}</td><td>${escapeHtml(e.event_time)}</td><td>${escapeHtml(e.region)}<br>${escapeHtml(e.browser)} / ${escapeHtml(e.os)}</td>
         <td>${escapeHtml(e.domain)}</td><td>${escapeHtml(e.query)}</td>
         <td class="score bot">combined ${escapeHtml(e.combined_score)}<br>rules ${escapeHtml(e.heuristic_score)}<br>ml ${escapeHtml(e.ml_score)}</td>
+        <td>${escapeHtml(e.operational_tier)}</td>
         <td>${(e.reasons || []).map(escapeHtml).join('<br>')}</td>
       </tr>`).join('');
     }

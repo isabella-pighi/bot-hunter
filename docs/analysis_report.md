@@ -21,7 +21,13 @@ The dashboard exposes these same signals with sample events so a business user c
 
 ## 3. Filtering options
 
-Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. For ad-billing workflows, the safest starting point is to quarantine high-confidence bot traffic for review, then move to automatic suppression once performance is validated against labeled outcomes or chargeback evidence.
+Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. Bot Hunter assigns operational tiers without changing the binary `is_bot` prediction:
+
+- suppress: 981 events
+- quarantine: 2,751 events
+- monitor: 145,507 events
+
+Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
 
 ## 4. Rationale and generalization
 
@@ -33,7 +39,7 @@ The estimated probability that a flagged event is fraudulent is 77%. This is not
 
 ## 6. Recommended actions
 
-Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress the highest combined-score traffic, quarantine medium-confidence traffic for review, and monitor low-confidence anomalies until labels are available.
+Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress bot events with the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the remaining bot events for review; and monitor traffic that is not selected for bot action while retaining it for drift checks and future labels.
 
 ## 7. Future work
 
@@ -41,7 +47,7 @@ With more time, I would add labeled validation data, campaign-level normalizatio
 
 ## 8. Submission
 
-The repository includes `submission.tsv` with `event_id` and `is_bot`, using the final binary prediction.
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier.
 
 ```json
 {
@@ -72,6 +78,24 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
     "hour",
     "is_mobile_search"
   ],
+  "operational_tiers": {
+    "suppress": "High-confidence bot traffic suitable for automatic suppression after policy approval.",
+    "quarantine": "Bot traffic that should be held for review before suppression.",
+    "monitor": "Traffic not selected for bot action; keep for trend monitoring and future labels."
+  },
+  "tier_thresholds": {
+    "suppress_combined_score": 0.8,
+    "suppress_heuristic_score": 0.8,
+    "suppress_agreement_heuristic_score": 0.62,
+    "suppress_agreement_ml_score": 0.9,
+    "quarantine": "is_bot == 1 and suppress conditions are not met",
+    "monitor": "is_bot == 0"
+  },
+  "tier_counts": {
+    "suppress": 981,
+    "quarantine": 2751,
+    "monitor": 145507
+  },
   "top_reasons": [
     [
       "repeated query",
@@ -206,31 +230,5 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
       212
     ]
   ],
-  "bot_regions": [
-    [
-      "Earth",
-      1809
-    ],
-    [
-      "Mars",
-      1762
-    ],
-    [
-      "Mercury",
-      53
-    ],
-    [
-      "Venus",
-      43
-    ],
-    [
-      "Saturn",
-      36
-    ],
-    [
-      "Jupiter",
-      29
-    ]
-  ]
-}
+  "bot_reg
 ```

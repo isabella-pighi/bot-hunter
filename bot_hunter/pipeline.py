@@ -10,6 +10,11 @@ from .heuristics import apply_heuristics
 from .ml import score_anomalies
 from .report import write_reports
 
+SUPPRESS_COMBINED_THRESHOLD = 0.80
+SUPPRESS_HEURISTIC_THRESHOLD = 0.80
+SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD = 0.62
+SUPPRESS_AGREEMENT_ML_THRESHOLD = 0.90
+
 
 def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backend: str = "auto") -> dict[str, object]:
     root = Path(output_dir)
@@ -29,6 +34,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
     cutoff = _quantile(combined, 0.975) if combined else 0.0
     for event in events:
         event.is_bot = 1 if event.combined_score >= cutoff or event.heuristic_score >= 0.62 else 0
+        event.operational_tier = _assign_operational_tier(event)
 
     bot_events = [event for event in events if event.is_bot]
     both_count = sum(1 for event in bot_events if event.heuristic_score >= 0.45 and event.ml_score >= 0.90)
@@ -42,6 +48,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
     top_domains = counters["domain"].most_common(12)
     top_queries = counters["query"].most_common(12)
     top_regions = Counter(event.region for event in bot_events).most_common(8)
+    tier_counts = Counter(event.operational_tier for event in events)
     summary = {
         "input_path": str(Path(input_path).expanduser()),
         "total_events": len(events),
@@ -54,6 +61,20 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
         "ml_backend": ml_backend_used,
         "feature_artifact": "artifacts/features.tsv",
         "feature_names": feature_names,
+        "operational_tiers": {
+            "suppress": "High-confidence bot traffic suitable for automatic suppression after policy approval.",
+            "quarantine": "Bot traffic that should be held for review before suppression.",
+            "monitor": "Traffic not selected for bot action; keep for trend monitoring and future labels.",
+        },
+        "tier_thresholds": {
+            "suppress_combined_score": SUPPRESS_COMBINED_THRESHOLD,
+            "suppress_heuristic_score": SUPPRESS_HEURISTIC_THRESHOLD,
+            "suppress_agreement_heuristic_score": SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD,
+            "suppress_agreement_ml_score": SUPPRESS_AGREEMENT_ML_THRESHOLD,
+            "quarantine": "is_bot == 1 and suppress conditions are not met",
+            "monitor": "is_bot == 0",
+        },
+        "tier_counts": {tier: tier_counts.get(tier, 0) for tier in ("suppress", "quarantine", "monitor")},
         "top_reasons": reason_counter.most_common(10),
         "top_domains": top_domains,
         "top_queries": top_queries,
@@ -75,11 +96,26 @@ def _quantile(values: list[float], q: float) -> float:
     return ordered[idx]
 
 
+def _assign_operational_tier(event) -> str:
+    if not event.is_bot:
+        return "monitor"
+    if (
+        event.combined_score >= SUPPRESS_COMBINED_THRESHOLD
+        or event.heuristic_score >= SUPPRESS_HEURISTIC_THRESHOLD
+        or (
+            event.heuristic_score >= SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD
+            and event.ml_score >= SUPPRESS_AGREEMENT_ML_THRESHOLD
+        )
+    ):
+        return "suppress"
+    return "quarantine"
+
+
 def _write_submission(path: Path, events) -> None:
     with path.open("w", encoding="utf-8") as handle:
-        handle.write("event_id\tis_bot\n")
+        handle.write("event_id\tis_bot\toperational_tier\n")
         for event in events:
-            handle.write(f"{event.event_id}\t{event.is_bot}\n")
+            handle.write(f"{event.event_id}\t{event.is_bot}\t{event.operational_tier}\n")
 
 
 def _write_json(path: Path, payload: object) -> None:
