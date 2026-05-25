@@ -132,3 +132,15 @@ combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
 ```
 
 An event is flagged as a bot if it is above the combined-score threshold or if the heuristic score is high enough on its own.
+
+#### Precision and confidence
+
+Bot Hunter does not currently calculate true precision for the heuristic, k-means, Isolation Forest, or combined methods because the dataset does not include ground-truth labels. True precision requires known true positives and false positives:
+
+```text
+precision = true_positives / (true_positives + false_positives)
+```
+
+The `estimated_precision` field in the generated summary is therefore not measured model precision. It is an operational confidence estimate based on agreement between independent signals. The pipeline starts with a baseline confidence and increases it when final flagged events are supported by both a meaningful heuristic score and a high anomaly score.
+
+Measured per-method precision would require labeled data, manual review outcomes, chargeback/fraud confirmation, trusted synthetic labels, or a benchmark dataset with known bot/human labels. With labels available, the project could report separate precision values for heuristic-only flags, k-means flags, Isolation Forest flags, and the final combined decision.
