@@ -4,7 +4,6 @@
 
 | Priority | Status | Area | Item | Why it matters | Notes |
 | --- | --- | --- | --- | --- | --- |
-| P0 | Todo | Explainability | Store structured rule contributions alongside text reasons. | Makes dashboard grouping, audits, and per-rule impact analysis more reliable. | Keep the current human-readable reasons, but add machine-readable rule IDs, weights, and raw values. |
 | P0 | Todo | Combined Decision Logic | Define operational confidence tiers: suppress, quarantine, and monitor. | Turns scores into clearer business actions without pretending unlabeled data has measured precision. | Tie tiers to `combined_score`, heuristic strength, and anomaly score agreement. |
 | P0 | Todo | Combined Decision Logic | Report disagreement buckets separately. | High-rules/low-ML and low-rules/high-ML cases are the fastest way to inspect blind spots. | Add summary counts and dashboard sections for method disagreement. |
 | P1 | Todo | Rules-Based Heuristic Classifier | Make thresholds adaptive by percentile instead of fixed count cutoffs. | Reduces sensitivity to dataset size and traffic volume changes. | Keep current constants as fallback defaults or guardrails. |
@@ -26,3 +25,4 @@
 | P3 | Todo | Combined Decision Logic | Train a supervised combiner if labels become available. | A calibrated model can replace manual score weights once ground truth exists. | Candidate models: logistic regression or calibrated tree model. |
 | Done | Done | Anomaly Classifier | Add optional sklearn backend while keeping the standard-library k-means fallback. | Improves anomaly modeling without breaking lightweight environments. | Implemented with `--ml-backend {auto,sklearn,kmeans}`. |
 | Done | Done | Anomaly Classifier | Add `IsolationForest` as the first optional sklearn anomaly model. | Provides a model designed for unsupervised anomaly detection. | It is now preferred by default when scikit-learn is available. |
+| Done | Done | Explainability | Store structured rule contributions alongside text reasons. | Makes dashboard grouping, audits, and per-rule impact analysis more reliable. | `sample_events.json` now includes stable rule IDs, labels, weights, observed values, thresholds, and conditions while preserving text reasons. |

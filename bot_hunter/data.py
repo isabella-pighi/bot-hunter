@@ -10,6 +10,17 @@ from urllib.parse import parse_qs, urlsplit
 
 
 @dataclass
+class RuleContribution:
+    rule_id: str
+    label: str
+    reason: str
+    weight: float
+    observed: int | float | str
+    threshold: int | float | str | None = None
+    condition: str = ""
+
+
+@dataclass
 class ClickEvent:
     event_id: str
     event_time: datetime
@@ -24,6 +35,7 @@ class ClickEvent:
     combined_score: float = 0.0
     is_bot: int = 0
     reasons: list[str] = field(default_factory=list)
+    rule_contributions: list[RuleContribution] = field(default_factory=list)
 
     @property
     def domain(self) -> str:
@@ -145,5 +157,16 @@ def iter_event_dicts(events: Iterable[ClickEvent]) -> Iterable[dict[str, object]
             "combined_score": round(event.combined_score, 4),
             "is_bot": event.is_bot,
             "reasons": event.reasons,
+            "rule_contributions": [
+                {
+                    "rule_id": contribution.rule_id,
+                    "label": contribution.label,
+                    "reason": contribution.reason,
+                    "weight": contribution.weight,
+                    "observed": contribution.observed,
+                    "threshold": contribution.threshold,
+                    "condition": contribution.condition,
+                }
+                for contribution in event.rule_contributions
+            ],
         }
-

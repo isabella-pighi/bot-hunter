@@ -55,6 +55,9 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     submission = (tmp_path / "submission.tsv").read_text(encoding="utf-8")
     assert submission.startswith("event_id\tis_bot\n")
     assert "evt_1" in submission
+    sample_events = (tmp_path / "artifacts" / "sample_events.json").read_text(encoding="utf-8")
+    assert '"rule_contributions"' in sample_events
+    assert '"rule_id": "fast_click"' in sample_events
     features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
     assert features[0].split("\t") == ["event_id", *summary["feature_names"]]
     assert len(features) == 4
