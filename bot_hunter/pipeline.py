@@ -7,11 +7,11 @@ from pathlib import Path
 
 from .data import build_features, iter_event_dicts, parse_clicks
 from .heuristics import apply_heuristics
-from .ml import score_with_kmeans
+from .ml import score_anomalies
 from .report import write_reports
 
 
-def run_pipeline(input_path: str | Path, output_dir: str | Path = ".") -> dict[str, object]:
+def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backend: str = "kmeans") -> dict[str, object]:
     root = Path(output_dir)
     artifacts = root / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)
@@ -19,7 +19,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".") -> dict[s
     events = parse_clicks(input_path)
     feature_names, counters = build_features(events)
     apply_heuristics(events, counters)
-    score_with_kmeans(events)
+    ml_backend_used = score_anomalies(events, backend=ml_backend)
 
     combined = []
     for event in events:
@@ -51,6 +51,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".") -> dict[s
         "heuristic_flag_rate": sum(1 for event in events if event.heuristic_score >= 0.62) / max(len(events), 1),
         "ml_tail_rate": sum(1 for event in events if event.ml_score >= 0.985) / max(len(events), 1),
         "estimated_precision": estimated_precision,
+        "ml_backend": ml_backend_used,
         "feature_names": feature_names,
         "top_reasons": reason_counter.most_common(10),
         "top_domains": top_domains,

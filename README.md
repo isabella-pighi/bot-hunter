@@ -27,6 +27,14 @@ python3 -m bot_hunter.web --port 8000
 
 Open `http://127.0.0.1:8000` to inspect the dashboard.
 
+The default run stays dependency-light and uses the built-in k-means anomaly backend. If scikit-learn is installed, you can opt into Isolation Forest scoring:
+
+```bash
+python3 -m bot_hunter.cli run --input ~/Downloads/bot-hunter-dataset.tsv --ml-backend sklearn
+```
+
+Use `--ml-backend auto` to prefer scikit-learn when available and fall back to the built-in k-means backend otherwise.
+
 ## Agentic development team
 
 This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
@@ -70,11 +78,13 @@ The explainable classifier in `bot_hunter/heuristics.py` scores each click using
 
 Each signal adds weight to `heuristic_score`, capped at `1.0`. The classifier also records human-readable reasons such as `repeated query` or `same-second click burst`, which are shown in the dashboard and generated reports.
 
-### Unsupervised k-means anomaly classifier
+### Unsupervised anomaly classifier
 
-The statistical classifier in `bot_hunter/ml.py` builds numeric features for each event in `bot_hunter/data.py`, standardizes them, then runs a dependency-light k-means implementation. Events farther from their nearest cluster center are treated as more anomalous.
+The statistical classifier in `bot_hunter/ml.py` builds numeric features for each event in `bot_hunter/data.py`, standardizes them, then runs a dependency-light k-means implementation by default. Events farther from their nearest cluster center are treated as more anomalous.
 
 The anomaly distance is converted into `ml_score` by ranking each event against all other distances. A high `ml_score` means the event is in the unusual tail of behavior, even if no single rule caught it.
+
+An optional scikit-learn backend uses `IsolationForest` for anomaly scoring. It is not a default runtime dependency; install it with the `sklearn` extra or provide scikit-learn in your environment, then pass `--ml-backend sklearn` or `--ml-backend auto`.
 
 The final pipeline in `bot_hunter/pipeline.py` combines both scores:
 

@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import random
+from importlib.util import find_spec
 from math import sqrt
 
 from .data import ClickEvent
+
+MLBackend = str
 
 
 def _standardize(matrix: list[list[float]]) -> tuple[list[list[float]], list[float], list[float]]:
@@ -29,6 +32,39 @@ def _nearest(row: list[float], centers: list[list[float]]) -> tuple[int, float]:
             best_idx = idx
             best_dist = dist
     return best_idx, best_dist
+
+
+def score_anomalies(events: list[ClickEvent], backend: MLBackend = "kmeans") -> MLBackend:
+    if backend == "kmeans":
+        score_with_kmeans(events)
+        return "kmeans"
+    if backend == "sklearn":
+        try:
+            score_with_isolation_forest(events)
+        except ImportError as exc:
+            raise ValueError(
+                "sklearn backend requested but scikit-learn is not installed; "
+                "install with: pip install bot-hunter[sklearn]"
+            ) from exc
+        return "sklearn"
+    if backend == "auto":
+        if not _sklearn_available():
+            score_with_kmeans(events)
+            return "kmeans"
+        try:
+            score_with_isolation_forest(events)
+        except ImportError:
+            score_with_kmeans(events)
+            return "kmeans"
+        return "sklearn"
+    raise ValueError(f"Unknown ML backend: {backend}")
+
+
+def _sklearn_available() -> bool:
+    try:
+        return find_spec("sklearn.ensemble") is not None
+    except (ImportError, ValueError):
+        return False
 
 
 def score_with_kmeans(
@@ -61,14 +97,34 @@ def score_with_kmeans(
         centers = new_centers
 
     distances = [_nearest(row, centers)[1] for row in scaled]
-    ordered = sorted(distances)
-    max_rank = max(len(ordered) - 1, 1)
-    for event, dist in zip(events, distances):
-        rank = _upper_bound(ordered, dist)
-        event.ml_score = rank / max_rank
+    _assign_rank_scores(events, distances)
 
     # Keep variables visible to linters and readers; means/stds document that scoring is standardized.
     _ = (means, stds)
+
+
+def score_with_isolation_forest(events: list[ClickEvent], seed: int = 7) -> None:
+    if not events:
+        return
+    from sklearn.ensemble import IsolationForest
+
+    matrix = [event.features for event in events]
+    scaled, means, stds = _standardize(matrix)
+    model = IsolationForest(random_state=seed, contamination="auto")
+    model.fit(scaled)
+    normality_scores = model.decision_function(scaled)
+    anomaly_scores = [-float(score) for score in normality_scores]
+    _assign_rank_scores(events, anomaly_scores)
+
+    _ = (means, stds)
+
+
+def _assign_rank_scores(events: list[ClickEvent], anomaly_values) -> None:
+    ordered = sorted(float(value) for value in anomaly_values)
+    max_rank = max(len(ordered) - 1, 1)
+    for event, value in zip(events, anomaly_values):
+        rank = _upper_bound(ordered, float(value))
+        event.ml_score = rank / max_rank
 
 
 def _upper_bound(values: list[float], needle: float) -> int:
@@ -81,4 +137,3 @@ def _upper_bound(values: list[float], needle: float) -> int:
         else:
             high = mid
     return low - 1
-

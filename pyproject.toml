@@ -11,6 +11,9 @@ build-backend = "setuptools.build_meta"
 [dependency-groups]
 dev = ["pytest>=8"]
 
+[project.optional-dependencies]
+sklearn = ["scikit-learn>=1.4"]
+
 [tool.setuptools.packages.find]
 include = ["bot_hunter*"]
 
