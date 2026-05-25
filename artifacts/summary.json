@@ -1,13 +1,13 @@
 {
   "input_path": "data/bot-hunter-dataset.tsv",
   "total_events": 149239,
-  "bot_events": 3781,
-  "bot_rate": 0.02533520058429767,
-  "threshold": 0.5833619587504523,
+  "bot_events": 3732,
+  "bot_rate": 0.025006868177889156,
+  "threshold": 0.5765429180235596,
   "heuristic_flag_rate": 0.006794470614249626,
   "ml_tail_rate": 0.015002780774462439,
-  "estimated_precision": 0.6924702459666754,
-  "ml_backend": "kmeans",
+  "estimated_precision": 0.7703804930332261,
+  "ml_backend": "sklearn",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
     "log_domain_count",
@@ -29,31 +29,31 @@
   "top_reasons": [
     [
       "repeated query",
-      3583
-    ],
-    [
-      "very short query",
-      2089
+      3323
     ],
     [
       "repeated query/domain pair",
-      2015
-    ],
-    [
-      "same-second click burst",
-      1952
-    ],
-    [
-      "heavy region/browser/os cluster",
-      1889
+      2065
     ],
     [
       "high-volume clicked domain",
-      1661
+      1904
+    ],
+    [
+      "same-second click burst",
+      1890
+    ],
+    [
+      "very short query",
+      1864
+    ],
+    [
+      "heavy region/browser/os cluster",
+      1740
     ],
     [
       "extreme time-to-click",
-      167
+      279
     ],
     [
       "implausibly fast click",
@@ -163,27 +163,27 @@
   "bot_regions": [
     [
       "Earth",
-      1817
+      1809
     ],
     [
       "Mars",
-      1772
+      1762
     ],
     [
       "Mercury",
-      56
+      53
     ],
     [
       "Venus",
-      52
-    ],
-    [
-      "Jupiter",
-      44
+      43
     ],
     [
       "Saturn",
-      40
+      36
+    ],
+    [
+      "Jupiter",
+      29
     ]
   ]
 }

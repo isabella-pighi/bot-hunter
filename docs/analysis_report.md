@@ -6,15 +6,15 @@ The application implements two classifiers. The first is a rules-based classifie
 
 ## 2. Anomalies found
 
-The run analyzed 149,239 events and flagged 3,781 events as bots (2.53%). The strongest explainable patterns were:
+The run analyzed 149,239 events and flagged 3,732 events as bots (2.50%). The strongest explainable patterns were:
 
-- repeated query: 3,583 events
-- very short query: 2,089 events
-- repeated query/domain pair: 2,015 events
-- same-second click burst: 1,952 events
-- heavy region/browser/os cluster: 1,889 events
-- high-volume clicked domain: 1,661 events
-- extreme time-to-click: 167 events
+- repeated query: 3,323 events
+- repeated query/domain pair: 2,065 events
+- high-volume clicked domain: 1,904 events
+- same-second click burst: 1,890 events
+- very short query: 1,864 events
+- heavy region/browser/os cluster: 1,740 events
+- extreme time-to-click: 279 events
 - implausibly fast click: 27 events
 
 The dashboard exposes these same signals with sample events so a business user can inspect the likely automated behavior without reading model internals.
@@ -29,7 +29,7 @@ The heuristic model is transparent and easy to convert into policy. The k-means 
 
 ## 5. Probability assessment
 
-The estimated probability that a flagged event is fraudulent is 69%. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
+The estimated probability that a flagged event is fraudulent is 77%. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
 
 ## 6. Recommended actions
 
@@ -47,13 +47,13 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
 {
   "input_path": "data/bot-hunter-dataset.tsv",
   "total_events": 149239,
-  "bot_events": 3781,
-  "bot_rate": 0.02533520058429767,
-  "threshold": 0.5833619587504523,
+  "bot_events": 3732,
+  "bot_rate": 0.025006868177889156,
+  "threshold": 0.5765429180235596,
   "heuristic_flag_rate": 0.006794470614249626,
   "ml_tail_rate": 0.015002780774462439,
-  "estimated_precision": 0.6924702459666754,
-  "ml_backend": "kmeans",
+  "estimated_precision": 0.7703804930332261,
+  "ml_backend": "sklearn",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
     "log_domain_count",
@@ -75,31 +75,31 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
   "top_reasons": [
     [
       "repeated query",
-      3583
-    ],
-    [
-      "very short query",
-      2089
+      3323
     ],
     [
       "repeated query/domain pair",
-      2015
-    ],
-    [
-      "same-second click burst",
-      1952
-    ],
-    [
-      "heavy region/browser/os cluster",
-      1889
+      2065
     ],
     [
       "high-volume clicked domain",
-      1661
+      1904
+    ],
+    [
+      "same-second click burst",
+      1890
+    ],
+    [
+      "very short query",
+      1864
+    ],
+    [
+      "heavy region/browser/os cluster",
+      1740
     ],
     [
       "extreme time-to-click",
-      167
+      279
     ],
     [
       "implausibly fast click",
@@ -209,27 +209,27 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
   "bot_regions": [
     [
       "Earth",
-      1817
+      1809
     ],
     [
       "Mars",
-      1772
+      1762
     ],
     [
       "Mercury",
-      56
+      53
     ],
     [
       "Venus",
-      52
-    ],
-    [
-      "Jupiter",
-      44
+      43
     ],
     [
       "Saturn",
-      40
+      36
+    ],
+    [
+      "Jupiter",
+      29
     ]
   ]
 }
