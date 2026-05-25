@@ -50,8 +50,36 @@ Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orc
 - `development approach/`: proposed Claude Code, Codex CLI, HCOM, reviewer/coder workflow, and role prompts.
 - `scripts/`: helper scripts for starting the local agentic development team.
 
-## Classifier rationale
+## Implemented detection methods
 
-The heuristic classifier focuses on business-explainable signals: repeated query/ad pairs, repeated exact click times, unusually high-volume domains or device combinations, second-level bursts, and implausibly fast clicks. These are common traits of scripted traffic and can be converted directly into operational filters.
+Bot Hunter currently uses two scoring methods, then combines them into one final bot decision.
 
-The ML classifier uses k-means over standardized behavioral features, then treats events farthest from their closest centroid as anomalous. It is unsupervised because the brief does not include labels. K-means is intentionally simple, transparent, and fast enough for this dataset size without external dependencies.
+### Rules-based heuristic classifier
+
+The explainable classifier in `bot_hunter/heuristics.py` scores each click using hand-built behavioral signals that are suspicious for automated traffic:
+
+- repeated query/domain pairs
+- repeated search queries
+- high-volume clicked domains
+- dense region/browser/OS clusters
+- exact time-to-click reuse
+- many clicks in the same second
+- implausibly fast clicks
+- extremely long time-to-click values
+- very short queries
+
+Each signal adds weight to `heuristic_score`, capped at `1.0`. The classifier also records human-readable reasons such as `repeated query` or `same-second click burst`, which are shown in the dashboard and generated reports.
+
+### Unsupervised k-means anomaly classifier
+
+The statistical classifier in `bot_hunter/ml.py` builds numeric features for each event in `bot_hunter/data.py`, standardizes them, then runs a dependency-light k-means implementation. Events farther from their nearest cluster center are treated as more anomalous.
+
+The anomaly distance is converted into `ml_score` by ranking each event against all other distances. A high `ml_score` means the event is in the unusual tail of behavior, even if no single rule caught it.
+
+The final pipeline in `bot_hunter/pipeline.py` combines both scores:
+
+```python
+combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
+```
+
+An event is flagged as a bot if it is above the combined-score threshold or if the heuristic score is high enough on its own.
