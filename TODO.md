@@ -24,8 +24,8 @@
 
 ### Unsupervised Anomaly Classifier
 
-- Add an optional sklearn backend while keeping the current standard-library k-means fallback.
-- Evaluate `IsolationForest` as the primary optional anomaly model for tabular behavioral features.
+- Done: add an optional sklearn backend while keeping the current standard-library k-means fallback.
+- Done: add `IsolationForest` as the first optional sklearn anomaly model for tabular behavioral features.
 - Evaluate `LocalOutlierFactor` for density-based anomalies and small suspicious traffic pockets.
 - Use robust scaling or quantile transforms for heavy-tailed features such as domain counts, query counts, and time-to-click.
 - Add richer categorical encodings for region, browser, OS, country, and traffic source when using sklearn pipelines.
