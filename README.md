@@ -86,6 +86,23 @@ The anomaly distance is converted into `ml_score` by ranking each event against 
 
 An optional scikit-learn backend uses `IsolationForest` for anomaly scoring. It is not a default runtime dependency; install it with the `sklearn` extra or provide scikit-learn in your environment, then pass `--ml-backend sklearn` or `--ml-backend auto`.
 
+#### How the anomaly methods differ
+
+The k-means backend groups standardized click behavior into a small number of clusters. For each click, Bot Hunter measures the distance to the nearest cluster center and ranks that distance against all other clicks. This works well as a dependency-light baseline: unusual clicks are often far from the common traffic clusters. The tradeoff is that k-means is a clustering method, not a dedicated anomaly detector. It can be sensitive to the number of clusters, and it assumes normal traffic can be represented by roughly center-shaped groups.
+
+Isolation Forest is generally better suited to anomaly detection because it is designed to isolate rare observations. Instead of asking how close a click is to a cluster center, it builds random decision trees and scores clicks that can be separated quickly as more anomalous. That tends to fit bot-hunting better when suspicious events are sparse, unevenly distributed, or unusual because of a mix of signals rather than one large distance from a cluster. Bot Hunter keeps this backend optional so the default installation remains lightweight.
+
+#### Current artifact examples
+
+The checked-in `artifacts/summary.json` was produced from the default backend and analyzed 149,239 events. It flagged 3,781 events as bots, a 2.53% bot rate. Treat the `estimated_precision` value in the summary as an operational confidence estimate, not measured ground truth, because the dataset does not include labels.
+
+Two high-risk examples in `artifacts/sample_events.json` show how the model and rules support the same business explanation:
+
+- `evt_046784` clicked `www.amazon.co.uk` for query `nomnem`. It has `heuristic_score` 0.84, `ml_score` 0.9979, and `combined_score` 0.9063. The recorded reasons are concrete: the query/domain pair repeated 85 times, the query repeated 1,226 times, the Amazon UK domain appeared 4,623 times, the region/browser/OS cluster appeared 23,756 times, 6 clicks landed in the same second, and the query is very short.
+- `evt_105119` clicked `www.amazon.de` for the same query, `nomnem`. It has `heuristic_score` 0.92, `ml_score` 0.8846, and `combined_score` 0.9051. Its reasons include 66 repeats of the query/domain pair, 1,226 repeats of the query, 5,543 clicks to the Amazon Germany domain, a 43,674-event device cluster, 4 clicks in the same second, an extreme time-to-click, and a very short query.
+
+At the summary level, the same pattern is visible: Amazon domains are among the highest-volume clicked domains (`www.amazon.de`, `www.amazon.co.uk`, and `www.amazon.ca` are the top three), and `nomnem` is the top repeated query with 1,226 occurrences. Those facts do not prove fraud by themselves, but they make the flagged events easy to review: high repetition, dense device clusters, synchronized timing, and anomalous statistical scores are all pointing in the same direction.
+
 The final pipeline in `bot_hunter/pipeline.py` combines both scores:
 
 ```python
