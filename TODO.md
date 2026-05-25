@@ -1,40 +1,28 @@
 # TODO
 
-## Detection Method Improvements
+## Prioritized Backlog
 
-### Rules-Based Heuristic Classifier
-
-- Make thresholds adaptive by percentile instead of fixed count cutoffs.
-- Normalize high-volume signals by domain, region, campaign, inventory source, or hour when those fields are available.
-- Add rolling burst features such as query/domain clicks in 1-second, 10-second, and 60-second windows.
-- Separate high-confidence rules from weak supporting rules instead of only accumulating all signals linearly.
-- Add allowlist or suppression handling for known legitimate high-volume domains or campaigns.
-- Store rule contributions as structured data alongside text reasons so dashboard grouping and audits are more reliable.
-
-### Domain Reputation Signals
-
-- Add optional domain reputation checks as a heuristic risk signal, not as an automatic final bot decision.
-- Start with a local domain blocklist file so the pipeline remains reproducible, testable, and usable offline.
-- Support cached provider lookups for reputable sources such as Google Safe Browsing or Web Risk, Spamhaus DBL, and SURBL when credentials and usage terms allow.
-- Query unique domains once per run instead of checking every click event individually.
-- Cache lookup results with a configurable TTL to avoid rate-limit pressure and repeated network calls.
-- Weight reputation categories differently, with phishing, malware, and botnet C&C as stronger signals than general spam or poor reputation.
-- Record the provider and category in structured rule output and dashboard reasons, such as `domain listed by Spamhaus DBL as malware`.
-- Add allowlist handling for known legitimate domains that may appear in reputation datasets because of compromise, redirects, or historical abuse.
-
-### Unsupervised Anomaly Classifier
-
-- Done: add an optional sklearn backend while keeping the current standard-library k-means fallback.
-- Done: add `IsolationForest` as the first optional sklearn anomaly model for tabular behavioral features.
-- Evaluate `LocalOutlierFactor` for density-based anomalies and small suspicious traffic pockets.
-- Use robust scaling or quantile transforms for heavy-tailed features such as domain counts, query counts, and time-to-click.
-- Add richer categorical encodings for region, browser, OS, country, and traffic source when using sklearn pipelines.
-- Calibrate anomaly thresholds against historical batches instead of recalculating only within each run.
-- Store nearest-cluster distance, cluster size, and top feature deviations to make ML flags easier to explain.
-
-### Combined Decision Logic
-
-- Train a simple supervised combiner, such as logistic regression or a calibrated tree model, if labels become available.
-- Define confidence tiers for operations: suppress, quarantine, and monitor.
-- Report disagreement buckets separately, especially high-rules/low-ML and low-rules/high-ML events.
-- Track score distribution drift, flagged rate, top reasons, and top domains across runs.
+| Priority | Status | Area | Item | Why it matters | Notes |
+| --- | --- | --- | --- | --- | --- |
+| P0 | Todo | Explainability | Store structured rule contributions alongside text reasons. | Makes dashboard grouping, audits, and per-rule impact analysis more reliable. | Keep the current human-readable reasons, but add machine-readable rule IDs, weights, and raw values. |
+| P0 | Todo | Combined Decision Logic | Define operational confidence tiers: suppress, quarantine, and monitor. | Turns scores into clearer business actions without pretending unlabeled data has measured precision. | Tie tiers to `combined_score`, heuristic strength, and anomaly score agreement. |
+| P0 | Todo | Combined Decision Logic | Report disagreement buckets separately. | High-rules/low-ML and low-rules/high-ML cases are the fastest way to inspect blind spots. | Add summary counts and dashboard sections for method disagreement. |
+| P1 | Todo | Rules-Based Heuristic Classifier | Make thresholds adaptive by percentile instead of fixed count cutoffs. | Reduces sensitivity to dataset size and traffic volume changes. | Keep current constants as fallback defaults or guardrails. |
+| P1 | Todo | Rules-Based Heuristic Classifier | Separate high-confidence rules from weak supporting rules. | Prevents many weak signals from looking equivalent to one very strong bot signal. | Consider rule tiers or max-per-family scoring. |
+| P1 | Todo | Domain Reputation Signals | Add optional domain reputation checks as a heuristic risk signal. | Adds outside threat intelligence while preserving behavior-based detection. | This should boost risk, not automatically decide `is_bot`. |
+| P1 | Todo | Domain Reputation Signals | Start with a local domain blocklist file. | Keeps the pipeline reproducible, testable, and usable offline. | Add provider/category fields so live lookups can share the same structure later. |
+| P1 | Todo | Anomaly Classifier | Store nearest-cluster distance, cluster size, and top feature deviations. | Makes ML flags easier to explain and compare with heuristic reasons. | For Isolation Forest, store anomaly score rank and strongest feature deviations instead of tree internals. |
+| P1 | Todo | Anomaly Classifier | Use robust scaling or quantile transforms for heavy-tailed features. | Domain counts, query counts, and time-to-click are heavy-tailed and can distort distance-based methods. | Compare against current standardization before replacing it. |
+| P2 | Todo | Rules-Based Heuristic Classifier | Normalize high-volume signals by domain, region, campaign, inventory source, or hour. | Reduces false positives from legitimate popular domains or campaigns. | Depends on available metadata; campaign/inventory fields may not exist in the current dataset. |
+| P2 | Todo | Rules-Based Heuristic Classifier | Add rolling burst features over 1-second, 10-second, and 60-second windows. | Captures scripted timing patterns better than exact same-second counts alone. | Start with query/domain and device-cluster windows. |
+| P2 | Todo | Domain Reputation Signals | Query unique domains once per run and cache results with a configurable TTL. | Avoids per-event network calls and provider rate-limit pressure. | Required before adding any live reputation provider. |
+| P2 | Todo | Domain Reputation Signals | Weight reputation categories differently. | Phishing, malware, and botnet C&C should count more than general spam or historical poor reputation. | Preserve provider/category in explanations. |
+| P2 | Todo | Domain Reputation Signals | Add allowlist handling for legitimate domains. | Prevents over-flagging compromised or historically abused legitimate domains. | Apply after reputation lookup and before score contribution. |
+| P2 | Todo | Anomaly Classifier | Add richer categorical encodings for region, browser, OS, country, and traffic source. | Improves sklearn models beyond aggregate-count features. | Use only when the sklearn backend is available. |
+| P2 | Todo | Anomaly Classifier | Calibrate anomaly thresholds against historical batches. | Current thresholds are batch-relative; historical calibration would improve stability. | Requires saving run history or baseline artifacts. |
+| P2 | Todo | Combined Decision Logic | Track score distribution drift, flagged rate, top reasons, and top domains across runs. | Helps detect model drift, traffic changes, and threshold instability. | Store compact run history rather than full event history. |
+| P3 | Todo | Domain Reputation Signals | Support cached provider lookups for Google Safe Browsing/Web Risk, Spamhaus DBL, and SURBL. | Adds stronger threat intelligence when credentials and terms allow. | Keep this optional and disabled by default. |
+| P3 | Todo | Anomaly Classifier | Evaluate `LocalOutlierFactor` for density-based anomalies. | Could find small suspicious traffic pockets that Isolation Forest misses. | Compare against Isolation Forest before adding another runtime option. |
+| P3 | Todo | Combined Decision Logic | Train a supervised combiner if labels become available. | A calibrated model can replace manual score weights once ground truth exists. | Candidate models: logistic regression or calibrated tree model. |
+| Done | Done | Anomaly Classifier | Add optional sklearn backend while keeping the standard-library k-means fallback. | Improves anomaly modeling without breaking lightweight environments. | Implemented with `--ml-backend {auto,sklearn,kmeans}`. |
+| Done | Done | Anomaly Classifier | Add `IsolationForest` as the first optional sklearn anomaly model. | Provides a model designed for unsupervised anomaly detection. | It is now preferred by default when scikit-learn is available. |
