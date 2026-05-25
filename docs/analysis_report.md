@@ -45,7 +45,7 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
 
 ```json
 {
-  "input_path": "/Users/isabella/Downloads/bot-hunter-dataset.tsv",
+  "input_path": "data/bot-hunter-dataset.tsv",
   "total_events": 149239,
   "bot_events": 3781,
   "bot_rate": 0.02533520058429767,
@@ -53,6 +53,8 @@ The repository includes `submission.tsv` with `event_id` and `is_bot`, using the
   "heuristic_flag_rate": 0.006794470614249626,
   "ml_tail_rate": 0.015002780774462439,
   "estimated_precision": 0.6924702459666754,
+  "ml_backend": "kmeans",
+  "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
     "log_domain_count",
     "log_query_count",
