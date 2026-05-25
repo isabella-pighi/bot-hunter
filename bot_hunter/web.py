@@ -21,6 +21,13 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json(_read_json(ROOT / "artifacts" / "summary.json"))
         elif parsed.path == "/api/events":
             self._send_json(_read_json(ROOT / "artifacts" / "sample_events.json"))
+        elif parsed.path == "/api/features":
+            params = parse_qs(parsed.query)
+            offset = _parse_int(params.get("offset", ["0"])[0], default=0)
+            limit = min(_parse_int(params.get("limit", ["200"])[0], default=200), 1000)
+            self._send_json(_read_features(ROOT / "artifacts" / "features.tsv", offset=offset, limit=limit))
+        elif parsed.path == "/features":
+            self._send_html(_features_html())
         elif parsed.path == "/report":
             self._send_html((ROOT / "docs" / "analysis_report.html").read_text(encoding="utf-8"))
         elif parsed.path == "/run":
@@ -64,6 +71,38 @@ def _read_json(path: Path) -> object:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _parse_int(value: str, default: int) -> int:
+    try:
+        return max(0, int(value))
+    except ValueError:
+        return default
+
+
+def _read_features(path: Path, offset: int = 0, limit: int = 200) -> object:
+    if not path.exists():
+        return {"error": f"{path.name} not found; run the pipeline first"}
+    with path.open("r", encoding="utf-8") as handle:
+        header = handle.readline().rstrip("\n").split("\t")
+        feature_names = header[1:]
+        rows = []
+        for idx, line in enumerate(handle):
+            if idx < offset:
+                continue
+            if len(rows) >= limit:
+                break
+            parts = line.rstrip("\n").split("\t")
+            if len(parts) != len(header):
+                continue
+            rows.append({"event_id": parts[0], "features": [float(value) for value in parts[1:]]})
+    return {
+        "feature_names": feature_names,
+        "offset": offset,
+        "limit": limit,
+        "rows": rows,
+        "next_offset": offset + len(rows),
+    }
+
+
 def _dashboard_html() -> str:
     return """<!doctype html>
 <html lang="en">
@@ -102,6 +141,7 @@ def _dashboard_html() -> str:
     <div class="actions">
       <input id="inputPath" value="/Users/isabella/Downloads/bot-hunter-dataset.tsv" aria-label="Input path">
       <button onclick="runPipeline()">Run</button>
+      <a href="/features">Features</a>
       <a href="/report">Report</a>
     </div>
   </header>
@@ -171,6 +211,90 @@ def _dashboard_html() -> str:
       await load();
     }
     load();
+  </script>
+</body>
+</html>"""
+
+
+def _features_html() -> str:
+    return """<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bot Hunter Features</title>
+  <style>
+    :root { color-scheme: light; --ink:#172026; --muted:#5f6b74; --line:#d8dee4; --bg:#f7f9fb; --panel:#ffffff; --accent:#16697a; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); }
+    header { background:#ffffff; border-bottom:1px solid var(--line); padding:22px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    h1 { font-size:24px; margin:0; letter-spacing:0; }
+    main { max-width:1240px; margin:0 auto; padding:26px; }
+    .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; }
+    .actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    a, button { color:#ffffff; background:var(--accent); border:0; border-radius:6px; padding:9px 12px; text-decoration:none; font-weight:650; cursor:pointer; }
+    .label { color:var(--muted); font-size:13px; }
+    .table-wrap { overflow:auto; max-height:72vh; border:1px solid var(--line); border-radius:6px; margin-top:12px; }
+    table { width:100%; border-collapse:collapse; font-size:12px; white-space:nowrap; }
+    th, td { border-bottom:1px solid var(--line); padding:8px; text-align:right; font-variant-numeric:tabular-nums; }
+    th:first-child, td:first-child { text-align:left; position:sticky; left:0; background:#ffffff; }
+    th { color:var(--muted); font-weight:600; background:#ffffff; position:sticky; top:0; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Bot Hunter Features</h1>
+    <div class="actions">
+      <a href="/">Dashboard</a>
+      <a href="/report">Report</a>
+    </div>
+  </header>
+  <main>
+    <section class="panel">
+      <div class="actions">
+        <button onclick="loadFeatures(0)">First Page</button>
+        <button id="nextButton" onclick="loadFeatures(nextOffset)">Next Page</button>
+        <span class="label" id="status"></span>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead id="featureHead"></thead>
+          <tbody id="featureRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <script>
+    let nextOffset = 0;
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[ch]);
+    }
+    async function loadFeatures(offset) {
+      document.getElementById('status').textContent = 'Loading...';
+      const payload = await fetch('/api/features?offset=' + encodeURIComponent(offset) + '&limit=200').then(r => r.json());
+      if (payload.error) {
+        document.getElementById('status').textContent = payload.error;
+        return;
+      }
+      const columns = ['event_id', ...(payload.feature_names || [])];
+      document.getElementById('featureHead').innerHTML = `<tr>${columns.map(name => `<th>${escapeHtml(name)}</th>`).join('')}</tr>`;
+      document.getElementById('featureRows').innerHTML = (payload.rows || []).map(row => `<tr>
+        <td>${escapeHtml(row.event_id)}</td>${(row.features || []).map(value => `<td>${escapeHtml(Number(value).toFixed(6))}</td>`).join('')}
+      </tr>`).join('');
+      nextOffset = payload.next_offset || 0;
+      const rowsShown = (payload.rows || []).length;
+      document.getElementById('nextButton').disabled = rowsShown < payload.limit;
+      document.getElementById('status').textContent = rowsShown
+        ? `Showing rows ${payload.offset} through ${payload.next_offset - 1}`
+        : `No rows found at offset ${payload.offset}`;
+    }
+    loadFeatures(0);
   </script>
 </body>
 </html>"""

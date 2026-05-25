@@ -52,6 +52,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
         "ml_tail_rate": sum(1 for event in events if event.ml_score >= 0.985) / max(len(events), 1),
         "estimated_precision": estimated_precision,
         "ml_backend": ml_backend_used,
+        "feature_artifact": "artifacts/features.tsv",
         "feature_names": feature_names,
         "top_reasons": reason_counter.most_common(10),
         "top_domains": top_domains,
@@ -61,6 +62,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
 
     _write_submission(root / "submission.tsv", events)
     _write_json(artifacts / "summary.json", summary)
+    _write_features(artifacts / "features.tsv", feature_names, events)
     sample = sorted(events, key=lambda event: event.combined_score, reverse=True)[:250]
     _write_json(artifacts / "sample_events.json", list(iter_event_dicts(sample)))
     write_reports(summary, root / "docs")
@@ -82,6 +84,14 @@ def _write_submission(path: Path, events) -> None:
 
 def _write_json(path: Path, payload: object) -> None:
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def _write_features(path: Path, feature_names: list[str], events) -> None:
+    with path.open("w", encoding="utf-8") as handle:
+        handle.write("\t".join(["event_id", *feature_names]) + "\n")
+        for event in events:
+            values = [f"{value:.6f}" for value in event.features]
+            handle.write("\t".join([event.event_id, *values]) + "\n")
 
 
 def _normalize_reason(reason: str) -> str:

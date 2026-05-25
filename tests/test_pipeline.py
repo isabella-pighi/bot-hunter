@@ -22,9 +22,32 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     summary = run_pipeline(raw, tmp_path)
     assert summary["total_events"] == 3
     assert summary["ml_backend"] == "kmeans"
+    assert summary["feature_artifact"] == "artifacts/features.tsv"
     submission = (tmp_path / "submission.tsv").read_text(encoding="utf-8")
     assert submission.startswith("event_id\tis_bot\n")
     assert "evt_1" in submission
+    features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
+    assert features[0].split("\t") == ["event_id", *summary["feature_names"]]
+    assert len(features) == 4
+    first_feature_row = features[1].split("\t")
+    assert first_feature_row == [
+        "evt_1",
+        "1.098612",
+        "1.098612",
+        "1.098612",
+        "1.098612",
+        "1.098612",
+        "1.098612",
+        "0.010000",
+        "2.000000",
+        "7.000000",
+        "0.000000",
+        "0.000000",
+        "-1.000000",
+        "1.000000",
+        "0.000000",
+        "1.000000",
+    ]
 
 
 def test_pipeline_handles_empty_input(tmp_path: Path) -> None:
@@ -37,6 +60,9 @@ def test_pipeline_handles_empty_input(tmp_path: Path) -> None:
     assert summary["bot_events"] == 0
     assert summary["threshold"] == 0.0
     assert (tmp_path / "submission.tsv").read_text(encoding="utf-8") == "event_id\tis_bot\n"
+    assert (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8") == (
+        "event_id\t" + "\t".join(summary["feature_names"]) + "\n"
+    )
 
 
 def test_pipeline_can_select_sklearn_backend(monkeypatch, tmp_path: Path) -> None:
