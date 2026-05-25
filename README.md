@@ -3,7 +3,7 @@
 Bot Hunter is a dependency-light Python application for detecting likely bot clicks in ad click logs. It includes:
 
 - A rules-based heuristic classifier.
-- A standard-library unsupervised k-means anomaly classifier.
+- An Isolation Forest anomaly classifier when scikit-learn is available, with a standard-library k-means fallback.
 - A combined binary prediction written to `submission.tsv`.
 - A local HTTP dashboard for business review.
 - Generated Markdown, HTML, and PDF reports.
@@ -27,13 +27,13 @@ python3 -m bot_hunter.web --port 8000
 
 Open `http://127.0.0.1:8000` to inspect the dashboard.
 
-The default run stays dependency-light and uses the built-in k-means anomaly backend. If scikit-learn is installed, you can opt into Isolation Forest scoring:
+By default, Bot Hunter uses `--ml-backend auto`: it prefers Isolation Forest when scikit-learn is installed and falls back to the built-in k-means backend otherwise.
 
 ```bash
-python3 -m bot_hunter.cli run --input ~/Downloads/bot-hunter-dataset.tsv --ml-backend sklearn
+python3 -m bot_hunter.cli run --input ~/Downloads/bot-hunter-dataset.tsv --ml-backend kmeans
 ```
 
-Use `--ml-backend auto` to prefer scikit-learn when available and fall back to the built-in k-means backend otherwise.
+Use `--ml-backend kmeans` when you want the dependency-light backend explicitly, or `--ml-backend sklearn` when you want to require scikit-learn and fail fast if it is unavailable.
 
 ## Agentic development team
 
@@ -80,11 +80,11 @@ Each signal adds weight to `heuristic_score`, capped at `1.0`. The classifier al
 
 ### Unsupervised anomaly classifier
 
-The statistical classifier in `bot_hunter/ml.py` builds numeric features for each event in `bot_hunter/data.py`, standardizes them, then runs a dependency-light k-means implementation by default. Events farther from their nearest cluster center are treated as more anomalous.
+The statistical classifier in `bot_hunter/ml.py` builds numeric features for each event in `bot_hunter/data.py`, standardizes them, then uses Isolation Forest by default when scikit-learn is available. If scikit-learn is not installed, the same `auto` default falls back to the dependency-light k-means implementation. Events with stronger anomaly evidence receive higher `ml_score` values.
 
-The anomaly distance is converted into `ml_score` by ranking each event against all other distances. A high `ml_score` means the event is in the unusual tail of behavior, even if no single rule caught it.
+The anomaly signal is converted into `ml_score` by ranking each event against all other anomaly values. A high `ml_score` means the event is in the unusual tail of behavior, even if no single rule caught it.
 
-An optional scikit-learn backend uses `IsolationForest` for anomaly scoring. It is not a default runtime dependency; install it with the `sklearn` extra or provide scikit-learn in your environment, then pass `--ml-backend sklearn` or `--ml-backend auto`.
+Scikit-learn is still optional rather than a hard runtime dependency. Install it with the `sklearn` extra or provide scikit-learn in your environment to get the preferred Isolation Forest backend; otherwise Bot Hunter continues with k-means. The generated summary records the actual backend used as `ml_backend`.
 
 #### Features used for anomaly scoring
 
@@ -106,17 +106,17 @@ Both anomaly backends use the same 15-feature vector:
 - `hour`: hour of day from the event timestamp.
 - `is_mobile_search`: whether `st=mobile_search_intl`.
 
-Before k-means distance is calculated, each feature column is standardized as `(value - mean) / standard_deviation`, then Euclidean distance is measured from each event to its nearest cluster center. The feature values are also materialized in `artifacts/features.tsv` and exposed through the dashboard's Features page.
+Before anomaly scoring, each feature column is standardized as `(value - mean) / standard_deviation`. Isolation Forest uses those standardized values directly. The k-means fallback then measures Euclidean distance from each event to its nearest cluster center. The feature values are also materialized in `artifacts/features.tsv` and exposed through the dashboard's Features page.
 
 #### How the anomaly methods differ
 
-The k-means backend groups standardized click behavior into a small number of clusters. For each click, Bot Hunter measures the distance to the nearest cluster center and ranks that distance against all other clicks. This works well as a dependency-light baseline: unusual clicks are often far from the common traffic clusters. The tradeoff is that k-means is a clustering method, not a dedicated anomaly detector. It can be sensitive to the number of clusters, and it assumes normal traffic can be represented by roughly center-shaped groups.
+The k-means fallback groups standardized click behavior into a small number of clusters. For each click, Bot Hunter measures the distance to the nearest cluster center and ranks that distance against all other clicks. This works well as a dependency-light baseline: unusual clicks are often far from the common traffic clusters. The tradeoff is that k-means is a clustering method, not a dedicated anomaly detector. It can be sensitive to the number of clusters, and it assumes normal traffic can be represented by roughly center-shaped groups.
 
-Isolation Forest is generally better suited to anomaly detection because it is designed to isolate rare observations. Instead of asking how close a click is to a cluster center, it builds random decision trees and scores clicks that can be separated quickly as more anomalous. That tends to fit bot-hunting better when suspicious events are sparse, unevenly distributed, or unusual because of a mix of signals rather than one large distance from a cluster. Bot Hunter keeps this backend optional so the default installation remains lightweight.
+Isolation Forest is generally better suited to anomaly detection because it is designed to isolate rare observations. Instead of asking how close a click is to a cluster center, it builds random decision trees and scores clicks that can be separated quickly as more anomalous. That tends to fit bot-hunting better when suspicious events are sparse, unevenly distributed, or unusual because of a mix of signals rather than one large distance from a cluster. Bot Hunter therefore uses Isolation Forest as the primary backend when available while keeping k-means as the automatic fallback.
 
 #### Current artifact examples
 
-The checked-in `artifacts/summary.json` was produced from the default backend and analyzed 149,239 events. It flagged 3,781 events as bots, a 2.53% bot rate. Treat the `estimated_precision` value in the summary as an operational confidence estimate, not measured ground truth, because the dataset does not include labels.
+The checked-in `artifacts/summary.json` was produced by an earlier k-means/default run and analyzed 149,239 events. It flagged 3,781 events as bots, a 2.53% bot rate. Treat the `estimated_precision` value in the summary as an operational confidence estimate, not measured ground truth, because the dataset does not include labels.
 
 Two high-risk examples in `artifacts/sample_events.json` show how the model and rules support the same business explanation:
 

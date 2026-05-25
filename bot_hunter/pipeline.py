@@ -11,7 +11,7 @@ from .ml import score_anomalies
 from .report import write_reports
 
 
-def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backend: str = "kmeans") -> dict[str, object]:
+def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backend: str = "auto") -> dict[str, object]:
     root = Path(output_dir)
     artifacts = root / "artifacts"
     artifacts.mkdir(parents=True, exist_ok=True)

@@ -1,10 +1,39 @@
 import sys
+from importlib.machinery import ModuleSpec
 from pathlib import Path
 from types import ModuleType
 
 import pytest
 
 from bot_hunter.pipeline import run_pipeline
+
+
+class FakeIsolationForest:
+    def __init__(self, random_state: int, contamination: str) -> None:
+        self.random_state = random_state
+        self.contamination = contamination
+
+    def fit(self, rows) -> "FakeIsolationForest":
+        return self
+
+    def decision_function(self, rows) -> list[float]:
+        # Fixed values keep the test focused on backend selection and rank normalization.
+        return [1.0, 0.5, -1.0][: len(rows)]
+
+
+def install_fake_sklearn(monkeypatch) -> None:
+    sklearn = ModuleType("sklearn")
+    sklearn.__spec__ = ModuleSpec("sklearn", loader=None, is_package=True)
+    ensemble = ModuleType("sklearn.ensemble")
+    ensemble.__spec__ = ModuleSpec("sklearn.ensemble", loader=None)
+    ensemble.IsolationForest = FakeIsolationForest
+    monkeypatch.setitem(sys.modules, "sklearn", sklearn)
+    monkeypatch.setitem(sys.modules, "sklearn.ensemble", ensemble)
+
+
+def hide_sklearn(monkeypatch) -> None:
+    monkeypatch.setitem(sys.modules, "sklearn", None)
+    monkeypatch.setitem(sys.modules, "sklearn.ensemble", None)
 
 
 def test_pipeline_writes_submission(tmp_path: Path) -> None:
@@ -19,7 +48,7 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
         ),
         encoding="utf-8",
     )
-    summary = run_pipeline(raw, tmp_path)
+    summary = run_pipeline(raw, tmp_path, ml_backend="kmeans")
     assert summary["total_events"] == 3
     assert summary["ml_backend"] == "kmeans"
     assert summary["feature_artifact"] == "artifacts/features.tsv"
@@ -66,24 +95,7 @@ def test_pipeline_handles_empty_input(tmp_path: Path) -> None:
 
 
 def test_pipeline_can_select_sklearn_backend(monkeypatch, tmp_path: Path) -> None:
-    class FakeIsolationForest:
-        def __init__(self, random_state: int, contamination: str) -> None:
-            self.random_state = random_state
-            self.contamination = contamination
-
-        def fit(self, rows) -> "FakeIsolationForest":
-            return self
-
-        def decision_function(self, rows) -> list[float]:
-            # Fixed values keep the test focused on backend selection and rank normalization.
-            return [1.0, 0.5, -1.0][: len(rows)]
-
-    sklearn = ModuleType("sklearn")
-    ensemble = ModuleType("sklearn.ensemble")
-    ensemble.IsolationForest = FakeIsolationForest
-    monkeypatch.setitem(sys.modules, "sklearn", sklearn)
-    monkeypatch.setitem(sys.modules, "sklearn.ensemble", ensemble)
-
+    install_fake_sklearn(monkeypatch)
     raw = tmp_path / "clicks.tsv"
     raw.write_text(
         "\n".join(
@@ -101,9 +113,27 @@ def test_pipeline_can_select_sklearn_backend(monkeypatch, tmp_path: Path) -> Non
     assert summary["ml_backend"] == "sklearn"
 
 
-def test_pipeline_auto_backend_falls_back_without_sklearn(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setitem(sys.modules, "sklearn", None)
-    monkeypatch.setitem(sys.modules, "sklearn.ensemble", None)
+def test_pipeline_default_prefers_sklearn_when_available(monkeypatch, tmp_path: Path) -> None:
+    install_fake_sklearn(monkeypatch)
+    raw = tmp_path / "clicks.tsv"
+    raw.write_text(
+        "\n".join(
+            [
+                "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com&ttc=10&q=foo%20bar&ct=US&kl=en&kp=-1&sld=1&st=mobile_search_intl",
+                "evt_2\t2019-12-02 00:00:01\tMars\tChrome\tiOS\t/ad_click?d=a.com&ttc=20&q=foo%20bar&ct=US&kl=en&kp=-1&sld=1&st=mobile_search_intl",
+                "evt_3\t2019-12-02 00:00:02\tVenus\tSafari\tAndroid\t/ad_click?d=b.com&ttc=3000&q=human%20search&ct=GB&kl=uk&kp=-1&sld=0&st=mobile_search_intl",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    summary = run_pipeline(raw, tmp_path)
+
+    assert summary["ml_backend"] == "sklearn"
+
+
+def test_pipeline_default_falls_back_without_sklearn(monkeypatch, tmp_path: Path) -> None:
+    hide_sklearn(monkeypatch)
     raw = tmp_path / "clicks.tsv"
     raw.write_text(
         "\n".join(
@@ -115,14 +145,13 @@ def test_pipeline_auto_backend_falls_back_without_sklearn(monkeypatch, tmp_path:
         encoding="utf-8",
     )
 
-    summary = run_pipeline(raw, tmp_path, ml_backend="auto")
+    summary = run_pipeline(raw, tmp_path)
 
     assert summary["ml_backend"] == "kmeans"
 
 
 def test_pipeline_sklearn_backend_reports_missing_dependency(monkeypatch, tmp_path: Path) -> None:
-    monkeypatch.setitem(sys.modules, "sklearn", None)
-    monkeypatch.setitem(sys.modules, "sklearn.ensemble", None)
+    hide_sklearn(monkeypatch)
     raw = tmp_path / "clicks.tsv"
     raw.write_text(
         "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com&ttc=10&q=foo%20bar&ct=US&kl=en&kp=-1&sld=1&st=mobile_search_intl",

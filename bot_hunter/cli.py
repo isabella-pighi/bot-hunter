@@ -17,8 +17,8 @@ def main() -> None:
     run_parser.add_argument(
         "--ml-backend",
         choices=["kmeans", "sklearn", "auto"],
-        default="kmeans",
-        help="Anomaly backend to use; default keeps the dependency-light k-means implementation",
+        default="auto",
+        help="Anomaly backend to use; default prefers sklearn when available and falls back to k-means",
     )
 
     args = parser.parse_args()
