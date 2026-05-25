@@ -86,6 +86,28 @@ The anomaly distance is converted into `ml_score` by ranking each event against 
 
 An optional scikit-learn backend uses `IsolationForest` for anomaly scoring. It is not a default runtime dependency; install it with the `sklearn` extra or provide scikit-learn in your environment, then pass `--ml-backend sklearn` or `--ml-backend auto`.
 
+#### Features used for anomaly scoring
+
+Both anomaly backends use the same 15-feature vector:
+
+- `log_domain_count`: frequency of the clicked domain.
+- `log_query_count`: frequency of the search query.
+- `log_query_domain_count`: frequency of that query/domain pair.
+- `log_device_count`: frequency of the region/browser/OS combination.
+- `log_same_second_count`: number of events at the exact same timestamp.
+- `log_ttc_count`: frequency of the exact same time-to-click value.
+- `ttc_seconds`: time-to-click in seconds.
+- `query_terms`: number of terms in the query.
+- `query_chars`: query length in characters.
+- `has_bkl`: whether URL parameter `bkl` exists.
+- `has_om`: whether URL parameter `om` exists.
+- `kp`: numeric `kp` URL parameter.
+- `sld`: numeric `sld` URL parameter.
+- `hour`: hour of day from the event timestamp.
+- `is_mobile_search`: whether `st=mobile_search_intl`.
+
+Before k-means distance is calculated, each feature column is standardized as `(value - mean) / standard_deviation`, then Euclidean distance is measured from each event to its nearest cluster center. The feature values are also materialized in `artifacts/features.tsv` and exposed through the dashboard's Features page.
+
 #### How the anomaly methods differ
 
 The k-means backend groups standardized click behavior into a small number of clusters. For each click, Bot Hunter measures the distance to the nearest cluster center and ranks that distance against all other clicks. This works well as a dependency-light baseline: unusual clicks are often far from the common traffic clusters. The tradeoff is that k-means is a clustering method, not a dedicated anomaly detector. It can be sensitive to the number of clusters, and it assumes normal traffic can be represented by roughly center-shaped groups.
