@@ -19,10 +19,12 @@ Responsibilities:
 Task brief template:
 
 ```text
-@coder @reviewer TASK bot-hunter-<task-id>
+@algorithm-coder- @algorithm-reviewer- TASK bot-hunter-<task-id>
 Goal: <one sentence>
 Scope: <files or feature area>
 Acceptance: <observable success criteria>
 Constraints: <runtime, dependencies, style, data assumptions>
 Review mode: blocking findings first, then residual risks
 ```
+
+Use `@ux-coder- @ux-reviewer-` for UX, report, and documentation work. Use both specialist pairs for cross-domain work, and require approval from each relevant reviewer before committing.

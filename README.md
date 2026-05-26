@@ -37,7 +37,7 @@ Use `--ml-backend kmeans` when you want the dependency-light backend explicitly,
 
 ## Agentic development team
 
-This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
+This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM. The default team has two specialist pairs: algorithm/engineering and UX/report/documentation.
 
 ```bash
 ./scripts/setup-memory-mcp
@@ -45,7 +45,7 @@ This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
 ./scripts/start-agent-team
 ```
 
-Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. The consolidated team instructions live in `development approach/team_instructions.md`.
+Use `./scripts/start-algorithm-coder`, `./scripts/start-algorithm-reviewer`, `./scripts/start-ux-coder`, `./scripts/start-ux-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. The consolidated team instructions live in `development approach/team_instructions.md`.
 
 ## Generated files
 

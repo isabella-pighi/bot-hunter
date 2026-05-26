@@ -14,6 +14,7 @@ if ! command -v codex >/dev/null 2>&1; then
   exit 1
 fi
 
-export HCOM_TAG="${HCOM_TAG:-algorithm-coder}"
-PROMPT="$(cat 'development approach/prompts/algorithm_coder_prompt.md')"
+export HCOM_TAG="${HCOM_TAG:-ux-coder}"
+PROMPT="$(cat 'development approach/prompts/ux_coder_prompt.md')"
 exec hcom codex --tag "$HCOM_TAG" --dir "$ROOT" --hcom-system-prompt "$PROMPT"
+

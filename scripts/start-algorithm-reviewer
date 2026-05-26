@@ -17,3 +17,4 @@ fi
 export HCOM_TAG="${HCOM_TAG:-algorithm-reviewer}"
 PROMPT="$(cat 'development approach/prompts/algorithm_reviewer_prompt.md')"
 exec hcom claude --tag "$HCOM_TAG" --dir "$ROOT" --hcom-system-prompt "$PROMPT"
+

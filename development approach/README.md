@@ -4,8 +4,10 @@ This folder contains the documentation for the local agentic development team.
 
 - `team_instructions.md`: canonical consolidated instructions for the team.
 - `agentic_development_architecture.md`: architecture, roles, handoff protocol, review checklist, and Bot Hunter-specific workflow.
-- `prompts/coder_prompt.md`: Codex coder role prompt.
-- `prompts/reviewer_prompt.md`: Claude reviewer role prompt.
+- `prompts/algorithm_coder_prompt.md`: Codex algorithm and engineering coder role prompt.
+- `prompts/algorithm_reviewer_prompt.md`: Claude algorithm and engineering reviewer role prompt.
+- `prompts/ux_coder_prompt.md`: Codex UX, report, and documentation coder role prompt.
+- `prompts/ux_reviewer_prompt.md`: Claude UX, report, and documentation reviewer role prompt.
 - `prompts/orchestrator_prompt.md`: orchestrator role prompt.
 
 The executable helper scripts remain in `scripts/` because they are operational project tooling, not documentation. They load these prompts from this folder when starting HCOM agents.

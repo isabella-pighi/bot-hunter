@@ -7,6 +7,7 @@ HCOM is used as the coordination layer: each agent runs in its own terminal, but
 ## Goals
 
 - Use different model families for independent implementation and review judgement.
+- Split implementation and review into two specialist pairs: algorithm/engineering and UX/report/documentation.
 - Keep engineering work traceable through explicit handoff messages.
 - Reduce self-review bias by ensuring the reviewer is not the same agent that wrote the code.
 - Preserve human control over scope, merges, pushes, and final product decisions.
@@ -55,9 +56,13 @@ The orchestrator is the process owner. It may be a human, a lightweight script, 
 
 The orchestrator should not silently overwrite either agent's work. It coordinates and records decisions.
 
-### Coder Agent
+### Algorithm and Engineering Pair
 
-The coder agent owns implementation. For this repo, Codex is a strong default coder because it is optimized for terminal-driven implementation, edits, tests, and commits.
+The algorithm and engineering coder owns detection-pipeline, classifier, test, runtime observability, and supportability changes. Codex is the default coder. The algorithm and engineering reviewer is Claude and applies Google-style engineering standards around readability, simplicity, maintainability, testability, observability, and explicit assumptions.
+
+### UX, Report, and Documentation Pair
+
+The UX, report, and documentation coder owns dashboard, report, copy, README, and development-doc changes. Codex is the default coder. The UX reviewer is Claude and applies UX industry standards around clarity, hierarchy, accessibility, responsive behavior, readable visualizations, and business-user comprehension.
 
 Coder responsibilities:
 
@@ -67,9 +72,9 @@ Coder responsibilities:
 - Publish a handoff message containing changed files, commands run, known risks, and review request.
 - Wait for reviewer feedback before declaring the task complete.
 
-### Reviewer Agent
+### Reviewer Responsibilities
 
-The reviewer agent owns critique. Claude Code is a strong default reviewer because it is useful for broad reasoning, architectural critique, and bug-risk analysis.
+Reviewer agents own critique within their specialty. Claude Code is a strong default reviewer because it is useful for broad reasoning, architectural critique, UX critique, and bug-risk analysis.
 
 Reviewer responsibilities:
 
@@ -95,19 +100,31 @@ Check local prerequisites:
 ./scripts/check-agent-team
 ```
 
-Start the coder:
+Start the algorithm and engineering coder:
 
 ```bash
-./scripts/start-coder
+./scripts/start-algorithm-coder
 ```
 
-Start the reviewer:
+Start the algorithm and engineering reviewer:
 
 ```bash
-./scripts/start-reviewer
+./scripts/start-algorithm-reviewer
 ```
 
-Start both default agents:
+Start the UX, report, and documentation coder:
+
+```bash
+./scripts/start-ux-coder
+```
+
+Start the UX, report, and documentation reviewer:
+
+```bash
+./scripts/start-ux-reviewer
+```
+
+Start both specialist pairs:
 
 ```bash
 ./scripts/start-agent-team
@@ -140,7 +157,7 @@ Each handoff message should be short and structured. This keeps transcripts usef
 Sent by the orchestrator to the coder and reviewer:
 
 ```text
-@coder @reviewer TASK bot-hunter-<id>
+@algorithm-coder- @algorithm-reviewer- TASK bot-hunter-<id>
 Goal: <one sentence>
 Scope: <files or feature area>
 Acceptance: <observable success criteria>
@@ -148,12 +165,14 @@ Constraints: <runtime, dependencies, style, data assumptions>
 Review mode: blocking findings only, then residual risks
 ```
 
+Use `@ux-coder- @ux-reviewer-` for UX, report, and documentation work. Use both specialist pairs for cross-domain work.
+
 ### Coder Ready for Review
 
 Sent by the coder:
 
 ```text
-@reviewer REVIEW_REQUEST bot-hunter-<id>
+@<specialist-reviewer-tag>- REVIEW_REQUEST bot-hunter-<id>
 Summary: <what changed>
 Files: <main files>
 Verification: <commands run and results>
@@ -166,7 +185,7 @@ Diff base: <branch or commit>
 Sent by the reviewer:
 
 ```text
-@coder REVIEW_RESULT bot-hunter-<id>
+@<specialist-coder-tag>- REVIEW_RESULT bot-hunter-<id>
 Decision: changes_requested | approved
 Findings:
 - Severity: <blocker|major|minor>
@@ -181,7 +200,7 @@ Residual risk: <remaining concern or "none">
 Sent by the coder after fixes:
 
 ```text
-@reviewer REVISION_READY bot-hunter-<id>
+@<specialist-reviewer-tag>- REVISION_READY bot-hunter-<id>
 Resolved:
 - <finding and fix>
 Verification: <commands run>
@@ -193,7 +212,7 @@ Open: <anything intentionally not fixed>
 Sent by the orchestrator:
 
 ```text
-@coder @reviewer TASK_CLOSED bot-hunter-<id>
+@<assigned-team-tags> TASK_CLOSED bot-hunter-<id>
 Decision: accepted | rejected | deferred
 Commit: <sha>
 Reason: <short rationale>
