@@ -34,6 +34,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert 'placeholder="/path/to/bot-hunter-dataset.tsv"' in dashboard
         assert 'id="mlBackend"' in dashboard
         assert "Operational confidence" in dashboard
+        assert "Method Disagreement" in dashboard
 
         features_page = urlopen(base_url + "/features", timeout=5).read().decode("utf-8")
         assert "Bot Hunter Features" in features_page

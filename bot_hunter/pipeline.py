@@ -10,6 +10,13 @@ from .heuristics import apply_heuristics
 from .ml import score_anomalies
 from .report import write_reports
 
+# Heuristics stay slightly dominant because they are directly explainable and
+# easier to validate in audits, while ML still has enough influence to move
+# borderline cases and surface multivariate anomalies.
+COMBINED_HEURISTIC_WEIGHT = 0.58
+COMBINED_ML_WEIGHT = 0.42
+
+# These are conservative operational guardrails rather than learned cutoffs.
 SUPPRESS_COMBINED_THRESHOLD = 0.80
 SUPPRESS_HEURISTIC_THRESHOLD = 0.80
 SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD = 0.62
@@ -28,7 +35,9 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
 
     combined = []
     for event in events:
-        event.combined_score = (0.58 * event.heuristic_score) + (0.42 * event.ml_score)
+        event.combined_score = (COMBINED_HEURISTIC_WEIGHT * event.heuristic_score) + (
+            COMBINED_ML_WEIGHT * event.ml_score
+        )
         combined.append(event.combined_score)
 
     cutoff = _quantile(combined, 0.975) if combined else 0.0
@@ -66,6 +75,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".", ml_backen
             "quarantine": "Bot traffic that should be held for review before suppression.",
             "monitor": "Traffic not selected for bot action; keep for trend monitoring and future labels.",
         },
+        "method_disagreement": _method_disagreement(events),
         "tier_thresholds": {
             "suppress_combined_score": SUPPRESS_COMBINED_THRESHOLD,
             "suppress_heuristic_score": SUPPRESS_HEURISTIC_THRESHOLD,
@@ -109,6 +119,27 @@ def _assign_operational_tier(event) -> str:
     ):
         return "suppress"
     return "quarantine"
+
+
+def _method_disagreement(events) -> list[tuple[str, int]]:
+    counts: Counter[str] = Counter()
+    for event in events:
+        heuristic_high = event.heuristic_score >= SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD
+        ml_high = event.ml_score >= SUPPRESS_AGREEMENT_ML_THRESHOLD
+        if heuristic_high and ml_high:
+            counts["Heuristic + ML"] += 1
+        elif heuristic_high:
+            counts["Heuristic only"] += 1
+        elif ml_high:
+            counts["ML only"] += 1
+        else:
+            counts["Neither strong"] += 1
+    return [
+        ("Heuristic + ML", counts.get("Heuristic + ML", 0)),
+        ("Heuristic only", counts.get("Heuristic only", 0)),
+        ("ML only", counts.get("ML only", 0)),
+        ("Neither strong", counts.get("Neither strong", 0)),
+    ]
 
 
 def _write_submission(path: Path, events) -> None:

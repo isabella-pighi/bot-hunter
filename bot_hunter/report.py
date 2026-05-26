@@ -28,6 +28,10 @@ def _markdown(summary: dict[str, object]) -> str:
     tier_lines = "\n".join(
         f"- {tier}: {int(tier_counts.get(tier, 0)):,} events" for tier in ("suppress", "quarantine", "monitor")
     )
+    disagreement_rows = summary.get("method_disagreement", [])
+    disagreement_lines = "\n".join(f"- {label}: {int(count):,} events" for label, count in disagreement_rows)
+    if not disagreement_lines:
+        disagreement_lines = "- No method disagreement data was reported."
 
     return f"""# Bot Hunter Analysis Report
 
@@ -51,23 +55,29 @@ Practical filters for similar datasets include dropping or quarantining traffic 
 
 Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
 
-## 4. Rationale and generalization
+## 4. Method disagreement
+
+The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.90 ML agreement thresholds used in suppression are also reported separately so blind spots are visible:
+
+{disagreement_lines}
+
+## 5. Rationale and generalization
 
 The heuristic model is transparent and easy to convert into policy. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. The {backend_label} catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
 
-## 5. Probability assessment
+## 6. Probability assessment
 
 The estimated probability that a flagged event is fraudulent is {precision:.0%}. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
 
-## 6. Recommended actions
+## 7. Recommended actions
 
 Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress bot events with the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the remaining bot events for review; and monitor traffic that is not selected for bot action while retaining it for drift checks and future labels.
 
-## 7. Future work
+## 8. Future work
 
 With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory, calibrated probabilities, and a feedback loop from manual review decisions.
 
-## 8. Submission
+## 9. Submission
 
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier.
 """

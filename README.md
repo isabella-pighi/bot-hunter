@@ -209,6 +209,8 @@ The final pipeline in `bot_hunter/pipeline.py` combines both scores:
 combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
 ```
 
+The 0.58/0.42 split is intentional rather than learned: the rule layer stays slightly dominant because it is more directly explainable and easier to audit, while ML still has enough weight to move borderline cases and catch multivariate oddities. The suppress thresholds are conservative guardrails, not fitted probabilities. The same 0.62 heuristic and 0.90 ML agreement thresholds that support suppression are also reported separately as `Heuristic + ML`, `Heuristic only`, `ML only`, and `Neither strong` buckets so method disagreement stays visible.
+
 An event is flagged as a bot if it is above the combined-score threshold or if the heuristic score is high enough on its own.
 
 #### Operational confidence tiers

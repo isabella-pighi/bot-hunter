@@ -169,6 +169,11 @@ def _dashboard_html() -> str:
       <div class="card"><h2>Flagged Regions</h2><div id="regions"></div></div>
     </section>
     <section class="card" style="margin-bottom:20px;">
+      <h2>Method Disagreement</h2>
+      <div class="label">Buckets use the same 0.62 heuristic and 0.90 ML agreement thresholds that feed suppression.</div>
+      <div id="disagreement"></div>
+    </section>
+    <section class="card" style="margin-bottom:20px;">
       <h2>Operational Tiers</h2>
       <div id="tiers"></div>
     </section>
@@ -207,6 +212,7 @@ def _dashboard_html() -> str:
       document.getElementById('metrics').innerHTML = metrics.map(([k,v]) => `<div class="card"><div class="label">${k}</div><div class="metric">${v}</div></div>`).join('');
       renderBars('reasons', s.top_reasons || []);
       renderBars('regions', s.bot_regions || []);
+      renderBars('disagreement', s.method_disagreement || []);
       renderBars('tiers', Object.entries(s.tier_counts || {}));
     }
     function renderBars(id, rows) {

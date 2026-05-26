@@ -7,7 +7,7 @@ from types import ModuleType
 import pytest
 
 from bot_hunter.data import ClickEvent
-from bot_hunter.pipeline import _assign_operational_tier, _normalize_reason, run_pipeline
+from bot_hunter.pipeline import _assign_operational_tier, _method_disagreement, _normalize_reason, run_pipeline
 
 
 class FakeIsolationForest:
@@ -62,6 +62,8 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     assert '"operational_tier"' in sample_events
     assert '"rule_contributions"' in sample_events
     assert '"rule_id": "fast_click"' in sample_events
+    assert "method_disagreement" in summary
+    assert sum(count for _, count in summary["method_disagreement"]) == 3
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an unsupervised k-means anomaly model" in report
     features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
@@ -179,6 +181,30 @@ def test_normalize_reason_handles_regular_interarrival() -> None:
         _normalize_reason("regular inter-arrival timing (8 clicks, mean 214.7s, cv 0.224)")
         == "regular inter-arrival timing"
     )
+
+
+def test_method_disagreement_buckets_partition_events_by_agreement_thresholds() -> None:
+    events = [
+        ClickEvent("evt_1", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
+        ClickEvent("evt_2", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
+        ClickEvent("evt_3", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
+        ClickEvent("evt_4", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
+    ]
+    events[0].heuristic_score = 0.62
+    events[0].ml_score = 0.90
+    events[1].heuristic_score = 0.70
+    events[1].ml_score = 0.10
+    events[2].heuristic_score = 0.10
+    events[2].ml_score = 0.95
+    events[3].heuristic_score = 0.10
+    events[3].ml_score = 0.10
+
+    assert _method_disagreement(events) == [
+        ("Heuristic + ML", 1),
+        ("Heuristic only", 1),
+        ("ML only", 1),
+        ("Neither strong", 1),
+    ]
 
 
 def test_operational_tier_boundaries() -> None:

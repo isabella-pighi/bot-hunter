@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R] /Count 2 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R] /Count 3 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -106,7 +106,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2686 >>
+<< /Length 2597 >>
 stream
 BT
 /F1 10 Tf
@@ -116,7 +116,35 @@ BT
 T*
 () Tj
 T*
-( 4. Rationale and generalization) Tj
+( 4. Method disagreement) Tj
+T*
+() Tj
+T*
+(The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more) Tj
+T*
+(directly explainable and should remain slightly dominant, while ML still has enough) Tj
+T*
+(weight to move borderline cases and catch multivariate oddities. The thresholds are) Tj
+T*
+(conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.90 ML) Tj
+T*
+(agreement thresholds used in suppression are also reported separately so blind spots are) Tj
+T*
+(visible:) Tj
+T*
+() Tj
+T*
+(- Heuristic + ML: 966 events) Tj
+T*
+(- Heuristic only: 48 events) Tj
+T*
+(- ML only: 13,958 events) Tj
+T*
+(- Neither strong: 134,267 events) Tj
+T*
+() Tj
+T*
+( 5. Rationale and generalization) Tj
 T*
 () Tj
 T*
@@ -140,7 +168,7 @@ T*
 T*
 () Tj
 T*
-( 5. Probability assessment) Tj
+( 6. Probability assessment) Tj
 T*
 () Tj
 T*
@@ -158,7 +186,7 @@ T*
 T*
 () Tj
 T*
-( 6. Recommended actions) Tj
+( 7. Recommended actions) Tj
 T*
 () Tj
 T*
@@ -168,6 +196,19 @@ T*
 T*
 (confidence intersection. For business action, use three tiers: suppress bot events with) Tj
 T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 809 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the) Tj
 T*
 (remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
@@ -176,7 +217,7 @@ T*
 T*
 () Tj
 T*
-( 7. Future work) Tj
+( 8. Future work) Tj
 T*
 () Tj
 T*
@@ -188,7 +229,7 @@ T*
 T*
 () Tj
 T*
-( 8. Submission) Tj
+( 9. Submission) Tj
 T*
 () Tj
 T*
@@ -199,20 +240,22 @@ T*
 ET
 endstream
 endobj
-7 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 xref
-0 8
+0 10
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
-0000000121 00000 n 
-0000000191 00000 n 
-0000002375 00000 n 
-0000002501 00000 n 
-0000005239 00000 n 
-trailer << /Size 8 /Root 1 0 R >>
+0000000127 00000 n 
+0000000197 00000 n 
+0000002381 00000 n 
+0000002507 00000 n 
+0000005156 00000 n 
+0000005282 00000 n 
+0000006142 00000 n 
+trailer << /Size 10 /Root 1 0 R >>
 startxref
-5365
+6268
 %%EOF
