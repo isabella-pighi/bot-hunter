@@ -75,8 +75,11 @@ The explainable classifier in `bot_hunter/heuristics.py` scores each click using
 - implausibly fast clicks
 - extremely long time-to-click values
 - very short queries
+- regular inter-arrival timing within narrow pseudo-session groups
 
 Each signal adds weight to `heuristic_score`, capped at `1.0`. The classifier records human-readable reasons such as `repeated query` or `same-second click burst`, which are shown in the dashboard and generated reports.
+
+Bot Hunter does not have an explicit user or session identifier in this dataset, so broad device-level timing patterns would be unsafe on their own. The inter-arrival rule is therefore intentionally narrow: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds only a low `0.10` heuristic weight when timing is both frequent and regular. It is supporting evidence, not a standalone proof of automation.
 
 The same rule hits are also stored as structured `rule_contributions` in `artifacts/sample_events.json`. Each contribution has a stable `rule_id`, display `label`, compatibility `reason`, numeric `weight`, raw `observed` value, threshold where applicable, and the condition that fired. Keeping both forms matters for explainability: business users can still read concise reasons, while audits, dashboards, grouped analysis, and per-rule impact checks can rely on stable machine-readable fields instead of parsing English text.
 

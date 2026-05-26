@@ -2,20 +2,21 @@
 
 ## 1. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, and implausibly fast clicks. The second is an Isolation Forest anomaly model over standardized behavioral features. Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, and regular pseudo-session inter-arrival timing. The second is an Isolation Forest anomaly model over standardized behavioral features. Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.
 
 ## 2. Anomalies found
 
 The run analyzed 149,239 events and flagged 3,732 events as bots (2.50%). The strongest explainable patterns were:
 
-- repeated query: 3,323 events
+- repeated query: 3,324 events
 - repeated query/domain pair: 2,065 events
-- high-volume clicked domain: 1,904 events
-- same-second click burst: 1,890 events
-- very short query: 1,864 events
-- heavy region/browser/os cluster: 1,740 events
-- extreme time-to-click: 279 events
+- high-volume clicked domain: 1,902 events
+- same-second click burst: 1,894 events
+- very short query: 1,861 events
+- heavy region/browser/os cluster: 1,733 events
+- extreme time-to-click: 278 events
 - implausibly fast click: 27 events
+- regular inter-arrival timing: 11 events
 
 The dashboard exposes these same signals with sample events so a business user can inspect the likely automated behavior without reading model internals.
 
@@ -31,7 +32,7 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 ## 4. Rationale and generalization
 
-The heuristic model is transparent and easy to convert into policy. The Isolation Forest model catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
+The heuristic model is transparent and easy to convert into policy. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. The Isolation Forest model catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
 
 ## 5. Probability assessment
 

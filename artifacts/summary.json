@@ -3,7 +3,7 @@
   "total_events": 149239,
   "bot_events": 3732,
   "bot_rate": 0.025006868177889156,
-  "threshold": 0.5765429180235596,
+  "threshold": 0.5767399187874402,
   "heuristic_flag_rate": 0.006794470614249626,
   "ml_tail_rate": 0.015002780774462439,
   "estimated_precision": 0.7703804930332261,
@@ -47,7 +47,7 @@
   "top_reasons": [
     [
       "repeated query",
-      3323
+      3324
     ],
     [
       "repeated query/domain pair",
@@ -55,27 +55,31 @@
     ],
     [
       "high-volume clicked domain",
-      1904
+      1902
     ],
     [
       "same-second click burst",
-      1890
+      1894
     ],
     [
       "very short query",
-      1864
+      1861
     ],
     [
       "heavy region/browser/os cluster",
-      1740
+      1733
     ],
     [
       "extreme time-to-click",
-      279
+      278
     ],
     [
       "implausibly fast click",
       27
+    ],
+    [
+      "regular inter-arrival timing",
+      11
     ]
   ],
   "top_domains": [
@@ -181,11 +185,11 @@
   "bot_regions": [
     [
       "Earth",
-      1809
+      1807
     ],
     [
       "Mars",
-      1762
+      1764
     ],
     [
       "Mercury",

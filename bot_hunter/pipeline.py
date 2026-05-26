@@ -137,4 +137,9 @@ def _normalize_reason(reason: str) -> str:
     reason = re.sub(r"exact time-to-click reused \d+ times", "reused exact time-to-click", reason)
     reason = re.sub(r"high-volume clicked domain \(\d+\)", "high-volume clicked domain", reason)
     reason = re.sub(r"heavy region/browser/os cluster \(\d+\)", "heavy region/browser/os cluster", reason)
+    reason = re.sub(
+        r"regular inter-arrival timing \(\d+ clicks, mean [\d.]+s, cv [\d.]+\)",
+        "regular inter-arrival timing",
+        reason,
+    )
     return reason

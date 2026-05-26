@@ -1,8 +1,29 @@
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from bot_hunter.data import ClickEvent, build_features
 from bot_hunter.heuristics import apply_heuristics
+
+
+def _event(
+    idx: int,
+    event_time: datetime,
+    *,
+    region: str = "Mars",
+    browser: str = "Chrome",
+    os_name: str = "Android",
+    query: str = "human search",
+    domain: str = "example.com",
+) -> ClickEvent:
+    return ClickEvent(
+        event_id=f"evt_{idx}",
+        event_time=event_time,
+        region=region,
+        browser=browser,
+        os=os_name,
+        url=f"/ad_click?d={domain}&ttc={1000 + idx}&q={query.replace(' ', '%20')}",
+        params={"d": domain, "ttc": str(1000 + idx), "q": query},
+    )
 
 
 def test_rule_contributions_preserve_reasons_and_score() -> None:
@@ -79,3 +100,61 @@ def test_high_volume_rule_contribution_fields() -> None:
     assert contribution.observed == 200
     assert contribution.threshold == 200
     assert contribution.condition == "domain_count >= threshold"
+
+
+def test_regular_interarrival_rule_triggers_for_regular_pseudo_session() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    events = [_event(idx, start.replace(minute=idx * 2)) for idx in range(8)]
+    _, counters = build_features(events)
+
+    apply_heuristics(events, counters)
+
+    contribution = events[0].rule_contributions[-1]
+    assert contribution.rule_id == "regular_interarrival"
+    assert contribution.label == "Regular inter-arrival timing"
+    assert contribution.reason == "regular inter-arrival timing (8 clicks, mean 120.0s, cv 0.000)"
+    assert contribution.weight == 0.10
+    assert contribution.observed == 0.0
+    assert contribution.threshold == 0.50
+    assert contribution.condition == "events >= 8 and mean_delta_seconds <= 300 and cv <= 0.50"
+    assert all("regular inter-arrival timing" in event.reasons[-1] for event in events)
+
+
+def test_regular_interarrival_rule_ignores_irregular_timing() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    offsets = [0, 30, 360, 390, 900, 930, 1500, 1530]
+    events = [_event(idx, start.replace(second=0) + timedelta(seconds=offset)) for idx, offset in enumerate(offsets)]
+    _, counters = build_features(events)
+
+    apply_heuristics(events, counters)
+
+    assert "regular_interarrival" not in {
+        contribution.rule_id for event in events for contribution in event.rule_contributions
+    }
+
+
+def test_regular_interarrival_rule_requires_at_least_eight_events() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    events = [_event(idx, start.replace(minute=idx * 2)) for idx in range(7)]
+    _, counters = build_features(events)
+
+    apply_heuristics(events, counters)
+
+    assert "regular_interarrival" not in {
+        contribution.rule_id for event in events for contribution in event.rule_contributions
+    }
+
+
+def test_regular_interarrival_rule_does_not_cross_split_groups() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    events = [
+        *[_event(idx, start.replace(minute=idx * 2), query="human search") for idx in range(4)],
+        *[_event(idx + 4, start.replace(minute=idx * 2), query="other search") for idx in range(4)],
+    ]
+    _, counters = build_features(events)
+
+    apply_heuristics(events, counters)
+
+    assert "regular_interarrival" not in {
+        contribution.rule_id for event in events for contribution in event.rule_contributions
+    }

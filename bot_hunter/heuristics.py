@@ -1,8 +1,14 @@
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, defaultdict
+from math import sqrt
 
 from .data import ClickEvent, RuleContribution
+
+REGULAR_INTERARRIVAL_MIN_EVENTS = 8
+REGULAR_INTERARRIVAL_MAX_MEAN_SECONDS = 300.0
+REGULAR_INTERARRIVAL_MAX_CV = 0.50
+REGULAR_INTERARRIVAL_WEIGHT = 0.10
 
 
 def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> None:
@@ -12,6 +18,7 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
     query_domain_hi = max(4, int(total * 0.00025))
     device_hi = max(600, int(total * 0.035))
     ttc_hi = max(40, int(total * 0.0012))
+    regular_interarrival = _regular_interarrival_contributions(events)
 
     for event in events:
         score = 0.0
@@ -168,9 +175,57 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                 )
             )
 
+        interarrival_contribution = regular_interarrival.get(id(event))
+        if interarrival_contribution:
+            score += interarrival_contribution.weight
+            reasons.append(interarrival_contribution.reason)
+            contributions.append(interarrival_contribution)
+
         event.heuristic_score = min(score, 1.0)
         event.reasons = reasons
         event.rule_contributions = contributions
+
+
+def _regular_interarrival_contributions(events: list[ClickEvent]) -> dict[int, RuleContribution]:
+    groups: dict[tuple[str, str, str, str, str], list[ClickEvent]] = defaultdict(list)
+    for event in events:
+        groups[(event.region, event.browser, event.os, event.query, event.domain)].append(event)
+
+    contributions: dict[int, RuleContribution] = {}
+    for group_events in groups.values():
+        if len(group_events) < REGULAR_INTERARRIVAL_MIN_EVENTS:
+            continue
+        ordered = sorted(group_events, key=lambda event: event.event_time)
+        deltas = [
+            (current.event_time - previous.event_time).total_seconds()
+            for previous, current in zip(ordered, ordered[1:])
+        ]
+        if not deltas:
+            continue
+        mean_delta = sum(deltas) / len(deltas)
+        if mean_delta <= 0 or mean_delta > REGULAR_INTERARRIVAL_MAX_MEAN_SECONDS:
+            continue
+        variance = sum((delta - mean_delta) ** 2 for delta in deltas) / len(deltas)
+        cv = sqrt(variance) / mean_delta
+        if cv > REGULAR_INTERARRIVAL_MAX_CV:
+            continue
+
+        reason = (
+            f"regular inter-arrival timing ({len(group_events)} clicks, "
+            f"mean {mean_delta:.1f}s, cv {cv:.3f})"
+        )
+        contribution = _contribution(
+            "regular_interarrival",
+            "Regular inter-arrival timing",
+            reason,
+            REGULAR_INTERARRIVAL_WEIGHT,
+            round(cv, 3),
+            REGULAR_INTERARRIVAL_MAX_CV,
+            "events >= 8 and mean_delta_seconds <= 300 and cv <= 0.50",
+        )
+        for event in group_events:
+            contributions[id(event)] = contribution
+    return contributions
 
 
 def _contribution(

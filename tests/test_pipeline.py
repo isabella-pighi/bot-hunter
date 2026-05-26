@@ -7,7 +7,7 @@ from types import ModuleType
 import pytest
 
 from bot_hunter.data import ClickEvent
-from bot_hunter.pipeline import _assign_operational_tier, run_pipeline
+from bot_hunter.pipeline import _assign_operational_tier, _normalize_reason, run_pipeline
 
 
 class FakeIsolationForest:
@@ -172,6 +172,13 @@ def test_pipeline_sklearn_backend_reports_missing_dependency(monkeypatch, tmp_pa
 
     with pytest.raises(ValueError, match="scikit-learn is not installed"):
         run_pipeline(raw, tmp_path, ml_backend="sklearn")
+
+
+def test_normalize_reason_handles_regular_interarrival() -> None:
+    assert (
+        _normalize_reason("regular inter-arrival timing (8 clicks, mean 214.7s, cv 0.224)")
+        == "regular inter-arrival timing"
+    )
 
 
 def test_operational_tier_boundaries() -> None:

@@ -33,7 +33,7 @@ def _markdown(summary: dict[str, object]) -> str:
 
 ## 1. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, and implausibly fast clicks. The second is {model_name} over standardized behavioral features. {model_detail}
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, and regular pseudo-session inter-arrival timing. The second is {model_name} over standardized behavioral features. {model_detail}
 
 ## 2. Anomalies found
 
@@ -53,7 +53,7 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 ## 4. Rationale and generalization
 
-The heuristic model is transparent and easy to convert into policy. The {backend_label} catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
+The heuristic model is transparent and easy to convert into policy. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. The {backend_label} catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
 
 ## 5. Probability assessment
 
