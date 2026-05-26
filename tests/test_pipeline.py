@@ -62,6 +62,8 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     assert '"operational_tier"' in sample_events
     assert '"rule_contributions"' in sample_events
     assert '"rule_id": "fast_click"' in sample_events
+    report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
+    assert "an unsupervised k-means anomaly model" in report
     features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
     assert features[0].split("\t") == ["event_id", *summary["feature_names"]]
     assert len(features) == 4
@@ -119,6 +121,8 @@ def test_pipeline_can_select_sklearn_backend(monkeypatch, tmp_path: Path) -> Non
     summary = run_pipeline(raw, tmp_path, ml_backend="sklearn")
 
     assert summary["ml_backend"] == "sklearn"
+    report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
+    assert "an Isolation Forest anomaly model" in report
 
 
 def test_pipeline_default_prefers_sklearn_when_available(monkeypatch, tmp_path: Path) -> None:

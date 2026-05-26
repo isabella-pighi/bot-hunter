@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Iterable
 from urllib.parse import parse_qs, urlsplit
 
+EXPECTED_FIELD_COUNT = 6
+EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 @dataclass
 class RuleContribution:
@@ -64,8 +67,10 @@ def parse_clicks(path: str | Path) -> list[ClickEvent]:
             parts = line.split("\t")
             if line_number == 1 and parts[0].lower() == "event_id":
                 continue
-            if len(parts) != 6:
-                raise ValueError(f"Line {line_number} has {len(parts)} fields; expected 6")
+            if len(parts) != EXPECTED_FIELD_COUNT:
+                raise ValueError(
+                    f"Line {line_number} has {len(parts)} fields; expected {EXPECTED_FIELD_COUNT}"
+                )
             event_id, event_time, region, browser, os_name, url = parts
             parsed_url = urlsplit(url)
             raw_params = parse_qs(parsed_url.query, keep_blank_values=True)
@@ -73,7 +78,7 @@ def parse_clicks(path: str | Path) -> list[ClickEvent]:
             events.append(
                 ClickEvent(
                     event_id=event_id,
-                    event_time=datetime.strptime(event_time, "%Y-%m-%d %H:%M:%S"),
+                    event_time=_parse_event_time(event_time, line_number),
                     region=region,
                     browser=browser,
                     os=os_name,
@@ -82,6 +87,15 @@ def parse_clicks(path: str | Path) -> list[ClickEvent]:
                 )
             )
     return events
+
+
+def _parse_event_time(value: str, line_number: int) -> datetime:
+    try:
+        return datetime.strptime(value, EVENT_TIME_FORMAT)
+    except ValueError as exc:
+        raise ValueError(
+            f"Line {line_number} has invalid event_time {value!r}; expected YYYY-MM-DD HH:MM:SS"
+        ) from exc
 
 
 def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Counter]]:

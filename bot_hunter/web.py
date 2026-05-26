@@ -33,11 +33,15 @@ class Handler(BaseHTTPRequestHandler):
         elif parsed.path == "/run":
             params = parse_qs(parsed.query)
             input_path = params.get("input", [""])[0]
+            ml_backend = params.get("ml_backend", ["auto"])[0]
             if not input_path:
                 self._send_json({"error": "Pass ?input=/path/to/raw.tsv"}, status=400)
                 return
+            if ml_backend not in {"auto", "sklearn", "kmeans"}:
+                self._send_json({"error": "ml_backend must be auto, sklearn, or kmeans"}, status=400)
+                return
             try:
-                summary = run_pipeline(input_path, ROOT)
+                summary = run_pipeline(input_path, ROOT, ml_backend=ml_backend)
             except (OSError, ValueError) as exc:
                 self._send_json({"error": str(exc)}, status=400)
             else:
@@ -111,7 +115,7 @@ def _dashboard_html() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bot Hunter Dashboard</title>
   <style>
-    :root { color-scheme: light; --ink:#172026; --muted:#5f6b74; --line:#d8dee4; --bg:#f7f9fb; --panel:#ffffff; --accent:#16697a; --warn:#b95000; }
+    :root { color-scheme: light; --ink:#172026; --muted:#5f6b74; --line:#d8dee4; --bg:#f7f9fb; --panel:#ffffff; --accent:#16697a; --accent-weak:#e5f1f3; --warn:#b95000; }
     * { box-sizing: border-box; }
     body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); }
     header { background:#ffffff; border-bottom:1px solid var(--line); padding:22px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
@@ -122,27 +126,40 @@ def _dashboard_html() -> str:
     .metric { font-size:30px; font-weight:700; margin-top:8px; }
     .label { color:var(--muted); font-size:13px; }
     .wide { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px; }
+    h2 { font-size:18px; margin:0 0 14px; }
     .bar { height:24px; background:#e7edf0; border-radius:4px; overflow:hidden; margin:8px 0 13px; }
     .bar > span { display:block; height:100%; background:var(--accent); }
     table { width:100%; border-collapse:collapse; font-size:13px; }
     th, td { border-bottom:1px solid var(--line); padding:9px 8px; text-align:left; vertical-align:top; }
     th { color:var(--muted); font-weight:600; }
+    .table-wrap { overflow:auto; }
+    .wrap { max-width:240px; overflow-wrap:anywhere; }
     .score { font-variant-numeric:tabular-nums; font-weight:650; }
     .bot { color:var(--warn); }
     .actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    a, button, select, input { font:inherit; }
     a, button { color:#ffffff; background:var(--accent); border:0; border-radius:6px; padding:9px 12px; text-decoration:none; font-weight:650; cursor:pointer; }
-    input { min-width:330px; padding:9px 10px; border:1px solid var(--line); border-radius:6px; }
-    @media (max-width: 850px) { .grid, .wide { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } input { min-width:100%; } }
+    a.secondary { color:var(--accent); background:var(--accent-weak); }
+    button:disabled { opacity:.55; cursor:not-allowed; }
+    input, select { min-height:38px; padding:8px 10px; border:1px solid var(--line); border-radius:6px; background:#ffffff; }
+    input { width:min(420px, 42vw); }
+    select { color:var(--ink); }
+    @media (max-width: 850px) { .grid, .wide { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } input { width:100%; } .actions { width:100%; } }
   </style>
 </head>
 <body>
   <header>
     <h1>Bot Hunter</h1>
     <div class="actions">
-      <input id="inputPath" value="/Users/isabella/Downloads/bot-hunter-dataset.tsv" aria-label="Input path">
-      <button onclick="runPipeline()">Run</button>
-      <a href="/features">Features</a>
-      <a href="/report">Report</a>
+      <input id="inputPath" placeholder="/path/to/bot-hunter-dataset.tsv" aria-label="Input path">
+      <select id="mlBackend" aria-label="ML backend">
+        <option value="auto">Auto backend</option>
+        <option value="sklearn">Require sklearn</option>
+        <option value="kmeans">Use k-means</option>
+      </select>
+      <button id="runButton" onclick="runPipeline()">Run</button>
+      <a class="secondary" href="/features">Features</a>
+      <a class="secondary" href="/report">Report</a>
     </div>
   </header>
   <main>
@@ -157,10 +174,10 @@ def _dashboard_html() -> str:
     </section>
     <section class="card">
       <h2>Highest Risk Events</h2>
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Event</th><th>Time</th><th>Device</th><th>Domain</th><th>Query</th><th>Scores</th><th>Tier</th><th>Reasons</th></tr></thead>
         <tbody id="events"></tbody>
-      </table>
+      </table></div>
     </section>
   </main>
   <script>
@@ -185,7 +202,7 @@ def _dashboard_html() -> str:
         ['Events analyzed', s.total_events.toLocaleString()],
         ['Flagged bots', s.bot_events.toLocaleString()],
         ['Bot rate', pct(s.bot_rate)],
-        ['Estimated fraud probability', pct(s.estimated_precision)]
+        ['Operational confidence', pct(s.estimated_precision)]
       ];
       document.getElementById('metrics').innerHTML = metrics.map(([k,v]) => `<div class="card"><div class="label">${k}</div><div class="metric">${v}</div></div>`).join('');
       renderBars('reasons', s.top_reasons || []);
@@ -199,22 +216,33 @@ def _dashboard_html() -> str:
     function renderEvents(events) {
       document.getElementById('events').innerHTML = events.slice(0, 80).map(e => `<tr>
         <td>${escapeHtml(e.event_id)}</td><td>${escapeHtml(e.event_time)}</td><td>${escapeHtml(e.region)}<br>${escapeHtml(e.browser)} / ${escapeHtml(e.os)}</td>
-        <td>${escapeHtml(e.domain)}</td><td>${escapeHtml(e.query)}</td>
+        <td class="wrap">${escapeHtml(e.domain)}</td><td class="wrap">${escapeHtml(e.query)}</td>
         <td class="score bot">combined ${escapeHtml(e.combined_score)}<br>rules ${escapeHtml(e.heuristic_score)}<br>ml ${escapeHtml(e.ml_score)}</td>
         <td>${escapeHtml(e.operational_tier)}</td>
-        <td>${(e.reasons || []).map(escapeHtml).join('<br>')}</td>
+        <td class="wrap">${(e.reasons || []).map(escapeHtml).join('<br>')}</td>
       </tr>`).join('');
     }
     async function runPipeline() {
-      const input = encodeURIComponent(document.getElementById('inputPath').value);
-      document.getElementById('metrics').innerHTML = '<div class="card">Running pipeline...</div>';
-      const response = await fetch('/run?input=' + input);
-      if (!response.ok) {
-        const payload = await response.json();
-        document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(payload.error || 'Pipeline run failed')}</div>`;
+      const inputPath = document.getElementById('inputPath').value.trim();
+      if (!inputPath) {
+        document.getElementById('metrics').innerHTML = '<div class="card">Enter an input TSV path before running the pipeline.</div>';
         return;
       }
-      await load();
+      const input = encodeURIComponent(inputPath);
+      const mlBackend = encodeURIComponent(document.getElementById('mlBackend').value);
+      document.getElementById('runButton').disabled = true;
+      document.getElementById('metrics').innerHTML = '<div class="card">Running pipeline...</div>';
+      try {
+        const response = await fetch('/run?input=' + input + '&ml_backend=' + mlBackend);
+        if (!response.ok) {
+          const payload = await response.json();
+          document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(payload.error || 'Pipeline run failed')}</div>`;
+          return;
+        }
+        await load();
+      } finally {
+        document.getElementById('runButton').disabled = false;
+      }
     }
     load();
   </script>
@@ -230,7 +258,7 @@ def _features_html() -> str:
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bot Hunter Features</title>
   <style>
-    :root { color-scheme: light; --ink:#172026; --muted:#5f6b74; --line:#d8dee4; --bg:#f7f9fb; --panel:#ffffff; --accent:#16697a; }
+    :root { color-scheme: light; --ink:#172026; --muted:#5f6b74; --line:#d8dee4; --bg:#f7f9fb; --panel:#ffffff; --accent:#16697a; --accent-weak:#e5f1f3; }
     * { box-sizing: border-box; }
     body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); }
     header { background:#ffffff; border-bottom:1px solid var(--line); padding:22px 28px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
@@ -239,6 +267,7 @@ def _features_html() -> str:
     .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px; }
     .actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     a, button { color:#ffffff; background:var(--accent); border:0; border-radius:6px; padding:9px 12px; text-decoration:none; font-weight:650; cursor:pointer; }
+    a.secondary { color:var(--accent); background:var(--accent-weak); }
     .label { color:var(--muted); font-size:13px; }
     .table-wrap { overflow:auto; max-height:72vh; border:1px solid var(--line); border-radius:6px; margin-top:12px; }
     table { width:100%; border-collapse:collapse; font-size:12px; white-space:nowrap; }
@@ -251,8 +280,8 @@ def _features_html() -> str:
   <header>
     <h1>Bot Hunter Features</h1>
     <div class="actions">
-      <a href="/">Dashboard</a>
-      <a href="/report">Report</a>
+      <a class="secondary" href="/">Dashboard</a>
+      <a class="secondary" href="/report">Report</a>
     </div>
   </header>
   <main>

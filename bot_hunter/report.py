@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import html
-import json
 from pathlib import Path
 from textwrap import wrap
 
@@ -19,6 +18,8 @@ def write_reports(summary: dict[str, object], output_dir: str | Path = "docs") -
 def _markdown(summary: dict[str, object]) -> str:
     bot_rate = float(summary["bot_rate"])
     precision = float(summary["estimated_precision"])
+    ml_backend = str(summary.get("ml_backend", "auto"))
+    model_name, model_detail, backend_label = _model_copy(ml_backend)
     top_reasons = summary.get("top_reasons", [])
     reason_lines = "\n".join(f"- {reason}: {count:,} events" for reason, count in top_reasons)
     if not reason_lines:
@@ -32,7 +33,7 @@ def _markdown(summary: dict[str, object]) -> str:
 
 ## 1. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, and implausibly fast clicks. The second is an unsupervised k-means anomaly model over standardized behavioral features. Events far from their closest centroid receive higher anomaly scores.
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, and implausibly fast clicks. The second is {model_name} over standardized behavioral features. {model_detail}
 
 ## 2. Anomalies found
 
@@ -52,7 +53,7 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 ## 4. Rationale and generalization
 
-The heuristic model is transparent and easy to convert into policy. The k-means model catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
+The heuristic model is transparent and easy to convert into policy. The {backend_label} catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
 
 ## 5. Probability assessment
 
@@ -69,11 +70,27 @@ With more time, I would add labeled validation data, campaign-level normalizatio
 ## 8. Submission
 
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier.
-
-```json
-{json.dumps(summary, indent=2)[:3000]}
-```
 """
+
+
+def _model_copy(ml_backend: str) -> tuple[str, str, str]:
+    if ml_backend == "sklearn":
+        return (
+            "an Isolation Forest anomaly model",
+            "Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.",
+            "Isolation Forest model",
+        )
+    if ml_backend == "kmeans":
+        return (
+            "an unsupervised k-means anomaly model",
+            "Events far from their closest centroid receive higher anomaly scores.",
+            "k-means model",
+        )
+    return (
+        "the configured unsupervised anomaly model",
+        "Events with stronger statistical anomaly evidence receive higher anomaly scores.",
+        "anomaly model",
+    )
 
 
 def _html(markdown: str) -> str:

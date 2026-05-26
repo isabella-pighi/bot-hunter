@@ -3,13 +3,13 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R] /Count 2 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 2208 >>
+<< /Length 2122 >>
 stream
 BT
 /F1 10 Tf
@@ -29,11 +29,11 @@ T*
 T*
 (region/browser/OS clusters, exact time-to-click reuse, same-second bursts, and) Tj
 T*
-(implausibly fast clicks. The second is an unsupervised k-means anomaly model over) Tj
+(implausibly fast clicks. The second is an Isolation Forest anomaly model over) Tj
 T*
-(standardized behavioral features. Events far from their closest centroid receive higher) Tj
+(standardized behavioral features. Events that isolate unusually quickly in the fitted) Tj
 T*
-(anomaly scores.) Tj
+(forest receive higher anomaly scores.) Tj
 T*
 () Tj
 T*
@@ -41,25 +41,25 @@ T*
 T*
 () Tj
 T*
-(The run analyzed 149,239 events and flagged 3,781 events as bots \(2.53%\). The strongest) Tj
+(The run analyzed 149,239 events and flagged 3,732 events as bots \(2.50%\). The strongest) Tj
 T*
 (explainable patterns were:) Tj
 T*
 () Tj
 T*
-(- repeated query: 3,583 events) Tj
+(- repeated query: 3,323 events) Tj
 T*
-(- very short query: 2,089 events) Tj
+(- repeated query/domain pair: 2,065 events) Tj
 T*
-(- repeated query/domain pair: 2,015 events) Tj
+(- high-volume clicked domain: 1,904 events) Tj
 T*
-(- same-second click burst: 1,952 events) Tj
+(- same-second click burst: 1,890 events) Tj
 T*
-(- heavy region/browser/os cluster: 1,889 events) Tj
+(- very short query: 1,864 events) Tj
 T*
-(- high-volume clicked domain: 1,661 events) Tj
+(- heavy region/browser/os cluster: 1,740 events) Tj
 T*
-(- extreme time-to-click: 167 events) Tj
+(- extreme time-to-click: 279 events) Tj
 T*
 (- implausibly fast click: 27 events) Tj
 T*
@@ -79,25 +79,25 @@ T*
 T*
 (repeated query/domain pairs, repeated exact ttc values, dense same-second bursts, and) Tj
 T*
-(events above the combined anomaly threshold. For ad-billing workflows, the safest) Tj
+(events above the combined anomaly threshold. Bot Hunter assigns operational tiers) Tj
 T*
-(starting point is to quarantine high-confidence bot traffic for review, then move to) Tj
-T*
-(automatic suppression once performance is validated against labeled outcomes or) Tj
-T*
-(chargeback evidence.) Tj
+(without changing the binary is_bot prediction:) Tj
 T*
 () Tj
 T*
-( 4. Rationale and generalization) Tj
+(- suppress: 981 events) Tj
+T*
+(- quarantine: 2,751 events) Tj
+T*
+(- monitor: 145,507 events) Tj
 T*
 () Tj
 T*
-(The heuristic model is transparent and easy to convert into policy. The k-means model) Tj
+(Use suppress for high-confidence bot traffic after policy approval, quarantine for bot) Tj
 T*
-(catches multivariate oddities that a small rule set may miss. Both should generalize) Tj
+(traffic that should be held for review, and monitor for traffic that is not selected for) Tj
 T*
-(when bot traffic is repetitive or mechanically timed, but they may miss human-like bots) Tj
+(bot action but should remain available for trend analysis and future labels.) Tj
 T*
 ET
 endstream
@@ -106,17 +106,29 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2167 >>
+<< /Length 2260 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(and may over-flag legitimate campaigns that naturally produce high repetition. The) Tj
+() Tj
 T*
-(thresholds should be recalibrated when traffic mix, geography, or ad inventory changes) Tj
+( 4. Rationale and generalization) Tj
 T*
-(materially.) Tj
+() Tj
+T*
+(The heuristic model is transparent and easy to convert into policy. The Isolation Forest) Tj
+T*
+(model catches multivariate oddities that a small rule set may miss. Both should) Tj
+T*
+(generalize when bot traffic is repetitive or mechanically timed, but they may miss) Tj
+T*
+(human-like bots and may over-flag legitimate campaigns that naturally produce high) Tj
+T*
+(repetition. The thresholds should be recalibrated when traffic mix, geography, or ad) Tj
+T*
+(inventory changes materially.) Tj
 T*
 () Tj
 T*
@@ -124,7 +136,7 @@ T*
 T*
 () Tj
 T*
-(The estimated probability that a flagged event is fraudulent is 69%. This is not label-) Tj
+(The estimated probability that a flagged event is fraudulent is 77%. This is not label-) Tj
 T*
 (calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
 T*
@@ -146,11 +158,13 @@ T*
 T*
 (binary prediction uses the combined score threshold rather than only the highest-) Tj
 T*
-(confidence intersection. For business action, use three tiers: suppress the highest) Tj
+(confidence intersection. For business action, use three tiers: suppress bot events with) Tj
 T*
-(combined-score traffic, quarantine medium-confidence traffic for review, and monitor) Tj
+(the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the) Tj
 T*
-(low-confidence anomalies until labels are available.) Tj
+(remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
+T*
+(while retaining it for drift checks and future labels.) Tj
 T*
 () Tj
 T*
@@ -170,31 +184,9 @@ T*
 T*
 () Tj
 T*
-(The repository includes submission.tsv with event_id and is_bot, using the final binary) Tj
+(The repository includes submission.tsv with event_id, is_bot, and operational_tier,) Tj
 T*
-(prediction.) Tj
-T*
-() Tj
-T*
-(json) Tj
-T*
-({) Tj
-T*
-(  "input_path": "/Users/isabella/Downloads/bot-hunter-dataset.tsv",) Tj
-T*
-(  "total_events": 149239,) Tj
-T*
-(  "bot_events": 3781,) Tj
-T*
-(  "bot_rate": 0.02533520058429767,) Tj
-T*
-(  "threshold": 0.5833619587504523,) Tj
-T*
-(  "heuristic_flag_rate": 0.006794470614249626,) Tj
-T*
-(  "ml_tail_rate": 0.015002780774462439,) Tj
-T*
-(  "estimated_precision": 0.6924702459666754,) Tj
+(preserving the final binary prediction while adding a workflow tier.) Tj
 T*
 ET
 endstream
@@ -202,450 +194,17 @@ endobj
 7 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
-8 0 obj
-<< /Length 1045 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(  "feature_names": [) Tj
-T*
-(    "log_domain_count",) Tj
-T*
-(    "log_query_count",) Tj
-T*
-(    "log_query_domain_count",) Tj
-T*
-(    "log_device_count",) Tj
-T*
-(    "log_same_second_count",) Tj
-T*
-(    "log_ttc_count",) Tj
-T*
-(    "ttc_seconds",) Tj
-T*
-(    "query_terms",) Tj
-T*
-(    "query_chars",) Tj
-T*
-(    "has_bkl",) Tj
-T*
-(    "has_om",) Tj
-T*
-(    "kp",) Tj
-T*
-(    "sld",) Tj
-T*
-(    "hour",) Tj
-T*
-(    "is_mobile_search") Tj
-T*
-(  ],) Tj
-T*
-(  "top_reasons": [) Tj
-T*
-(    [) Tj
-T*
-(      "repeated query",) Tj
-T*
-(      3583) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "very short query",) Tj
-T*
-(      2089) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "repeated query/domain pair",) Tj
-T*
-(      2015) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "same-second click burst",) Tj
-T*
-(      1952) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "heavy region/browser/os cluster",) Tj
-T*
-(      1889) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "high-volume clicked domain",) Tj
-T*
-(      1661) Tj
-T*
-(    ],) Tj
-T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 881 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(    [) Tj
-T*
-(      "extreme time-to-click",) Tj
-T*
-(      167) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "implausibly fast click",) Tj
-T*
-(      27) Tj
-T*
-(    ]) Tj
-T*
-(  ],) Tj
-T*
-(  "top_domains": [) Tj
-T*
-(    [) Tj
-T*
-(      "www.amazon.de",) Tj
-T*
-(      5543) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.amazon.co.uk",) Tj
-T*
-(      4623) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.amazon.ca",) Tj
-T*
-(      4480) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.booking.com",) Tj
-T*
-(      3640) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.amazon.es",) Tj
-T*
-(      2230) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "duckduckgo.com",) Tj
-T*
-(      1816) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.amazon.fr",) Tj
-T*
-(      1573) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.amazon.com",) Tj
-T*
-(      1550) Tj
-T*
-(    ],) Tj
-T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 828 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(    [) Tj
-T*
-(      "www.amazon.it",) Tj
-T*
-(      1321) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.yidio.com",) Tj
-T*
-(      1301) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.preis.de",) Tj
-T*
-(      911) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "www.flicksmore.com",) Tj
-T*
-(      748) Tj
-T*
-(    ]) Tj
-T*
-(  ],) Tj
-T*
-(  "top_queries": [) Tj
-T*
-(    [) Tj
-T*
-(      "nomnem",) Tj
-T*
-(      1226) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "splenocyte",) Tj
-T*
-(      531) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "pluralizes",) Tj
-T*
-(      391) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "neti biscot",) Tj
-T*
-(      316) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "spurge",) Tj
-T*
-(      258) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "solely",) Tj
-T*
-(      246) Tj
-T*
-(    ],) Tj
-T*
-ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
-endobj
-14 0 obj
-<< /Length 805 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(    [) Tj
-T*
-(      "gangdom",) Tj
-T*
-(      246) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "valgoid kae",) Tj
-T*
-(      239) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "censer amatorial callainite",) Tj
-T*
-(      216) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "orlo pliny",) Tj
-T*
-(      213) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "nana",) Tj
-T*
-(      212) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "vaunt",) Tj
-T*
-(      212) Tj
-T*
-(    ]) Tj
-T*
-(  ],) Tj
-T*
-(  "bot_regions": [) Tj
-T*
-(    [) Tj
-T*
-(      "Earth",) Tj
-T*
-(      1817) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "Mars",) Tj
-T*
-(      1772) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "Mercury",) Tj
-T*
-(      56) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "Venus",) Tj
-T*
-(      52) Tj
-T*
-(    ],) Tj
-T*
-ET
-endstream
-endobj
-15 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
-endobj
-16 0 obj
-<< /Length 202 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(    [) Tj
-T*
-(      "Jupiter",) Tj
-T*
-(      44) Tj
-T*
-(    ],) Tj
-T*
-(    [) Tj
-T*
-(      "Saturn",) Tj
-T*
-(      40) Tj
-T*
-(    ]) Tj
-T*
-(  ]) Tj
-T*
-(}) Tj
-T*
-() Tj
-T*
-ET
-endstream
-endobj
-17 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
-endobj
 xref
-0 18
+0 8
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
-0000000155 00000 n 
-0000000225 00000 n 
-0000002485 00000 n 
-0000002611 00000 n 
-0000004830 00000 n 
-0000004956 00000 n 
-0000006053 00000 n 
-0000006179 00000 n 
-0000007112 00000 n 
-0000007240 00000 n 
-0000008120 00000 n 
-0000008248 00000 n 
-0000009105 00000 n 
-0000009233 00000 n 
-0000009487 00000 n 
-trailer << /Size 18 /Root 1 0 R >>
+0000000121 00000 n 
+0000000191 00000 n 
+0000002365 00000 n 
+0000002491 00000 n 
+0000004803 00000 n 
+trailer << /Size 8 /Root 1 0 R >>
 startxref
-9615
+4929
 %%EOF
