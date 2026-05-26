@@ -116,6 +116,27 @@ The k-means fallback groups standardized click behavior into a small number of c
 
 Isolation Forest is generally better suited to anomaly detection because it is designed to isolate rare observations. Instead of asking how close a click is to a cluster center, it builds random decision trees and scores clicks that can be separated quickly as more anomalous. That tends to fit bot-hunting better when suspicious events are sparse, unevenly distributed, or unusual because of a mix of signals rather than one large distance from a cluster. Bot Hunter therefore uses Isolation Forest as the primary backend when available while keeping k-means as the automatic fallback.
 
+#### HDBSCAN benchmark decision
+
+HDBSCAN was evaluated as a possible additional anomaly backend, but it is not part of the current implementation. The benchmark used the same 149,239-event dataset, the same 15-feature standardized matrix, and the same combined decision rule used by the existing pipeline. The comparison was between the current scikit-learn Isolation Forest backend and `sklearn.cluster.HDBSCAN` configured with `min_cluster_size=80`, `min_samples=20`, and `n_jobs=-1`.
+
+The benchmark results were:
+
+- Isolation Forest runtime: 2.303 seconds.
+- HDBSCAN runtime: 137.953 seconds.
+- Both approaches flagged 3,732 events.
+- Flagged-event overlap: 3,057 events.
+- Jaccard similarity: 0.6937.
+- Unique flagged events outside the overlap: 675 per backend.
+- HDBSCAN clusters: 17 non-noise clusters.
+- HDBSCAN noise points: 4,404 events, a 2.951% noise rate.
+- HDBSCAN `ml_tail_rate`: 2.951%.
+- Isolation Forest `ml_tail_rate`: 1.5003%.
+
+The suspicious themes were broadly similar across both backends. HDBSCAN found a larger anomaly tail, but the additional review set did not improve reviewability enough to justify roughly 60x runtime cost in the current dependency-light workflow.
+
+Decision: do not add an HDBSCAN backend now. Reconsider it only with sampling, tuning, or validation evidence showing better measured precision or materially better reviewer utility.
+
 #### Current artifact examples
 
 The checked-in `artifacts/summary.json` was produced by an earlier k-means/default run and analyzed 149,239 events. It flagged 3,781 events as bots, a 2.53% bot rate. Treat the `estimated_precision` value in the summary as an operational confidence estimate, not measured ground truth, because the dataset does not include labels.
