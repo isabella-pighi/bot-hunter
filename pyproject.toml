@@ -12,6 +12,7 @@ build-backend = "setuptools.build_meta"
 dev = ["pytest>=8"]
 
 [project.optional-dependencies]
+neural = ["scikit-learn>=1.4", "torch>=2.3"]
 sklearn = ["scikit-learn>=1.4"]
 
 [tool.setuptools.packages.find]

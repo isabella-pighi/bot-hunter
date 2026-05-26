@@ -137,6 +137,58 @@ The suspicious themes were broadly similar across both backends. HDBSCAN found a
 
 Decision: do not add an HDBSCAN backend now. Reconsider it only with sampling, tuning, or validation evidence showing better measured precision or materially better reviewer utility.
 
+#### Neural benchmark decision
+
+PyTorch autoencoder and variational autoencoder models were evaluated as optional anomaly backends, but neither is part of the production `--ml-backend` options. The benchmark used `data/bot-hunter-dataset.tsv`, the same 149,239 events, the existing 15-feature matrix from `bot_hunter.data.build_features`, the same feature standardization used by `bot_hunter.ml`, unchanged heuristic scores from `apply_heuristics`, rank-normalized anomaly values for `ml_score`, and the existing combined decision rule:
+
+```python
+combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
+```
+
+Events were flagged when the combined score was at or above the 97.5th percentile cutoff or when `heuristic_score >= 0.62`, matching the current pipeline. The benchmark was run CPU-only with fixed seed `7`, 8 capped training epochs, batch size `2048`, and this command:
+
+```bash
+uv run --extra neural scripts/neural-benchmark --input data/bot-hunter-dataset.tsv --output /tmp/bot-hunter-neural-benchmark.json
+```
+
+The optional evaluation dependency group is `neural = ["scikit-learn>=1.4", "torch>=2.3"]`. This extra is for benchmark tooling only; production behavior is unchanged. `--ml-backend auto` still prefers Isolation Forest when scikit-learn is available, and k-means remains the fallback.
+
+Model settings:
+
+- Isolation Forest baseline: `sklearn.ensemble.IsolationForest(random_state=7, contamination="auto")`.
+- Autoencoder: `15->32->8->32->15`, ReLU hidden layers, Adam with `lr=0.001`, scored by mean squared reconstruction error.
+- VAE: encoder `15->32->mu/logvar(8)`, decoder `8->32->15`, Adam with `lr=0.001`, scored by reconstruction MSE plus `0.001 * KL divergence`, with deterministic scoring from the latent mean after training.
+
+Benchmark metrics:
+
+| Backend | Runtime | Approx. peak memory | Flagged events | `ml_tail_rate` | IF overlap | Jaccard vs IF | Unique vs IF | IF unique vs backend |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Isolation Forest | 2.022s | 716.9 MB | 3,732 | 1.5003% | 3,732 | 1.0000 | 0 | 0 |
+| Autoencoder | 12.366s | 992.6 MB | 3,838 | 1.5003% | 2,689 | 0.5509 | 1,149 | 1,043 |
+| VAE | 3.403s | 1,027.8 MB | 3,789 | 1.5003% | 2,877 | 0.6195 | 912 | 855 |
+
+The review slices were similar, but not better for the neural models:
+
+- Isolation Forest top reasons: repeated query 3,323; repeated query/domain pair 2,065; high-volume clicked domain 1,904; same-second click burst 1,890; very short query 1,864; heavy region/browser/os cluster 1,740; extreme time-to-click 279; implausibly fast click 27.
+- Autoencoder top reasons: repeated query 3,638; very short query 2,165; heavy region/browser/os cluster 2,160; same-second click burst 2,048; repeated query/domain pair 1,882; high-volume clicked domain 1,405; extreme time-to-click 161; implausibly fast click 36.
+- VAE top reasons: repeated query 3,405; heavy region/browser/os cluster 2,080; same-second click burst 2,001; very short query 1,954; repeated query/domain pair 1,876; high-volume clicked domain 1,657; extreme time-to-click 202; implausibly fast click 48.
+- Isolation Forest top domains: `www.amazon.de` 818; `www.booking.com` 392; `www.amazon.ca` 372; `www.amazon.co.uk` 322; `duckduckgo.com` 248; `www.amazon.it` 232; `www.overstock.com` 186; `sofatutor.com` 183.
+- Autoencoder top domains: `www.amazon.de` 655; `www.booking.com` 302; `www.amazon.ca` 278; `duckduckgo.com` 228; `www.amazon.it` 216; `www.amazon.co.uk` 170; `sofatutor.com` 145; `www.overstock.com` 137.
+- VAE top domains: `www.amazon.de` 707; `www.booking.com` 353; `www.amazon.ca` 340; `www.amazon.co.uk` 257; `www.amazon.it` 234; `duckduckgo.com` 230; `sofatutor.com` 172; `www.overstock.com` 160.
+- Isolation Forest top queries: `nomnem` 587; `neti biscot` 204; `nana` 191; `fuzz sulphid` 188; `censer amatorial callainite` 186; `vaunt` 185; `orlo pliny` 185; `shamefast ui` 185.
+- Autoencoder top queries: `nomnem` 916; `splenocyte` 265; `vaunt` 191; `nana` 185; `shamefast ui` 182; `orlo pliny` 180; `neti biscot` 178; `pluralizes` 177.
+- VAE top queries: `nomnem` 747; `splenocyte` 223; `censer amatorial callainite` 195; `nana` 192; `vaunt` 187; `starn noonmeat` 177; `vielle motoneuron` 174; `fuzz sulphid` 169.
+- Isolation Forest top regions: Earth 1,809; Mars 1,762; Mercury 53; Venus 43; Saturn 36; Jupiter 29.
+- Autoencoder top regions: Mars 1,927; Earth 1,719; Venus 51; Saturn 51; Mercury 46; Jupiter 44.
+- VAE top regions: Mars 1,936; Earth 1,702; Mercury 40; Venus 40; Jupiter 39; Saturn 32.
+- Isolation Forest top event IDs: `evt_105119`, `evt_046784`, `evt_128656`, `evt_068755`, `evt_038503`, `evt_005176`, `evt_063596`, `evt_043433`, `evt_111917`, `evt_126217`.
+- Autoencoder top event IDs: `evt_105119`, `evt_068755`, `evt_046784`, `evt_128656`, `evt_126217`, `evt_133713`, `evt_126676`, `evt_132706`, `evt_120121`, `evt_114075`.
+- VAE top event IDs: `evt_105119`, `evt_068755`, `evt_046784`, `evt_073286`, `evt_063103`, `evt_063596`, `evt_007787`, `evt_128656`, `evt_005176`, `evt_126217`.
+
+Qualitatively, Isolation Forest remains the best production fit: it was fastest, used the lowest observed peak memory, is already integrated, and its flags align with the existing heuristic explanations. The autoencoder added reconstruction-error ranking but no direct business explanation beyond the same heuristic overlays; it was about 6.1x slower than Isolation Forest, used more memory, and had only 0.5509 Jaccard similarity with Isolation Forest. The VAE was closer to Isolation Forest than the autoencoder, but it used the most memory, adds stochastic training and model complexity, and did not improve reviewability or explanation quality.
+
+Decision: do not promote the autoencoder or VAE into production `--ml-backend` choices. Keep neural benchmarking as optional evaluation tooling only, and reconsider neural backends only with labels or manual-review evidence showing materially better precision or reviewer utility.
+
 #### Current artifact examples
 
 The checked-in `artifacts/summary.json` was produced by an earlier k-means/default run and analyzed 149,239 events. It flagged 3,781 events as bots, a 2.53% bot rate. Treat the `estimated_precision` value in the summary as an operational confidence estimate, not measured ground truth, because the dataset does not include labels.
