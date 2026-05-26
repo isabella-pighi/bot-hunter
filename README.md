@@ -45,7 +45,7 @@ This repo includes a lightweight Claude Code + Codex CLI team setup using HCOM:
 ./scripts/start-agent-team
 ```
 
-Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. Development team documentation and role prompts live in `development approach/`.
+Use `./scripts/start-coder`, `./scripts/start-reviewer`, or `./scripts/start-orchestrator` when you want to start roles individually. The consolidated team instructions live in `development approach/team_instructions.md`.
 
 ## Generated files
 

@@ -2,6 +2,7 @@
 
 This folder contains the documentation for the local agentic development team.
 
+- `team_instructions.md`: canonical consolidated instructions for the team.
 - `agentic_development_architecture.md`: architecture, roles, handoff protocol, review checklist, and Bot Hunter-specific workflow.
 - `prompts/coder_prompt.md`: Codex coder role prompt.
 - `prompts/reviewer_prompt.md`: Claude reviewer role prompt.
