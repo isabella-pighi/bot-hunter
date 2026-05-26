@@ -65,6 +65,8 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     assert "method_disagreement" in summary
     assert sum(count for _, count in summary["method_disagreement"]) == 3
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
+    assert "Methods evaluated but not included" in report
+    assert "HDBSCAN" in report
     assert "an unsupervised k-means anomaly model" in report
     features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
     assert features[0].split("\t") == ["event_id", *summary["feature_names"]]

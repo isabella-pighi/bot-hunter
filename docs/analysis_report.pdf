@@ -9,7 +9,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 2132 >>
+<< /Length 2379 >>
 stream
 BT
 /F1 10 Tf
@@ -19,7 +19,23 @@ BT
 T*
 () Tj
 T*
-( 1. Classifiers) Tj
+( 1. Project context) Tj
+T*
+() Tj
+T*
+(Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer readable,) Tj
+T*
+(lets the anomaly model add statistical coverage, and treats all score outputs as) Tj
+T*
+(unlabeled operational evidence rather than measured ground truth. That matters because) Tj
+T*
+(the dataset does not include labels, so precision is reported as an operational) Tj
+T*
+(confidence estimate instead of a calibrated metric.) Tj
+T*
+() Tj
+T*
+( 2. Classifiers) Tj
 T*
 () Tj
 T*
@@ -37,7 +53,27 @@ T*
 T*
 () Tj
 T*
-( 2. Anomalies found) Tj
+( 3. Methods evaluated but not included) Tj
+T*
+() Tj
+T*
+(Bot Hunter also evaluated HDBSCAN, a shallow autoencoder, and a small VAE as optional) Tj
+T*
+(anomaly backends in prior benchmark work. They were not promoted because they did not) Tj
+T*
+(improve reviewer utility enough to justify their runtime, memory, or complexity costs.) Tj
+T*
+(HDBSCAN was much slower than the current anomaly path on the full dataset, while the) Tj
+T*
+(neural models used more memory and did not produce clearer explanations than Isolation) Tj
+T*
+(Forest. The production ML path therefore remains Isolation Forest when scikit-learn is) Tj
+T*
+(available, with k-means as the lightweight fallback.) Tj
+T*
+() Tj
+T*
+( 4. Anomalies found) Tj
 T*
 () Tj
 T*
@@ -63,6 +99,19 @@ T*
 T*
 (- implausibly fast click: 27 events) Tj
 T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2348 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- regular inter-arrival timing: 11 events) Tj
 T*
 () Tj
@@ -73,7 +122,7 @@ T*
 T*
 () Tj
 T*
-( 3. Filtering options) Tj
+( 5. Filtering options) Tj
 T*
 () Tj
 T*
@@ -99,24 +148,11 @@ T*
 T*
 (traffic that should be held for review, and monitor for traffic that is not selected for) Tj
 T*
-ET
-endstream
-endobj
-5 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
-endobj
-6 0 obj
-<< /Length 2597 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (bot action but should remain available for trend analysis and future labels.) Tj
 T*
 () Tj
 T*
-( 4. Method disagreement) Tj
+( 6. Method disagreement) Tj
 T*
 () Tj
 T*
@@ -144,7 +180,7 @@ T*
 T*
 () Tj
 T*
-( 5. Rationale and generalization) Tj
+( 7. Rationale and generalization) Tj
 T*
 () Tj
 T*
@@ -160,6 +196,19 @@ T*
 T*
 (oddities that a small rule set may miss. Both should generalize when bot traffic is) Tj
 T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 1979 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (repetitive or mechanically timed, but they may miss human-like bots and may over-flag) Tj
 T*
 (legitimate campaigns that naturally produce high repetition. The thresholds should be) Tj
@@ -168,7 +217,7 @@ T*
 T*
 () Tj
 T*
-( 6. Probability assessment) Tj
+( 8. Probability assessment) Tj
 T*
 () Tj
 T*
@@ -186,7 +235,7 @@ T*
 T*
 () Tj
 T*
-( 7. Recommended actions) Tj
+( 9. Recommended actions) Tj
 T*
 () Tj
 T*
@@ -196,19 +245,6 @@ T*
 T*
 (confidence intersection. For business action, use three tiers: suppress bot events with) Tj
 T*
-ET
-endstream
-endobj
-7 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
-endobj
-8 0 obj
-<< /Length 809 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the) Tj
 T*
 (remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
@@ -217,7 +253,7 @@ T*
 T*
 () Tj
 T*
-( 8. Future work) Tj
+( 10. Future work) Tj
 T*
 () Tj
 T*
@@ -229,7 +265,7 @@ T*
 T*
 () Tj
 T*
-( 9. Submission) Tj
+( 11. Submission) Tj
 T*
 () Tj
 T*
@@ -250,12 +286,12 @@ xref
 0000000058 00000 n 
 0000000127 00000 n 
 0000000197 00000 n 
-0000002381 00000 n 
-0000002507 00000 n 
-0000005156 00000 n 
-0000005282 00000 n 
-0000006142 00000 n 
+0000002628 00000 n 
+0000002754 00000 n 
+0000005154 00000 n 
+0000005280 00000 n 
+0000007311 00000 n 
 trailer << /Size 10 /Root 1 0 R >>
 startxref
-6268
+7437
 %%EOF
