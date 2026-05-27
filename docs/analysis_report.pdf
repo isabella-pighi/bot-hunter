@@ -1,334 +1,168 @@
 %PDF-1.4
+%“Œ‹ž ReportLab Generated PDF document (opensource)
 1 0 obj
-<< /Type /Catalog /Pages 2 0 R >>
+<<
+/F1 2 0 R /F2 3 0 R /F3 4 0 R /F4 5 0 R /F5 7 0 R
+>>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>
+<<
+/BaseFont /Helvetica /Encoding /WinAnsiEncoding /Name /F1 /Subtype /Type1 /Type /Font
+>>
 endobj
 3 0 obj
-<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+<<
+/BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding /Name /F2 /Subtype /Type1 /Type /Font
+>>
 endobj
 4 0 obj
-<< /Length 2477 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-( Bot Hunter Analysis Report) Tj
-T*
-() Tj
-T*
-( 1. Project context) Tj
-T*
-() Tj
-T*
-(Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer readable,) Tj
-T*
-(lets the anomaly model add statistical coverage, and treats all score outputs as) Tj
-T*
-(unlabeled operational evidence rather than measured ground truth. That matters because) Tj
-T*
-(the dataset does not include labels, so precision is reported as an operational) Tj
-T*
-(confidence estimate instead of a calibrated metric.) Tj
-T*
-() Tj
-T*
-( 2. Classifiers) Tj
-T*
-() Tj
-T*
-(The application implements two classifiers. The first is a rules-based classifier that) Tj
-T*
-(scores repeated query/domain pairs, repeated queries, high-volume domains, dense) Tj
-T*
-(region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly) Tj
-T*
-(fast clicks, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse) Tj
-T*
-(is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute) Tj
-T*
-(floor so the rule can adapt to timer reuse patterns without letting low-count) Tj
-T*
-(coincidences fire. The second classifier is an Isolation Forest anomaly model over) Tj
-T*
-(standardized behavioral features. Events that isolate unusually quickly in the fitted) Tj
-T*
-(forest receive higher anomaly scores.) Tj
-T*
-() Tj
-T*
-( 3. Methods evaluated but not included) Tj
-T*
-() Tj
-T*
-(Bot Hunter also evaluated HDBSCAN, a shallow autoencoder, and a small VAE as optional) Tj
-T*
-(anomaly backends in prior benchmark work. They were not promoted because they did not) Tj
-T*
-(improve reviewer utility enough to justify their runtime, memory, or complexity costs.) Tj
-T*
-(HDBSCAN was much slower than the current anomaly path on the full dataset, while the) Tj
-T*
-(neural models used more memory and did not produce clearer explanations than Isolation) Tj
-T*
-(Forest. The production ML path therefore remains Isolation Forest when scikit-learn is) Tj
-T*
-(available, with k-means as the lightweight fallback.) Tj
-T*
-() Tj
-T*
-( 4. Anomalies found) Tj
-T*
-() Tj
-T*
-(The run analyzed 149,239 events and flagged 3,732 events as bots \(2.50%\). The strongest) Tj
-T*
-(explainable patterns were:) Tj
-T*
-() Tj
-T*
-(- repeated query: 3,325 events) Tj
-T*
-(- repeated query/domain pair: 2,065 events) Tj
-T*
-(- high-volume clicked domain: 1,902 events) Tj
-T*
-(- same-second click burst: 1,893 events) Tj
-T*
-(- very short query: 1,862 events) Tj
-T*
-ET
-endstream
+<<
+/BaseFont /Courier /Encoding /WinAnsiEncoding /Name /F3 /Subtype /Type1 /Type /Font
+>>
 endobj
 5 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+<<
+/BaseFont /Helvetica-Oblique /Encoding /WinAnsiEncoding /Name /F4 /Subtype /Type1 /Type /Font
+>>
 endobj
 6 0 obj
-<< /Length 2164 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(- heavy region/browser/os cluster: 1,732 events) Tj
-T*
-(- extreme time-to-click: 277 events) Tj
-T*
-(- implausibly fast click: 27 events) Tj
-T*
-(- regular inter-arrival timing: 11 events) Tj
-T*
-(- reused exact time-to-click: 2 events) Tj
-T*
-() Tj
-T*
-(The dashboard exposes these same signals with sample events so a business user can) Tj
-T*
-(inspect the likely automated behavior without reading model internals.) Tj
-T*
-() Tj
-T*
-( 5. Filtering options) Tj
-T*
-() Tj
-T*
-(Practical filters for similar datasets include dropping or quarantining traffic from) Tj
-T*
-(repeated query/domain pairs, repeated exact ttc values, dense same-second bursts, and) Tj
-T*
-(events above the combined anomaly threshold. Bot Hunter assigns operational tiers) Tj
-T*
-(without changing the binary is_bot prediction:) Tj
-T*
-() Tj
-T*
-(- suppress: 981 events) Tj
-T*
-(- quarantine: 2,751 events) Tj
-T*
-(- monitor: 145,507 events) Tj
-T*
-() Tj
-T*
-(Use suppress for high-confidence bot traffic after policy approval, quarantine for bot) Tj
-T*
-(traffic that should be held for review, and monitor for traffic that is not selected for) Tj
-T*
-(bot action but should remain available for trend analysis and future labels.) Tj
-T*
-() Tj
-T*
-( 6. Method disagreement) Tj
-T*
-() Tj
-T*
-(The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more) Tj
-T*
-(directly explainable and should remain slightly dominant, while ML still has enough) Tj
-T*
-(weight to move borderline cases and catch multivariate oddities. The thresholds are) Tj
-T*
-(conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.90 ML) Tj
-T*
-(agreement thresholds used in suppression are also reported separately so blind spots are) Tj
-T*
-(visible:) Tj
-T*
-() Tj
-T*
-(- Heuristic + ML: 966 events) Tj
-T*
-(- Heuristic only: 48 events) Tj
-T*
-(- ML only: 13,958 events) Tj
-T*
-(- Neither strong: 134,267 events) Tj
-T*
-() Tj
-T*
-( 7. Rationale and generalization) Tj
-T*
-() Tj
-T*
-(The heuristic model is transparent and easy to convert into policy. Only exact time-to-) Tj
-T*
-(click reuse uses percentile calibration because it is a global duplicate-count signal) Tj
-T*
-ET
-endstream
+<<
+/Contents 15 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
 endobj
 7 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+<<
+/BaseFont /Symbol /Name /F5 /Subtype /Type1 /Type /Font
+>>
 endobj
 8 0 obj
-<< /Length 2903 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(whose suspiciousness depends on the dataset's observed timer granularity and reuse) Tj
-T*
-(distribution; the absolute floor protects against weak duplicate counts in smaller or) Tj
-T*
-(smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they) Tj
-T*
-(represent separate behavioral concepts. The regular inter-arrival rule is intentionally) Tj
-T*
-(narrow because the dataset has no explicit user or session identifier: it only compares) Tj
-T*
-(clicks with the same region, browser, OS, query, and clicked domain, requires at least) Tj
-T*
-(eight events, and adds low-weight supporting evidence rather than a standalone bot) Tj
-T*
-(decision. Structured rule contributions include threshold_mode, with fixed rules) Tj
-T*
-(reported as absolute and adaptive exact-ttc reuse reported as adaptive_percentile when) Tj
-T*
-(present. The Isolation Forest model catches multivariate oddities that a small rule set) Tj
-T*
-(may miss. Both should generalize when bot traffic is repetitive or mechanically timed,) Tj
-T*
-(but they may miss human-like bots and may over-flag legitimate campaigns that naturally) Tj
-T*
-(produce high repetition. The thresholds should be recalibrated when traffic mix,) Tj
-T*
-(geography, or ad inventory changes materially.) Tj
-T*
-() Tj
-T*
-( 8. Probability assessment) Tj
-T*
-() Tj
-T*
-(The estimated probability that a flagged event is fraudulent is 77%. This is not label-) Tj
-T*
-(calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
-T*
-(signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
-T*
-(score are more likely to be fraudulent than events flagged by only one weak signal. The) Tj
-T*
-(report therefore treats probability as an operational confidence estimate, not a) Tj
-T*
-(measured ground truth metric.) Tj
-T*
-() Tj
-T*
-( 9. Recommended actions) Tj
-T*
-() Tj
-T*
-(Assuming false positives and false negatives are roughly equal in cost, the submitted) Tj
-T*
-(binary prediction uses the combined score threshold rather than only the highest-) Tj
-T*
-(confidence intersection. For business action, use three tiers: suppress bot events with) Tj
-T*
-(the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the) Tj
-T*
-(remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
-T*
-(while retaining it for drift checks and future labels.) Tj
-T*
-() Tj
-T*
-( 10. Future work) Tj
-T*
-() Tj
-T*
-(With more time, I would add labeled validation data, campaign-level normalization,) Tj
-T*
-(browser/user-agent fingerprinting if available, time-series burst detection by) Tj
-T*
-(inventory, calibrated probabilities, and a feedback loop from manual review decisions.) Tj
-T*
-() Tj
-T*
-( 11. Submission) Tj
-T*
-() Tj
-T*
-(The repository includes submission.tsv with event_id, is_bot, and operational_tier,) Tj
-T*
-ET
-endstream
+<<
+/Contents 16 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
 endobj
 9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+<<
+/Contents 17 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
 endobj
 10 0 obj
-<< /Length 108 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(preserving the final binary prediction while adding a workflow tier.) Tj
-T*
-ET
-endstream
+<<
+/Contents 18 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
 endobj
 11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+<<
+/Contents 19 0 R /MediaBox [ 0 0 595.2756 841.8898 ] /Parent 14 0 R /Resources <<
+/Font 1 0 R /ProcSet [ /PDF /Text /ImageB /ImageC /ImageI ]
+>> /Rotate 0 /Trans <<
+
+>> 
+  /Type /Page
+>>
+endobj
+12 0 obj
+<<
+/PageMode /UseNone /Pages 14 0 R /Type /Catalog
+>>
+endobj
+13 0 obj
+<<
+/Author (\(anonymous\)) /CreationDate (D:20260527144808+00'00') /Creator (\(unspecified\)) /Keywords () /ModDate (D:20260527144808+00'00') /Producer (ReportLab PDF Library - \(opensource\)) 
+  /Subject (\(unspecified\)) /Title (\(anonymous\)) /Trapped /False
+>>
+endobj
+14 0 obj
+<<
+/Count 5 /Kids [ 6 0 R 8 0 R 9 0 R 10 0 R 11 0 R ] /Type /Pages
+>>
+endobj
+15 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 2307
+>>
+stream
+GauHL?#SK;&q/B8(_d86jP$]$UaRZW;5?X$e"RA`WJeD+-s#D$>_c[1QaEfCh_Vm?81A`CUq,*39iB0jfpQpDbcCrlnLNDpZm>M4R_F7r8;))u,nUA:?2mBtY@mm+ocqXf_*dPfo3`1#&"R%ODAK>)Yn/E(YKKoc$$uX?)4%t.<KsS:GpF04#_Rh5-Yk2O]*uP9(?9$2rQ_i?^X6Ib4H*X6FR`;cdbCp>Q$Gs).Tu,?[e*l`[:u8^odsIai4Vld=j3W`?7*ea1@O:!OdOAf&,[KG/7WUCR4JCu,:tYH)?2)HjqP'$(Ko]AbOM(gqoIuRAts$SG+RW)8Z10=Z\^U[;Wn)i=3g0m+aV)8#_Q[I1;FRqlfS8Ng^5@H1#NaSJd9<ciT69R\GV!>96"MA$R<B+!>j%&&Y*u%=WBI!`'>u15`<^Oo7;@'l<BO^oQ(J#s#M7c,YjB0orS<Z:VMEJ9V%ceF6?bJ_Hd5,,]3%@W>=pe\tVYQWmI$*9rEo8[^Dg?;+C,L/BFbOXmQMA3Tdf]X@RMO?-62ZA@n]nb$)H(JEu4fSMGQG(36n%/*]l0/Z"iC;5F2+$40oSBc,u:_QHL(D9_tC/B4cfc73m,'t/DBfbPg#CaIb6@ju9Lo?:<)nK`M&nAcLn+.4i]O%5QiY&cH).@1ehUReBr._BFifB-&RN@O9@fp]9hQ$7+N_IDu9OdYpZ/G<$mBfgqI+E"1@^qm5.W%i\7<45d^j/)YlJ?0qRlr`TIHSL4&XfJSL<0\ZC[abd\s8([1"`:&h;-;$-Ha9cQX'N!F`6&sIE\OYs9Jm1WWg8Dr^"k0U!*['g.;WR.Pi?g2m51L/p]g?klqj>[#hF>4&:l?@G@-hu^,u,eh;r=0?%`665H**Rp@$Cq#\Kbh`c8+[XjQAHYSUg74?,P)7o`ut;;q?,`2g(5jG,VX/YM-S^)P/gTf+"[q(4/Ls3$iB8*d?TiU]t/d_[cSTI*u6g3X9hZV'S'O),cgb4Nd@$sAAl<Chse_cl'ZKk7gsBr%f<5&_$YJn58m-1ni4O(G\U-Cu:-@l78On-Q,c^+5G]nnFL-&fS@3I<.-bgR%OJ.=1*Pg$k4i:LooXbVHb2HC)*I5PrRM0KE4*JR%L4:D_2M1u[R@Pt_AXnkedOG3:g1l(2C@#^*T'WNJ;jn]p5:mL8`bOY$R5\=!%HU9]<^lLPei%_%nS_jf:-hfu]HHB";-Rigu7kTSHojhL@??W&=;3f*A>*SPZfT<a*8b"\S$J<gb-TljTBSq>Oo$5F*F>p'S#pPZ-]Vn_kYC"hE+rtN%G&6daJ";%uHc;`b41JjQ,oZZ1YSM57fB03c,7mMsCreU'?VFFu^#pHf:"_4TDg[T#ZQXIA*']:J7!PP+)Ce/<0F%C/#G]%Zh\TGq^7bWpsj^@NR2t;G^f[$Mrg3Rc5gYJ=0FRYOc[Pk_Q;n_9Z\&Hc[I_rGC4JsPZ,(btVGO=<$Dd#)R3]NYo;H4,c=-?OVaFHB5=:St=)."'h;u:QX%#:!"R^1u,7d[]%@:lcE<:N:6UCJp-UCJ=dQ6DhDIh=s\$hr&=QLc5%XCCV^Z+O;8TU\3YTPF0/CA!FO@%G6ZGs^P6&OM[a1O04-oO.7t&#chh(ULYVfZWPJ7`3+mE:=\dXWGOaoWPF?q""r-_:kLtK<V9Rad(?56b[c]gPbG)F[,W;,;`Yq`f]?%^rXYVdSYi-J?7XLd\Cr9DR<0-WMp8rU?gHR^1")nA6d:,*@/[cnr6BueW&l',e(,8TFdOs'bE<?ni1(6.]R.9SMV5uWQr".j"s#&<cNFFG)o*>qU`((E]HJ;9h5WW2-R1V2js<(gV^b43&PeE(sjA-C8(=G!FXKT^,@!*V+=P72Pa3LXa=&^T>19c6*^;%J%)aLbgB]%$DM2O/f#-HiA+`L+s+<fs+RWeN-F&/ga-'Vl]>aE2*pWKP+U)O5\WY0633+m*pX9P:jhuL(nqiDo%r>E<'G%;hIu>2a*LT%J1](SJ\]Mp'S:;kKYUl>+i$6eSE1jrGj-.Q!>Z]0!"WEg"A]JKliS9uG=YriM^$GpCR'2,V&rMB_28u`7,a;(=q7nPs)R.>kf3qEm`X_lQdQ.Di@\&$"/H7"_ppb>MraJ:JV\"=mFkuL1>ha>EpmP_(sTJ&i3&-%P70b7")_'fETlDNcCLA8?6-FI%gaJb.Z/icn`a(SFgoPL7;jg<n/5Ve4I7otnHOb/A_cMp7IP!;pL.O&4P#96?f$P1%1!pn^0naBq$W1OMppfRgHTuAL]2Y;al+-:5c8s[71&PJF4]H>:;&c0M.V5>YNDfW~>endstream
+endobj
+16 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 2716
+>>
+stream
+Gb"/'9lo+"&\[L3i1c+qe^+H6ku8.Y@qD4tDIQhX\[X,CiF%DI8V.>#P*Nrap3dBjL,3>!^9"H=<5gJZ6\%Q`qRq@6"D9ptEqb(20QqWU?CZ)V"*Uq[4Rs\>nH4,ZEV.H%30SYC:$(EF(PhX<m9fPOaNO.1o8HDq1lF]GhZ)sKb?c3s/BL"=j=uPp0BRPCZN`Wm08Lf9NRd@tg#f')lZ])rr'eLucBMntpT9_W-%"1"qV"o']pG;<p)1L;`%IXFY?S'GIcs47P3agm0<pZkfQuQup:YB(aTKl&;)FY'T$(-a1+VLpA6Kb7'm8&8DtHrFU,_lK*[J7pVjf6V>rZ*!(Im0hq(.H;,gIV1'sYV-;6uGaq`/GQNb,itb)DZ7;<fNF]#Fc&:!k=!Yis*h$o_@qjms_S/W<3N=SiTo@"\)t`u%-rgbq;[_4QtZ?\_YVL-uWmn\ocEr4naEXa*gCAmVlcnK1[X\DZBDi]Q(Ck$sL+j2CB//-k3O3U<InA8<^^hj.H7;Up[GUu(Kb*i;`kq*3coAg2R'$`334ASb@//i^S3"?3jcGPq>[jDc80jie+M1l,XrB@A8P#mf*,"!@=5Rad@h[C^ZdO9bDI*"dPXPjXXrS7RPt"-+omqQLdH1`@$a*Z5XU`qe-A9!nIb3>nP2XD+685[CH?_mHY5Jjd\4aKFo#>Q3I95#4WYpq?uRUb^]!11[D=G);Lk4g1q&qO//4SZ1`!@rILk9#L0o[0smR!qR`(41l(MW+r2qDPRiGC9'\NlRe[[.lF(LjFWe7eQ,>e[KSEV)AodobB@,)j7&Z'ln>$"+.kSu7Pp:Q<SoFM<Eiq;Xql^J9X+QB"qJPQml2SL.;We[PHf^G>%#7Z&N*dCp:?^e":#"4E6C0I%UN-C=^RB:.JRebM1mK16dKUIT0[Qff@:UQd/m7h+ldF@]e5R*<P)_*AYmlj,crT[VWk<',/QAm$;5AKN>*rcId)7DW_V-l.g3MNTSn/2.;C)?*S.UJV'Hi(4u_W^MH4)a#/fpMl#KH-atH14>1Ae5dVN'EeVZJPQVq2FdQ,o?Mt2eV&oe)8LlCVYK,4Z0e!#p)Ob=q<]@$hubj$6sWl85oGc(\6.WVuH<EiF.m39"RI;L!m0Xh@RW8VBKg4b-!8e+DJdb)PV?BhQ0V?re[iQbQp(AP\D,9EO)N9QhW%d8EQ/lHL+.H=_U``fncj-ZE]Kq5;;3$Wq;JHR0+-pX'2G!6#p*b`lNL6dY`!qricpg;:R]>p5EV-nJHJo_b[.6gGI.8%!;ZuC>cTsWB:XXKDf7?8=>]cQ1sE^hnAOIY;C5R8//g@.Kpj:aPMj\0!<\p'aeVQ9>#g'P*NW*5&kEQn%nO*,bZo*dk)DUIcCl/Es(T6`jt+kO,,el:kT/pL")EUe2R#2AiDb')JSA-'D)apSHUF_mj;U%msiDlWL&;N$"Of7]u8V0BB]UA)2mWM;H/<m&<3iJpfjCRr\>fPi2riB=g[ZUa5"]Vu:41RC+C5>#-0B^;,sL_(j*'.!Bj>L`U<*pta0GIWuUD'"Co.dAVAn"r+(d]#5h<$`bRh-U(h<H(aUcfC8]R8T\)-6QmW)HFD,aNcMOm&B#)(frdf(t/)7"EY.@.3"sF,=ni*MSVV]JJDN5%+Mk.%\nDe-hm$q6'USA`4C6cBVNqmh-B%21^l\d%&S3)RaH`)1/hh*(^bHWrEml7]RKP&?9LGs8]k%3L23-3oh%O6b%;41;8u1jXC9;pknL/Zq@uoB<hUQq@77e3oE>h-/$[`)*)e_V/.MP3&:WXFXeAe1-N;%>8=?Fln73V:3;-q9V*VX!RJHVocumt[X5U@>*&k*CM:r*3J2FkV7S7m8/ZC#NUt8sBpY?u>nG$usi7T3qKHPLf'41?4+`Z!ulC6GQUA]kO[nq.B5GQ4)qG8*kT.2H#4A(,<76/<a:ETka+R4dY1CB`%gWq%$2jb.S`q>V"V\k<U'c?RYZGhDoel-qGO=E("Qg:?tDobqQ@?Z"LeP(EXT/TZ`g`Pf(j8[;!cd;LM@@![7>WiAeT7sGf0+GA/!MnPtYMOYSFqYZ'oXU>j[Hl/k,qZ?=[Z]S$"eHkRFY,Ysg96b\RD.OY:]?rI7[MZ*Uoo2t(O4CH#<GCj4Ea,aE(BKfA\<Z/*UMQCce#QT8>k0aj*\59"1MeZ^JC_86UU6-025-roPPqEWZ/bkgGRTc.TIFKd?iNOGW4?MJY^k85JHKaSGFi6&0IT%7J43sZW[^lm__Z_;#;W=XZRW.r5\.okc5l)#TpFnoir3'n*YOSi/VLAA>^%8L+Y$ggDc_KVD#Kj$[Y+&WdECZ4+66)[p#1]fZW7ZCR'CQZU!qk?3WdBLWrO+d`LEdiEhsa)?#;]EB"ABLfs]kB7WW6fpq$`iFd_(rrgPl1NYRm*R`fm?#NL-p',g3W'e#ofg/pIZ1EQ;q.UE&G7#2f=@;e,K[[j_ln0O".1m0!)\GhtVa))W:'fnBi<[K_'-MZdp5%))\[&[F*;_Yp*5kVRE-R8WI[f^I]T$1RZN%^urF:%.VsJLNGE?9"J-O,>.K=mTh)!!Q<P,=JmOSd#q/EJ4I6!Uja+"N8kXZM\N*)e,Bsp4D%WX*/I4t0_kaOQOII9Wa>Xt+-NR.0C9sZs1$C]AB'@5n1iC$<\q#,/AUsIDT_>i7t:?*]E=HMF]Yd`f^]?M/JqnAAO>GU/AE;Qd,6,F(4G4Z`I)Pk[~>endstream
+endobj
+17 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 2600
+>>
+stream
+Gb!l!>Beg[&q9SYR$X=CZSI.P$)2igGLK:\[+dLdftR*4P$eS*74KQra8^Sni'ie\92nSFgLL-5+tt2Fo?DZuJ/en!J#WH4>60+9JN#eiTF<1!5Xcf'ne8[,>^X+r,VfXr82^?3aP@B^s""p%6*(3c0l0$b/3&@Xs16!SD_El%idbtd6HFb?W^sr504hqPTUWY04uhB*R:pr.B]YEmN5!Ui]W3fgMf7Q(9@CH#Pji"_o>5qYP<WLHg<FbUP`YB"a=,a_k1=.;JT'B7)qs-),"8V97PsUYbZ=W&S9=Bu(BKB^8&G4#`+NjH"GDDMKa9K-UkT`,6B"DY5ffs)QgfVVoR(:pqt*BVI=ZhgfBUcV`%-n]o!^P=ZR*hY$uB>f$XLQJ9!)6o)@A^.d^Y;_ds4rjG@N%BYdmKV'(k@TeoTbZLBpS>)Wpk<A4^BASQPMa2K"Kl'mctqMr4M5klO@HB!]-jR]l;a@eC*!CIlkfY1!M$0aI+/2266k12F0!l@];_Q2=<WXen'R]OR8j`>gbh%;_eBC1\RB$'\73G)9S79=/YAjN0NtK=NGYfP0I0;c`#6bR>Bp;nYkBn>Za8pAkdM+]8>1n<O`D(Y=ae6-MB-D>_2RpU%_MrMKL[gq2tP%\/STQ\Jok#eHI5gj#s)VKu[tf?)N&=O/N@?>H@:]3tk:@Vi@VYLDoCi\gK1Btsmp*<a5%$=i%m2tQd@Y_:n@6[%ulBCcAg#Du.iL(L:S8.sn2cqL?:G%rYWF:Hj*:B?Z,?)'`CekcVtg*RLPV\!M:jehG?SN4GD?N&s`qV0S6q`R5FJ4lp60J7HAA3IY;mk+pYOl^3f"u2$)kg5^@@Dp3VKl)'?mKt%()udgSY):8P)rA)9,shR6'2ok]FfO*;%<WSgJ.PR^eMWpEfK3r&7JkXP]#"-IiW0uP&C8,r2C?g#Cr#]'l"kTW(<amj4KVX&r8*1HW!Uk($ge/k,.W4P7$1k7(YZn#E1tg*(+utHpZ4^USUh/jX9^n=$\Ao)Kb)9t?^?#(UJpG?Dd!mPm6Lje]jr=C5VX],+uG9l,!r'l4@Eiemn3f"cU*:enIp_oa8eX'Y=jhs,p%R5ScC2!0:;hli/0@*;;6=B"uP&Z_gl@g^'nE14:I$@fF!i_+tM*`boHks0R8C#"?bApQ?^W'"2B6I_$0Cp%ut"^$\AR<UbrmUlfV\CU[0O"BZBJ^"!u8["3F?3JJ845i9b/]BKR,6K8G`807?`?S,cI$h"YM5La:qfD,o>8T'&DA[W>9<)n[O'U_n[cPR!]ds1lICOJV:\YUeGF!9EIp)=Z[$SL.?NVWf++-`)Ng'F;[A.)5mRPSA8u"=fG2MLE]:!MM=smaNZeM.\)moDa;8[+:?9V@@J,;3J:)cU*e<n=Cm3ko_7.OU:On8N%RAOmM$4M[+O#\u=&Q!97CY>p`!KDN`N:)(&Q-B*tP4@S3:!@8V(t0M[jI![pH4&6d,;;Nh%`2NQE+Eo4*pNBG4D<oH&0dZ3.I,:l"\7k!cNO`1kh<2Fs/pc1VVS=!$i:ZFr=,;/$QRR\O;N2$lRL^QWrIn=,k1%lFA7q2t<DqNE+*p#nen1=KN`pUHo$pbDYacp2&/YlmsY$`bNs,DMX*j!cI^.&4L,naK2KLDO'/Q\+o,S](AOgnF>M<MAN>FgGfgCe=F&fPX\Ygl>[gCdnhmIq>?D1>J6iqh'X9g:PiI`Ai+iP,?+?eR7B_;rEf&$FoCb<-X>XR.d8_ptL.G\YDCIrO4<,,/Eu$-)\iHMl6V8ZN`+g>6S8_9,QQ"B30-]s_li>V<.&l6_g/51eJ39i4A]UG9H74A4Kp%C\C_<m"9R()\G9\!Um>@ZXTM'J*lcAPI>LO,,hi]EpH/R-&PuIU\Ai?*m$d1u?'D=lM?3+i?!P<rjcgLen9!YB^t@-SB]nTOI`OJi/YIqg?38NW8%YrI3\PeHYhap/)oVB0g)OBb\-k)Q2hsiFC#YQ-[H5O6_gN5U92/gAUn(Z!]6kFHRY@lrJlb*f.JX<FJL8B(1$>q569TH9aWLDA>T'O<$a>#@$9B6K<&eh\bG:9Rg:<W2"Dlf5'/%dI6L2N/U3Nl'fGD]FYVFE40n@>9AmC5DW2L*s[9,79@2W%^'*B*g53&@$<-K-&?Y'_o8d/\X>gNgDY<X&FjFipH]Y]rLaoR,!b6RFd.qe<sUPG!W4'0?L;4WDF;EmLKM0E2op[[2kH"Y%KSf8Mn&e#j7g[D'Cn-^"2QY1>m<9GjDk*QZ*amO"FZ5UWD-'@n@JbI<Lt(t(],:%*)Au?-4r\Y>lN;lfrjQp\1UXTFe[U3[kcL$CeJ6C8JQFP@O'Oi-O3R=.^gjFpS:u8K!e/s*etV&Y"glLMM27q<LkSMRs%?8)/BAh;AT81=Vq,.%:XgXi_cZ0Zh"$rXK,T38F!95(-,glI!'>+gB9,X\ik%tPV-0-5MFm'f4a?Lp.n]JOuRRVK6^V[=GZAuE"g[/4"4Z;=e(f4!m58k/i7=bZNG?X/^jQ9mBq:l\X!2cHD$.D1fGL@@?9*'0?Lpe#6=2B`Eq@bo'EsEWF:Cg4e<"gb*<5V'uf"^&NSdZFFZke<9"#C?<"h]rr<TLr!E~>endstream
+endobj
+18 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 2937
+>>
+stream
+Gb!ku?'!aM'n)]]_3Y/Y@'&Sh@i'R7(>1%hT]d^Tne.UgA_Q:,,WZPq*rl,/9BsD9gG>G&JSrj<M(DNb-$dg"4SR!.0)g1Zs1Dn/k8AX<MoRrPc'HQ]SWM)[Z?NXED`:rpi^D:\FjHU,TKhf5[9hZKBbl#$b/S4[L4RB/rTsg,DJq!?ViD^@&W;#ao!15b-%72$+,8YIXC.[B[b"6\mh>E^Z]\%3<gp^?.kU$.g"VB#]1+^FPLug;s1i6]Ze9,_leX%P)`V7=a+qS1PHP)spNlalFn]1)cl,X\cS7TRddDuOCgiFR0O@G"@s67rX`E26J!-RB]jd1$>d$T@oU8iTf7Id@XV`\u[Oh2g,o020Mb5p%/oZq5>'@Ak>V4u1,?Im_"OG\YZWpL'H8QL49,^m:<Jq+\OsUREXVrroZE:.qQA+%uKudgM<Rj'F[ME[3.ph\3l13u'TNf?&2ZK@!h*(.l2IT6-M?Un8[oJGW@*1]B24]$,=>Vi^/KQb/F4CcWR&j^5'2d;[fU36/^70ArDTH`*D2KA]k8\_Xh_,(fib6Xk:)8VA)mf&Qq1'XIZD)56b/,QJI*[l,'Rm(d>J@gkc'WaR%g0.1$AL/=HD>0CJ9#GJn,3%GC5:J0#=VCEEIF/,+L2)FB%X0UbDVoNo.p`qjCS%tka]J5!7g!6h41n?\_Ra$DlmBfWD^'#nERYp+2O7LfC7r=n^M6*'[JW:ou*S-g?nO5\QDE+-D)(U#g"sI$b7tlEktaAmhuuf2;DTj\?d!t#suu>I_3f7SN'5/qLpep+UYYi?XC)(k*;k\7qS8BMqnNKR>%'ppQlB*(ili?`Q\e\S$7?K&K75[V5Z[aO)X.j4).6+c$iQX%]GqSk1H*:SO7Ee:9rHs;WH^M69>:1NZH=d0JgdJms4!fY.W8IQ^ff7`a&\PHEBGGHrUPob>c_)Y]V[`X*oP9-!n;%i)!'cN$t,2c\)0WF+)eX<T5.C%?oB4%+*;6:ABt^N/];t^)NrnnV4X<`Rc3'MML[s&J#pLJ-88rX7&JbqJ4,<Pk\+CJQj<W6eo4L+)r+8_mbr`I+VL?es3a-,,4BkKR]IZ(W8^d'qADm_#Apek,i6"_=)n-20+;.NbK:ErV?G?(gL^"mhKrd&j]^lWoXCLEA,:sU37[e^;DrbQUQHSNnUFq)G`f=T-=gddaJM:)N'0#Zq[(1_:?H>[<gX8CfJ2\R!9F%6`DOqW]bL+DpHA><P7dSd;:_-GEYZFc;d2ML^NkhEH;SQ;]#;^V4;>077&.S#;QV\OSK$NRcelAX2)uceLf]Un@:No^.WnK-Mf7lrVg=/(RYDd]MF&"Ubpn*_WCu,H[=&/g/_qo%iW<iiS_7pr"pr4.MbIp+Seg1"PDZf-$UbM%r@7>$Vf!:9,FrYKduZ5/ngAH>Sa\B-6sFMbXZXDdX6_Bml2K`;CdO9d&*U&bH**U0;mLa6V7(iYOmlC[b(2@:kI?Pj:43VF&X)UF->![fY-?ehWB"`.GR8>nfCcBXAt)cdGbZ19s,U49YS'4EQ3&5Z.!BFfQ>e!_uF`e)s@G[@i:`[!G6HR(X6MC9$236[8aP%8't0sV8'<h:noa*V@,ODa0</*_Sh5ZVio1DqAsW++:i*R+MS>B^^UVH^;9dV?gg9mi)5r#PPQ.bG7[09WBqkPLC!KR#h8\l:j_g0*:UdJVh![6LY4KNBtBoeT<I2nk#OYB=JGNuiPjt9o>+V#m9@2al\7N^BFa0&A+$NFaPOb$&A%$>`Fp@0]!kl<K,jUg]a^JC-BEH9`:-((2uLK1ig85KVuS'RFV3Q^S3s/E]sH6#ITRD\]$!]F/[QiKAQeVJd2(R0/p@3-;NiB0*Z&adpKV*$jVN8]32SaNMJ\bkNG1!+MG>;lU9HJ-0Kg01%f9Y"_%Fr);&([ngD<8-K3Q\&'p03YR`^qd[VF_4=Y7Pr1eaBYOLJ(GHF`"2Yaaj\05HM#V\G1qC2@=r80ZXIbbSma6:uq`2S:n\)*3&,+:096nrdW,%6[\#DG<KYH./5Ke%Y1X-0qSJkZDCT=_ncHd:hfS#F_I2+B;-\F)YSad!_O;Z"gM?<cpoYCfROE>"j(pRf&F0f_^i_r4M41&_&2_KB+/PrW%Qr(X0ll^B]NA)<C7Og/dR8/>Y9%G.n;@>5&Q[nk/i-Wt[d<pP-HXaJ[McA\0%V%*Pi'r.I0B+o;B&-2n3ooDO)`o.QcGIjc9,NH8&irZVAjjH2o#e0X3h9#"N<8Dh!B-AFF!,G89jQn#uJgmmK&OUCj@OTj-g_qn8hALqi(&P[%5#UuFU6E\n#alPe/XHh"ViP5f:C\($/Y=6h&(q)pp:%)Nj4$=R:s'6-WIaGUC_sb]UdmDmtnfK7g8N&T.PRU1\f^/p/[9=C_Umu#,PWAS;i_kEN+kn+baTnZ8mgN5:NXgfjK@f"D9pdE,9mQ/P/`A2fU:FCtH`>`Q(?cMNY6H(uCS=ToF%]=XN9hhCLu,UW;t.5X,idWkAGlgAd3k>d<q;f4Lp#iSAIaWh3BR_kqF83P!'f9?U>"a+h-LR7ms@XcIh+jfOf!7KIEp"F2]oO@mdO$t8ob.[lPN7_&_>DP/3jeSN;^l3Rb'&u5-T2)]%sPjEEb=)>Vl`r]L=0@^_Uc>`cHRG[2*o8lq%@Aq!Ft8;ZekQ5PtCP4M]DTqUCtJEfKVmLNIF`"opV!+>C'-XF1+!rdT`8eoNg8UO\[R'K\3"?Q0U-dt[f4Glf-2Q<#DWn!3J&(A_19C;*j>9LU%jOVLGH[<I"?j"Z-U/aYLL]WGsIGY@itO;TE9JZh<j;]6/*$bo/]L^0MePEntORcXcub#3t1p'rT-b!Dg!a/*5X]J&a&4FT'CMA:P,DMY+"l+f'f4LIL97uuc;Gofu!hXN`&am@D%QYCOFm?^#?rDNC*g)nalT1#j)P4F2.H^gX*J*c;^%#IYK~>endstream
+endobj
+19 0 obj
+<<
+/Filter [ /ASCII85Decode /FlateDecode ] /Length 2236
+>>
+stream
+Gb!ku>ArQ1&q801R)cRi[CTMH"8&;AT(IUMmHtnVb5iBc7+lB%;+jf,oC)R=\lcC^ER=@:S0UW>RF2L(hon#$R=K[4#OZe:&\VQ!]:4>&OB)MgYntmS(])JCilabTP'V12[-U$Ok)oV:j/^m=G`-,Q":NpjdmY5[o^R\ER,)&tPUnp]$Ka/U]m6hUQ;lhhe-k:rfRHrM-gNkX-T\mR&*'^J0&K;h5IRuYlC,Gh=a@3)VN8BPb'ZXY5ABeuSa45:glK*-9p.k"^U"BIq;dMG=SM;W)L%4jFQ"P>NNBuFU9VT\5<lR0g0(@&Nj6#89Q4JXp#3^aYc]fT-K]_8MI6q(p^WX06mW]?K?o!9O!6=cJ5;#-o#,-LD-m3#9[\On9]q4Z#gt,[.-t1ZfF(&^E9;L5'Z;HkB%PdbG8'[64?pY`H?*")]):&9NT+,'kPJt!'#3J7d3NH^>>DbZN/Z];UXbZG:0Vn^]2>>6^#@[A-EFPQH&gKFcKgF9oPN'ApEXPP@KfY@=Jg#7HJ-A;A/KlCH,iN,Ua"A.=YV/,dB/M<G7pJXO$W#cs3"6Q"MKj%1Z(?Jh3XEV<ZAhpJ0%XZMNVg75\o0og'P*^*G;id&O=^;hNWCgEO1oD3/<c)rlXLAGUYQRqZ<O_QgER4'4m$0EM!OF*J"qF^l8uNE*@=UN6/;.q\75tMr7<m`ERof='5nUeMHu$h,?JH+1YesY]Z0\;&Gs6\-qgA)9(p3=O5Jup^;;]L5OQh5X`drAXm9cU0Ou]0B&n'l4EF8T[^Mq=ep9h<R14!0c\7s8`C?"#KMHG)a>C<_Z32b#8-j4TRrHMpdT",`1<GV(>aI?o*t"MZR_1*Adb?m?gLr.`_:,geMH-p'#qHRY*ljK&5t2d@&_[]O!1h?O#3dkQg%_9fN+;oG,?NePa1?4HTdaRiC/:,AMjMr7^][%*_(>.M:'_i<btULAsUQMkire%"gr+E81bk&GJ7<E)?9LV4_V:e'hgH;J)R+D\EGTlR*@ocT8WEUo7f;`S@aJrGLL-o+&^pdiA^C\Inrtd6[rSEs-fm8Yr#<%RF/l?c<O6)_N(&Mg1<>O7p!,%3_ht]GH>9>KiLjhBd[+h/7g8S+K^sa@dA?^=9B:N)G!pX*`pYa)Tsgi[:1fT.e+^..q!d\(c/FrB-k>AWKmm!#jh\:$CKrbZbZbZQ$`]5XDA9R$oCnqiC5f2ZehRV6HP,9fGGIEMF(hu@"$Y9N+e2n&;*@)lp.9b;=t;.S;2"d_=pRi1n'-CHh8@:_ZgHZ:`uoG6"JY>DGHl>2&ZZ;^HomOk]gl\Fr]TLSQ;K^jj'Hr$a/hjNge2c4bjo^,j<1\;mKa%4/b#u\,ETTF=l7dTGj6#J#E54R"1,Dq$Wi((2jB!Q)OHd&3;pWV'gTV'Yo/';9uI^]'WfhKT/nYU:*Z\6CL1:2'pF,EpTg=/%:J*CcatP8]WfG)(TG%0?\5jBeV-FCb"4pXck90c36*+<YKUjja8JO7Jp2Z]\tt[,D];kflT?$+IZ*rm"D^aZYtA/gbSu]%<O`'_*slCqHahmS:c\H>-jRYo$/^TAC;4_)PuS<,;K<7>jIECh/jui&b==(\[DQ\ka9GDZ-daCoaIW$2&2s7U`URPU'%gr%l@kU5;+L]Ga`mW9N6JHg0[Y;a5_'4o\VX*)U/N7`;F<M%/Cg36TnYcF`X,)Op8Kbg#bh]5#7ps:\D5Dcfi!)c)<]_Yj)V0>OXE"e0#]9em:QZY(7XGjam&2-?8;u[(jmR`64lcUD3JP])8jldL8A6"QSh>8Hf3SJQ9QN*_4hGo^g(]=EGppS__I.]@=lh,mZXu:;b]TpH@,r&rh/d#I1ugI,UB:n/!,@F81/!B.PbD?KO!a.XL@77F'_-8o-mYoG=eYAH^FQ4gipUr^r(`qD2[+o1P)&='4bbj5Yc-4St,g;-/#()sD9/:X0/Ir(?:@%Ia!^XScn+%/(6`oG%Gsh7a8"Vq9rXn'tqjE+MI32*([tSCZ$]q=D^XFj/[V3Y8@-EpLLZ\?k8]7K)F4SrVgUNnT%<SIXRq)"=Gqn#?.,Z4<3"PG]rt*'QjSh,2`rft9P;3[X>fH;BCPZ*hhDaA7-_<j^MBB+c.D,M&S'k.]l!<o6h.GL.OqL)&s"C`k3S:^(_,<s(agqpYNB<_o0.8E6,o)[q><*BTlemD02nSKuD+<d%Bs(A:,r1</gu\eAl4)ToLihK53ANHK;&3^-.X](d5_,3_c~>endstream
 endobj
 xref
-0 12
+0 20
 0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000134 00000 n 
-0000000204 00000 n 
-0000002733 00000 n 
-0000002859 00000 n 
-0000005075 00000 n 
-0000005201 00000 n 
-0000008156 00000 n 
-0000008282 00000 n 
-0000008442 00000 n 
-trailer << /Size 12 /Root 1 0 R >>
+0000000061 00000 n 
+0000000132 00000 n 
+0000000239 00000 n 
+0000000351 00000 n 
+0000000456 00000 n 
+0000000571 00000 n 
+0000000776 00000 n 
+0000000853 00000 n 
+0000001058 00000 n 
+0000001263 00000 n 
+0000001469 00000 n 
+0000001675 00000 n 
+0000001745 00000 n 
+0000002026 00000 n 
+0000002112 00000 n 
+0000004511 00000 n 
+0000007319 00000 n 
+0000010011 00000 n 
+0000013040 00000 n 
+trailer
+<<
+/ID 
+[<4796d399786d24aee10afa1ae1bbca8e><4796d399786d24aee10afa1ae1bbca8e>]
+% ReportLab generated PDF document -- digest (opensource)
+
+/Info 13 0 R
+/Root 12 0 R
+/Size 20
+>>
 startxref
-8570
+15368
 %%EOF
