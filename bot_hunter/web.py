@@ -233,20 +233,39 @@ def _dashboard_html() -> str:
     .actions { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
     a, button, select, input { font:inherit; }
     a, button { color:#ffffff; background:var(--accent); border:0; border-radius:6px; padding:9px 12px; text-decoration:none; font-weight:650; cursor:pointer; }
+    button.mode { color:var(--accent); background:var(--accent-weak); border:1px solid transparent; }
+    button.mode[aria-pressed="true"] { color:#ffffff; background:var(--accent); }
     a.secondary { color:var(--accent); background:var(--accent-weak); }
     button:disabled { opacity:.55; cursor:not-allowed; }
     input, select { min-height:38px; padding:8px 10px; border:1px solid var(--line); border-radius:6px; background:#ffffff; }
     input { width:min(420px, 42vw); }
     select { color:var(--ink); }
-    @media (max-width: 850px) { .grid, .wide { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } input { width:100%; } .actions { width:100%; } }
+    .dataset { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .mode-group { display:flex; gap:4px; padding:3px; border:1px solid var(--line); border-radius:8px; background:#ffffff; }
+    .input-panel { display:block; }
+    .input-panel.is-hidden { display:none; }
+    .input-help { flex-basis:100%; color:var(--muted); font-size:12px; margin:3px 0 0; }
+    @media (max-width: 850px) { .grid, .wide { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } input { width:100%; } .actions, .dataset, .input-panel { width:100%; } .mode-group { width:100%; } .mode-group button { flex:1; } }
   </style>
 </head>
 <body>
   <header>
     <h1>Bot Hunter</h1>
     <div class="actions">
-      <input id="inputFile" type="file" accept=".tsv,text/tab-separated-values,text/plain" aria-label="Upload input TSV">
-      <input id="inputPath" placeholder="/path/to/bot-hunter-dataset.tsv" aria-label="Input path">
+      <div class="dataset" aria-label="Dataset source">
+        <div class="mode-group" role="group" aria-label="Dataset input mode">
+          <button id="uploadModeButton" class="mode" type="button" aria-pressed="true" onclick="setInputMode('upload')">Upload TSV</button>
+          <button id="pathModeButton" class="mode" type="button" aria-pressed="false" onclick="setInputMode('path')">Server path</button>
+        </div>
+        <div id="uploadInputPanel" class="input-panel">
+          <input id="inputFile" class="dataset-field" type="file" accept=".tsv,text/tab-separated-values,text/plain" aria-label="Upload input TSV">
+          <p class="input-help">Choose a local .tsv file to upload and analyze.</p>
+        </div>
+        <div id="pathInputPanel" class="input-panel is-hidden">
+          <input id="inputPath" class="dataset-field" placeholder="/path/to/bot-hunter-dataset.tsv" aria-label="Input path">
+          <p class="input-help">Use only when the TSV already exists on the machine running this dashboard.</p>
+        </div>
+      </div>
       <select id="mlBackend" aria-label="ML backend">
         <option value="auto">Auto backend</option>
         <option value="sklearn">Require sklearn</option>
@@ -323,18 +342,37 @@ def _dashboard_html() -> str:
         <td class="wrap">${(e.reasons || []).map(escapeHtml).join('<br>')}</td>
       </tr>`).join('');
     }
+    let inputMode = 'upload';
+    function setInputMode(mode) {
+      inputMode = mode;
+      const uploadMode = mode === 'upload';
+      document.getElementById('uploadModeButton').setAttribute('aria-pressed', String(uploadMode));
+      document.getElementById('pathModeButton').setAttribute('aria-pressed', String(!uploadMode));
+      document.getElementById('uploadInputPanel').classList.toggle('is-hidden', !uploadMode);
+      document.getElementById('pathInputPanel').classList.toggle('is-hidden', uploadMode);
+      if (uploadMode) {
+        document.getElementById('inputPath').value = '';
+      } else {
+        document.getElementById('inputFile').value = '';
+      }
+    }
     async function runPipeline() {
       const file = document.getElementById('inputFile').files[0];
       const inputPath = document.getElementById('inputPath').value.trim();
       const mlBackend = document.getElementById('mlBackend').value;
-      if (!file && !inputPath) {
-        document.getElementById('metrics').innerHTML = '<div class="card">Choose a TSV file or enter an input path before running the pipeline.</div>';
+      if (inputMode === 'upload' && !file) {
+        document.getElementById('metrics').innerHTML = '<div class="card">Choose a TSV file before running the pipeline.</div>';
+        return;
+      }
+      if (inputMode === 'path' && !inputPath) {
+        document.getElementById('metrics').innerHTML = '<div class="card">Enter a file path before running the pipeline.</div>';
         return;
       }
       document.getElementById('runButton').disabled = true;
       document.getElementById('metrics').innerHTML = '<div class="card">Running pipeline...</div>';
       try {
-        const response = file ? await uploadAndRun(file, mlBackend) : await runPath(inputPath, mlBackend);
+        // Only the active mode is submitted; the other input is ignored regardless of its state.
+        const response = inputMode === 'upload' ? await uploadAndRun(file, mlBackend) : await runPath(inputPath, mlBackend);
         if (!response.ok) {
           const payload = await response.json();
           document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(payload.error || 'Pipeline run failed')}</div>`;

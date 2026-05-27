@@ -31,8 +31,21 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
     try:
         dashboard = urlopen(base_url + "/", timeout=5).read().decode("utf-8")
         assert 'href="/features"' in dashboard
+        assert 'id="uploadModeButton"' in dashboard
+        assert 'aria-pressed="true" onclick="setInputMode(\'upload\')"' in dashboard
+        assert 'id="pathModeButton"' in dashboard
+        assert 'aria-pressed="false" onclick="setInputMode(\'path\')"' in dashboard
         assert 'id="inputFile"' in dashboard
-        assert 'placeholder="/path/to/bot-hunter-dataset.tsv"' in dashboard
+        assert 'id="uploadInputPanel" class="input-panel"' in dashboard
+        assert 'id="pathInputPanel" class="input-panel is-hidden"' in dashboard
+        assert ".input-panel.is-hidden { display:none; }" in dashboard
+        assert 'id="inputPath" class="dataset-field" placeholder="/path/to/bot-hunter-dataset.tsv"' in dashboard
+        assert "Choose a local .tsv file to upload and analyze." in dashboard
+        assert "Use only when the TSV already exists on the machine running this dashboard." in dashboard
+        assert "Only the active mode is submitted; the other input is ignored regardless of its state." in dashboard
+        assert "inputMode === 'upload' ? await uploadAndRun(file, mlBackend) : await runPath(inputPath, mlBackend)" in dashboard
+        assert "Choose a TSV file before running the pipeline." in dashboard
+        assert "Enter a file path before running the pipeline." in dashboard
         assert 'id="mlBackend"' in dashboard
         assert "Operational confidence" in dashboard
         assert "Method Disagreement" in dashboard
