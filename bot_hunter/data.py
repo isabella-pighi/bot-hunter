@@ -20,6 +20,7 @@ class RuleContribution:
     weight: float
     observed: int | float | str
     threshold: int | float | str | None = None
+    threshold_mode: str = "absolute"
     condition: str = ""
 
 
@@ -181,6 +182,7 @@ def iter_event_dicts(events: Iterable[ClickEvent]) -> Iterable[dict[str, object]
                     "weight": contribution.weight,
                     "observed": contribution.observed,
                     "threshold": contribution.threshold,
+                    "threshold_mode": contribution.threshold_mode,
                     "condition": contribution.condition,
                 }
                 for contribution in event.rule_contributions

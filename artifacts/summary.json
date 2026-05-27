@@ -3,7 +3,7 @@
   "total_events": 149239,
   "bot_events": 3732,
   "bot_rate": 0.025006868177889156,
-  "threshold": 0.5767399187874402,
+  "threshold": 0.5767736903469626,
   "heuristic_flag_rate": 0.006794470614249626,
   "ml_tail_rate": 0.015002780774462439,
   "estimated_precision": 0.7703804930332261,
@@ -65,7 +65,7 @@
   "top_reasons": [
     [
       "repeated query",
-      3324
+      3325
     ],
     [
       "repeated query/domain pair",
@@ -77,19 +77,19 @@
     ],
     [
       "same-second click burst",
-      1894
+      1893
     ],
     [
       "very short query",
-      1861
+      1862
     ],
     [
       "heavy region/browser/os cluster",
-      1733
+      1732
     ],
     [
       "extreme time-to-click",
-      278
+      277
     ],
     [
       "implausibly fast click",
@@ -98,6 +98,10 @@
     [
       "regular inter-arrival timing",
       11
+    ],
+    [
+      "reused exact time-to-click",
+      2
     ]
   ],
   "top_domains": [

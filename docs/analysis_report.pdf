@@ -3,13 +3,13 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R] /Count 3 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R] /Count 4 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 2379 >>
+<< /Length 2477 >>
 stream
 BT
 /F1 10 Tf
@@ -45,11 +45,17 @@ T*
 T*
 (region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly) Tj
 T*
-(fast clicks, and regular pseudo-session inter-arrival timing. The second is an Isolation) Tj
+(fast clicks, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse) Tj
 T*
-(Forest anomaly model over standardized behavioral features. Events that isolate) Tj
+(is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute) Tj
 T*
-(unusually quickly in the fitted forest receive higher anomaly scores.) Tj
+(floor so the rule can adapt to timer reuse patterns without letting low-count) Tj
+T*
+(coincidences fire. The second classifier is an Isolation Forest anomaly model over) Tj
+T*
+(standardized behavioral features. Events that isolate unusually quickly in the fitted) Tj
+T*
+(forest receive higher anomaly scores.) Tj
 T*
 () Tj
 T*
@@ -83,21 +89,15 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,324 events) Tj
+(- repeated query: 3,325 events) Tj
 T*
 (- repeated query/domain pair: 2,065 events) Tj
 T*
 (- high-volume clicked domain: 1,902 events) Tj
 T*
-(- same-second click burst: 1,894 events) Tj
+(- same-second click burst: 1,893 events) Tj
 T*
-(- very short query: 1,861 events) Tj
-T*
-(- heavy region/browser/os cluster: 1,733 events) Tj
-T*
-(- extreme time-to-click: 278 events) Tj
-T*
-(- implausibly fast click: 27 events) Tj
+(- very short query: 1,862 events) Tj
 T*
 ET
 endstream
@@ -106,13 +106,21 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2348 >>
+<< /Length 2164 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(- heavy region/browser/os cluster: 1,732 events) Tj
+T*
+(- extreme time-to-click: 277 events) Tj
+T*
+(- implausibly fast click: 27 events) Tj
+T*
 (- regular inter-arrival timing: 11 events) Tj
+T*
+(- reused exact time-to-click: 2 events) Tj
 T*
 () Tj
 T*
@@ -184,17 +192,9 @@ T*
 T*
 () Tj
 T*
-(The heuristic model is transparent and easy to convert into policy. The regular inter-) Tj
+(The heuristic model is transparent and easy to convert into policy. Only exact time-to-) Tj
 T*
-(arrival rule is intentionally narrow because the dataset has no explicit user or session) Tj
-T*
-(identifier: it only compares clicks with the same region, browser, OS, query, and) Tj
-T*
-(clicked domain, requires at least eight events, and adds low-weight supporting evidence) Tj
-T*
-(rather than a standalone bot decision. The Isolation Forest model catches multivariate) Tj
-T*
-(oddities that a small rule set may miss. Both should generalize when bot traffic is) Tj
+(click reuse uses percentile calibration because it is a global duplicate-count signal) Tj
 T*
 ET
 endstream
@@ -203,17 +203,39 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 1979 >>
+<< /Length 2903 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(repetitive or mechanically timed, but they may miss human-like bots and may over-flag) Tj
+(whose suspiciousness depends on the dataset's observed timer granularity and reuse) Tj
 T*
-(legitimate campaigns that naturally produce high repetition. The thresholds should be) Tj
+(distribution; the absolute floor protects against weak duplicate counts in smaller or) Tj
 T*
-(recalibrated when traffic mix, geography, or ad inventory changes materially.) Tj
+(smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they) Tj
+T*
+(represent separate behavioral concepts. The regular inter-arrival rule is intentionally) Tj
+T*
+(narrow because the dataset has no explicit user or session identifier: it only compares) Tj
+T*
+(clicks with the same region, browser, OS, query, and clicked domain, requires at least) Tj
+T*
+(eight events, and adds low-weight supporting evidence rather than a standalone bot) Tj
+T*
+(decision. Structured rule contributions include threshold_mode, with fixed rules) Tj
+T*
+(reported as absolute and adaptive exact-ttc reuse reported as adaptive_percentile when) Tj
+T*
+(present. The Isolation Forest model catches multivariate oddities that a small rule set) Tj
+T*
+(may miss. Both should generalize when bot traffic is repetitive or mechanically timed,) Tj
+T*
+(but they may miss human-like bots and may over-flag legitimate campaigns that naturally) Tj
+T*
+(produce high repetition. The thresholds should be recalibrated when traffic mix,) Tj
+T*
+(geography, or ad inventory changes materially.) Tj
 T*
 () Tj
 T*
@@ -271,27 +293,42 @@ T*
 T*
 (The repository includes submission.tsv with event_id, is_bot, and operational_tier,) Tj
 T*
-(preserving the final binary prediction while adding a workflow tier.) Tj
-T*
 ET
 endstream
 endobj
 9 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
+10 0 obj
+<< /Length 108 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(preserving the final binary prediction while adding a workflow tier.) Tj
+T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
 xref
-0 10
+0 12
 0000000000 65535 f 
 0000000009 00000 n 
 0000000058 00000 n 
-0000000127 00000 n 
-0000000197 00000 n 
-0000002628 00000 n 
-0000002754 00000 n 
-0000005154 00000 n 
-0000005280 00000 n 
-0000007311 00000 n 
-trailer << /Size 10 /Root 1 0 R >>
+0000000134 00000 n 
+0000000204 00000 n 
+0000002733 00000 n 
+0000002859 00000 n 
+0000005075 00000 n 
+0000005201 00000 n 
+0000008156 00000 n 
+0000008282 00000 n 
+0000008442 00000 n 
+trailer << /Size 12 /Root 1 0 R >>
 startxref
-7437
+8570
 %%EOF

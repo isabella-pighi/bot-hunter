@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
-from math import sqrt
+from math import ceil, sqrt
 
 from .data import ClickEvent, RuleContribution
 
@@ -9,6 +9,8 @@ REGULAR_INTERARRIVAL_MIN_EVENTS = 8
 REGULAR_INTERARRIVAL_MAX_MEAN_SECONDS = 300.0
 REGULAR_INTERARRIVAL_MAX_CV = 0.50
 REGULAR_INTERARRIVAL_WEIGHT = 0.10
+TTC_REUSE_COUNT_FLOOR = 40
+TTC_REUSE_COUNT_PERCENTILE = 0.99
 
 
 def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> None:
@@ -17,7 +19,7 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
     query_hi = max(12, int(total * 0.001))
     query_domain_hi = max(4, int(total * 0.00025))
     device_hi = max(600, int(total * 0.035))
-    ttc_hi = max(40, int(total * 0.0012))
+    ttc_hi = _adaptive_ttc_reuse_threshold(counters["ttc"])
     regular_interarrival = _regular_interarrival_contributions(events)
 
     for event in events:
@@ -106,7 +108,11 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     0.16,
                     ttc_count,
                     ttc_hi,
-                    "ttc >= 0 and ttc_count >= threshold",
+                    (
+                        "ttc >= 0 and ttc_count >= adaptive 99th percentile "
+                        "threshold with absolute floor 40"
+                    ),
+                    "adaptive_percentile",
                 )
             )
 
@@ -228,6 +234,14 @@ def _regular_interarrival_contributions(events: list[ClickEvent]) -> dict[int, R
     return contributions
 
 
+def _adaptive_ttc_reuse_threshold(ttc_counts: Counter) -> int:
+    counts = sorted(count for ttc, count in ttc_counts.items() if ttc >= 0 and count > 0)
+    if not counts:
+        return TTC_REUSE_COUNT_FLOOR
+    percentile_idx = max(0, ceil(len(counts) * TTC_REUSE_COUNT_PERCENTILE) - 1)
+    return max(TTC_REUSE_COUNT_FLOOR, counts[percentile_idx])
+
+
 def _contribution(
     rule_id: str,
     label: str,
@@ -236,6 +250,7 @@ def _contribution(
     observed: int | float | str,
     threshold: int | float | str | None,
     condition: str,
+    threshold_mode: str = "absolute",
 ) -> RuleContribution:
     return RuleContribution(
         rule_id=rule_id,
@@ -244,5 +259,6 @@ def _contribution(
         weight=weight,
         observed=observed,
         threshold=threshold,
+        threshold_mode=threshold_mode,
         condition=condition,
     )

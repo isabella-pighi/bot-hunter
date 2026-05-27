@@ -2,7 +2,7 @@ from collections import Counter
 from datetime import datetime, timedelta
 
 from bot_hunter.data import ClickEvent, build_features
-from bot_hunter.heuristics import apply_heuristics
+from bot_hunter.heuristics import _adaptive_ttc_reuse_threshold, apply_heuristics
 
 
 def _event(
@@ -100,6 +100,58 @@ def test_high_volume_rule_contribution_fields() -> None:
     assert contribution.observed == 200
     assert contribution.threshold == 200
     assert contribution.condition == "domain_count >= threshold"
+
+
+def test_adaptive_ttc_reuse_threshold_uses_percentile_with_floor() -> None:
+    counts = Counter({-1: 1000})
+    counts.update({ttc: 1 for ttc in range(98)})
+    counts[10_000] = 70
+    counts[20_000] = 100
+
+    assert _adaptive_ttc_reuse_threshold(Counter()) == 40
+    assert _adaptive_ttc_reuse_threshold(Counter({idx: 1 for idx in range(10)})) == 40
+    assert _adaptive_ttc_reuse_threshold(counts) == 70
+
+
+def test_reused_ttc_rule_reports_adaptive_threshold_mode() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    events = [
+        _event(idx, start + timedelta(seconds=idx), query=f"human search {idx}", domain=f"example-{idx}.com")
+        for idx in range(70)
+    ]
+    for event in events:
+        event.params["ttc"] = "777"
+    _, counters = build_features(events)
+    counters["ttc"] = Counter({777: 70, **{10_000 + idx: 1 for idx in range(98)}, 20_000: 100})
+
+    apply_heuristics(events, counters)
+
+    contribution = next(item for item in events[0].rule_contributions if item.rule_id == "reused_ttc")
+    assert contribution.reason == "exact time-to-click reused 70 times"
+    assert contribution.observed == 70
+    assert contribution.threshold == 70
+    assert contribution.threshold_mode == "adaptive_percentile"
+    assert contribution.condition == (
+        "ttc >= 0 and ttc_count >= adaptive 99th percentile threshold with absolute floor 40"
+    )
+
+
+def test_reused_ttc_rule_uses_adaptive_cutoff_not_old_total_rate() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    events = [
+        _event(idx, start + timedelta(seconds=idx), query=f"human search {idx}", domain=f"example-{idx}.com")
+        for idx in range(45)
+    ]
+    for event in events:
+        event.params["ttc"] = "777"
+    _, counters = build_features(events)
+    counters["ttc"] = Counter({777: 45, **{10_000 + idx: 1 for idx in range(98)}, 20_000: 80, 30_000: 100})
+
+    apply_heuristics(events, counters)
+
+    assert "reused_ttc" not in {
+        contribution.rule_id for event in events for contribution in event.rule_contributions
+    }
 
 
 def test_regular_interarrival_rule_triggers_for_regular_pseudo_session() -> None:

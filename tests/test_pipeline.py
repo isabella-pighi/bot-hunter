@@ -61,6 +61,7 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     sample_events = (tmp_path / "artifacts" / "sample_events.json").read_text(encoding="utf-8")
     assert '"operational_tier"' in sample_events
     assert '"rule_contributions"' in sample_events
+    assert '"threshold_mode": "absolute"' in sample_events
     assert '"rule_id": "fast_click"' in sample_events
     assert "method_disagreement" in summary
     assert sum(count for _, count in summary["method_disagreement"]) == 3
