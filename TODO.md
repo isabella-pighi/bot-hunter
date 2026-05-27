@@ -4,7 +4,6 @@
 
 | Priority | Status | Area | Item | Why it matters | Notes |
 | --- | --- | --- | --- | --- | --- |
-| P0 | Done | Combined Decision Logic | Report disagreement buckets separately. | High-rules/low-ML and low-rules/high-ML cases are the fastest way to inspect blind spots. | Implemented with summary counts, dashboard section, and report narrative for Heuristic + ML / Heuristic only / ML only / Neither strong buckets. |
 | P1 | Todo | Rules-Based Heuristic Classifier | Make thresholds adaptive by percentile instead of fixed count cutoffs. | Reduces sensitivity to dataset size and traffic volume changes. | Keep current constants as fallback defaults or guardrails. |
 | P1 | Todo | Rules-Based Heuristic Classifier | Separate high-confidence rules from weak supporting rules. | Prevents many weak signals from looking equivalent to one very strong bot signal. | Consider rule tiers or max-per-family scoring. |
 | P1 | Todo | Domain Reputation Signals | Add optional domain reputation checks as a heuristic risk signal. | Adds outside threat intelligence while preserving behavior-based detection. | This should boost risk, not automatically decide `is_bot`. |
@@ -26,3 +25,4 @@
 | Done | Done | Anomaly Classifier | Add `IsolationForest` as the first optional sklearn anomaly model. | Provides a model designed for unsupervised anomaly detection. | It is now preferred by default when scikit-learn is available. |
 | Done | Done | Explainability | Store structured rule contributions alongside text reasons. | Makes dashboard grouping, audits, and per-rule impact analysis more reliable. | `sample_events.json` now includes stable rule IDs, labels, weights, observed values, thresholds, and conditions while preserving text reasons. |
 | Done | Done | Combined Decision Logic | Define operational confidence tiers: suppress, quarantine, and monitor. | Turns scores into clearer business actions without pretending unlabeled data has measured precision. | Added `operational_tier`, summary tier counts, dashboard/report visibility, and docs defining suppress/quarantine/monitor. |
+| Done | Done | Combined Decision Logic | Report disagreement buckets separately. | High-rules/low-ML and low-rules/high-ML cases are the fastest way to inspect blind spots. | Implemented with summary counts, dashboard section, and report narrative for Heuristic + ML / Heuristic only / ML only / Neither strong buckets. |
