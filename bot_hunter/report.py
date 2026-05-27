@@ -28,10 +28,16 @@ def _markdown(summary: dict[str, object]) -> str:
     tier_lines = "\n".join(
         f"- {tier}: {int(tier_counts.get(tier, 0)):,} events" for tier in ("suppress", "quarantine", "monitor")
     )
+    suppress_count = int(tier_counts.get("suppress", 0))
+    quarantine_count = int(tier_counts.get("quarantine", 0))
+    monitor_count = int(tier_counts.get("monitor", 0))
     disagreement_rows = summary.get("method_disagreement", [])
     disagreement_lines = "\n".join(f"- {label}: {int(count):,} events" for label, count in disagreement_rows)
     if not disagreement_lines:
         disagreement_lines = "- No method disagreement data was reported."
+    threshold = float(summary.get("threshold", 0.0))
+    heuristic_flag_rate = float(summary.get("heuristic_flag_rate", 0.0))
+    ml_tail_rate = float(summary.get("ml_tail_rate", 0.0))
 
     return f"""# Bot Hunter Analysis Report
 
@@ -69,25 +75,41 @@ The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer i
 
 {disagreement_lines}
 
-## 7. Rationale and generalization
+## 7. Threshold rationale
+
+The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff ({threshold:.6f} in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
+
+The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was {heuristic_flag_rate:.2%}, while the ML upper-tail reference rate was {ml_tail_rate:.2%}; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
+
+## 8. Rationale and generalization
 
 The heuristic model is transparent and easy to convert into policy. Only exact time-to-click reuse uses percentile calibration because it is a global duplicate-count signal whose suspiciousness depends on the dataset's observed timer granularity and reuse distribution; the absolute floor protects against weak duplicate counts in smaller or smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they represent separate behavioral concepts. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. Structured rule contributions include `threshold_mode`, with fixed rules reported as `absolute` and adaptive exact-ttc reuse reported as `adaptive_percentile` when present. The {backend_label} catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
 
-## 8. Probability assessment
+## 9. Probability assessment
 
 The estimated probability that a flagged event is fraudulent is {precision:.0%}. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
 
-## 9. Recommended actions
+## 10. Known limitations
+
+- The dataset has no ground-truth bot labels, so Bot Hunter cannot report measured precision, recall, or calibration.
+- The rules intentionally favor interpretable repetition and timing signals. Human-like automation, slow distributed bot traffic, or attacks spread across many query/domain combinations may be under-detected.
+- Legitimate campaigns can create high repetition, dense device clusters, or synchronized bursts. The suppress tier should therefore be policy-approved and periodically sampled.
+- The regular inter-arrival rule uses narrow pseudo-session groups because there is no user or session identifier. It is supporting evidence rather than proof of automation.
+- The anomaly score is relative to the current traffic mix. Material changes in geography, inventory, campaign volume, browser mix, or feature extraction should trigger a fresh threshold and review calibration.
+
+## 11. Recommended actions
 
 Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress bot events with the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the remaining bot events for review; and monitor traffic that is not selected for bot action while retaining it for drift checks and future labels.
 
-## 10. Future work
+## 12. Future work
 
 With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory, calibrated probabilities, and a feedback loop from manual review decisions.
 
-## 11. Submission
+## 13. Submission and decision summary
 
-The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier.
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected {int(summary["bot_events"]):,} of {int(summary["total_events"]):,} events as likely bots ({bot_rate:.2%}). The operational split is {suppress_count:,} suppress, {quarantine_count:,} quarantine, and {monitor_count:,} monitor events.
+
+Use the binary `is_bot` field as the compatibility output for downstream systems. Use `operational_tier` to decide handling: suppress high-confidence bot traffic after policy approval, quarantine lower-confidence bot traffic for review or delayed action, and monitor the remaining traffic for drift checks and future labels. The report and dashboard should be read as review aids, not as proof of fraud for every individual event.
 """
 
 
