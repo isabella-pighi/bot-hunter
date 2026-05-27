@@ -69,7 +69,7 @@ and they are also written to `artifacts/features.tsv` for inspection.
 | `log_device_count` | How common this region/browser/OS combination is |
 | `log_same_second_count` | Number of events sharing the exact same timestamp |
 | `log_ttc_count` | How often this exact time-to-click value recurs |
-| `ttc_seconds` | Time-to-click converted to seconds |
+| `ttc_seconds` | Time-to-click converted to seconds for direct timing magnitude |
 | `query_terms` | Number of words in the search query |
 | `query_chars` | Character length of the search query |
 | `has_bkl` | Whether the URL contains the `bkl` parameter (1 or 0) |
@@ -77,7 +77,7 @@ and they are also written to `artifacts/features.tsv` for inspection.
 | `kp` | Numeric value of the `kp` URL parameter |
 | `sld` | Numeric value of the `sld` URL parameter |
 | `hour` | Hour of day extracted from the event timestamp |
-| `is_mobile_search` | Whether `st=mobile_search_intl` is present in the URL (1 or 0) |
+| `log_ttc_seconds` | Log-scaled time-to-click magnitude, `log1p(ttc_seconds)` |
 
 Before anomaly scoring, each feature is standardised: `(value − mean) / std_deviation`.
 This puts all features on the same scale so no single large-magnitude feature dominates.
@@ -103,6 +103,7 @@ making the classifier's decisions auditable without any data science background.
 - Exact time-to-click value reused across many events
 - Many clicks occurring within the same second
 - Implausibly fast clicks (below a human reaction-time floor)
+- Moderately long time-to-click values (20 to 60 seconds, as supporting evidence)
 - Extremely long time-to-click values
 - Very short queries (single character or near-empty)
 - Regular inter-arrival timing within narrow pseudo-session groups
@@ -114,6 +115,14 @@ rule is therefore intentionally narrow: it only compares clicks that share the s
 region, browser, OS, search query, and clicked domain; it requires at least eight
 matching events; and it contributes only a low weight of 0.10 when both conditions fire.
 It is supporting evidence, not a standalone proof of automation.
+
+**A note on time-to-click timing bands:** Bot Hunter separates direct timing evidence
+from weaker supporting evidence. Implausibly fast clicks from 0 to 250 ms carry a higher
+weight because they are hard to reconcile with normal human reaction time. Moderately
+long clicks from 20 to 60 seconds add only low-weight support for delayed or mechanical
+click patterns, and extremely long clicks above 120 seconds remain a separate timing
+signal. Exact time-to-click reuse is handled separately because identical timer values
+can indicate instrumentation or scripted reuse across many events.
 
 **A note on the exact time-to-click reuse rule:** This is the only heuristic that uses
 percentile calibration — meaning its threshold is computed from the data rather than set

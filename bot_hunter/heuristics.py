@@ -9,6 +9,9 @@ REGULAR_INTERARRIVAL_MIN_EVENTS = 8
 REGULAR_INTERARRIVAL_MAX_MEAN_SECONDS = 300.0
 REGULAR_INTERARRIVAL_MAX_CV = 0.50
 REGULAR_INTERARRIVAL_WEIGHT = 0.10
+MODERATE_LONG_TTC_MIN_MS = 20_000
+MODERATE_LONG_TTC_MAX_MS = 60_000
+MODERATE_LONG_TTC_WEIGHT = 0.06
 TTC_REUSE_COUNT_FLOOR = 40
 TTC_REUSE_COUNT_PERCENTILE = 0.99
 
@@ -146,6 +149,21 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     event.ttc,
                     250,
                     "0 <= ttc <= threshold",
+                )
+            )
+        elif MODERATE_LONG_TTC_MIN_MS <= event.ttc <= MODERATE_LONG_TTC_MAX_MS:
+            score += MODERATE_LONG_TTC_WEIGHT
+            reason = "moderately long time-to-click"
+            reasons.append(reason)
+            contributions.append(
+                _contribution(
+                    "moderate_long_ttc",
+                    "Moderately long time-to-click",
+                    reason,
+                    MODERATE_LONG_TTC_WEIGHT,
+                    event.ttc,
+                    f"{MODERATE_LONG_TTC_MIN_MS}-{MODERATE_LONG_TTC_MAX_MS}",
+                    "20000 <= ttc <= 60000",
                 )
             )
         elif event.ttc > 120000:

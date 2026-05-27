@@ -154,6 +154,60 @@ def test_reused_ttc_rule_uses_adaptive_cutoff_not_old_total_rate() -> None:
     }
 
 
+def test_moderate_long_ttc_rule_triggers_only_in_inclusive_band() -> None:
+    start = datetime(2019, 12, 2, 8, 0, 0)
+    ttc_values = [19_999, 20_000, 60_000, 60_001]
+    events = [
+        ClickEvent(
+            event_id=f"evt_{idx}",
+            event_time=start + timedelta(seconds=idx),
+            region="Mars",
+            browser="Chrome",
+            os="Android",
+            url=f"/ad_click?d=example-{idx}.com&ttc={ttc}&q=human%20search%20{idx}",
+            params={"d": f"example-{idx}.com", "ttc": str(ttc), "q": f"human search {idx}"},
+        )
+        for idx, ttc in enumerate(ttc_values)
+    ]
+    _, counters = build_features(events)
+
+    apply_heuristics(events, counters)
+
+    assert "moderate_long_ttc" not in {item.rule_id for item in events[0].rule_contributions}
+    assert "moderate_long_ttc" not in {item.rule_id for item in events[3].rule_contributions}
+
+    for event, expected_ttc in [(events[1], 20_000), (events[2], 60_000)]:
+        assert event.reasons == ["moderately long time-to-click"]
+        assert event.heuristic_score == 0.06
+        contribution = event.rule_contributions[0]
+        assert contribution.rule_id == "moderate_long_ttc"
+        assert contribution.label == "Moderately long time-to-click"
+        assert contribution.reason == "moderately long time-to-click"
+        assert contribution.weight == 0.06
+        assert contribution.observed == expected_ttc
+        assert contribution.threshold == "20000-60000"
+        assert contribution.condition == "20000 <= ttc <= 60000"
+
+
+def test_extreme_ttc_rule_remains_separate_from_moderate_long_band() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=example.com&ttc=120001&q=human%20search",
+        params={"d": "example.com", "ttc": "120001", "q": "human search"},
+    )
+    _, counters = build_features([event])
+
+    apply_heuristics([event], counters)
+
+    assert event.reasons == ["extreme time-to-click"]
+    assert event.heuristic_score == 0.08
+    assert [item.rule_id for item in event.rule_contributions] == ["extreme_ttc"]
+
+
 def test_regular_interarrival_rule_triggers_for_regular_pseudo_session() -> None:
     start = datetime(2019, 12, 2, 8, 0, 0)
     events = [_event(idx, start.replace(minute=idx * 2)) for idx in range(8)]

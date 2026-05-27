@@ -6,7 +6,7 @@ Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer re
 
 ## 2. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. The second classifier is an Isolation Forest anomaly model over standardized behavioral features. Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. The second classifier is an Isolation Forest anomaly model over standardized behavioral features. Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.
 
 ## 3. Methods evaluated but not included
 
@@ -16,16 +16,16 @@ Bot Hunter also evaluated HDBSCAN, a shallow autoencoder, and a small VAE as opt
 
 The run analyzed 149,239 events and flagged 3,732 events as bots (2.50%). The strongest explainable patterns were:
 
-- repeated query: 3,338 events
-- repeated query/domain pair: 2,097 events
-- same-second click burst: 1,924 events
-- high-volume clicked domain: 1,887 events
-- very short query: 1,851 events
-- heavy region/browser/os cluster: 1,719 events
-- extreme time-to-click: 303 events
-- implausibly fast click: 45 events
-- regular inter-arrival timing: 15 events
-- reused exact time-to-click: 2 events
+- repeated query: 3,328 events
+- repeated query/domain pair: 2,094 events
+- same-second click burst: 1,928 events
+- high-volume clicked domain: 1,906 events
+- very short query: 1,822 events
+- heavy region/browser/os cluster: 1,716 events
+- moderately long time-to-click: 546 events
+- extreme time-to-click: 276 events
+- implausibly fast click: 40 events
+- regular inter-arrival timing: 14 events
 
 The dashboard exposes these same signals with sample events so a business user can inspect the likely automated behavior without reading model internals.
 
@@ -33,8 +33,8 @@ The dashboard exposes these same signals with sample events so a business user c
 
 Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. Bot Hunter assigns operational tiers without changing the binary `is_bot` prediction:
 
-- suppress: 1,011 events
-- quarantine: 2,721 events
+- suppress: 1,073 events
+- quarantine: 2,659 events
 - monitor: 145,507 events
 
 Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
@@ -43,24 +43,24 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.90 ML agreement thresholds used in suppression are also reported separately so blind spots are visible:
 
-- Heuristic + ML: 1,011 events
+- Heuristic + ML: 1,073 events
 - Heuristic only: 3 events
-- ML only: 13,913 events
+- ML only: 13,851 events
 - Neither strong: 134,312 events
 
 ## 7. Threshold rationale
 
-The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.581547 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
+The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.586199 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
 
-The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 0.68%, while the ML upper-tail reference rate was 1.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
+The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 0.72%, while the ML upper-tail reference rate was 1.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
 
 ## 8. Rationale and generalization
 
-The heuristic model is transparent and easy to convert into policy. Only exact time-to-click reuse uses percentile calibration because it is a global duplicate-count signal whose suspiciousness depends on the dataset's observed timer granularity and reuse distribution; the absolute floor protects against weak duplicate counts in smaller or smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they represent separate behavioral concepts. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. Structured rule contributions include `threshold_mode`, with fixed rules reported as `absolute` and adaptive exact-ttc reuse reported as `adaptive_percentile` when present. The Isolation Forest model catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
+The heuristic model is transparent and easy to convert into policy. Only exact time-to-click reuse uses percentile calibration because it is a global duplicate-count signal whose suspiciousness depends on the dataset's observed timer granularity and reuse distribution; the absolute floor protects against weak duplicate counts in smaller or smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they represent separate behavioral concepts. The time-to-click timing bands are intentionally tiered: clicks from 0 to 250 ms are treated as implausibly fast direct evidence, clicks from 20 to 60 seconds add low-weight support for delayed or mechanical click patterns, and clicks above 120 seconds remain a separate extreme timing signal. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. Structured rule contributions include `threshold_mode`, with fixed rules reported as `absolute` and adaptive exact-ttc reuse reported as `adaptive_percentile` when present. The Isolation Forest model catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
 
 ## 9. Probability assessment
 
-The estimated probability that a flagged event is fraudulent is 78%. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
+The estimated probability that a flagged event is fraudulent is 79%. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
 
 ## 10. Known limitations
 
@@ -80,6 +80,6 @@ With more time, I would add labeled validation data, campaign-level normalizatio
 
 ## 13. Submission and decision summary
 
-The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,732 of 149,239 events as likely bots (2.50%). The operational split is 1,011 suppress, 2,721 quarantine, and 145,507 monitor events.
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,732 of 149,239 events as likely bots (2.50%). The operational split is 1,073 suppress, 2,659 quarantine, and 145,507 monitor events.
 
 Use the binary `is_bot` field as the compatibility output for downstream systems. Use `operational_tier` to decide handling: suppress high-confidence bot traffic after policy approval, quarantine lower-confidence bot traffic for review or delayed action, and monitor the remaining traffic for drift checks and future labels. The report and dashboard should be read as review aids, not as proof of fraud for every individual event.

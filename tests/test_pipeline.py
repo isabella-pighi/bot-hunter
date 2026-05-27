@@ -71,6 +71,8 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     assert "an unsupervised k-means anomaly model" in report
     features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
     assert features[0].split("\t") == ["event_id", *summary["feature_names"]]
+    assert "is_mobile_search" not in summary["feature_names"]
+    assert "log_ttc_seconds" in summary["feature_names"]
     assert len(features) == 4
     first_feature_row = features[1].split("\t")
     assert first_feature_row == [
@@ -89,7 +91,7 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
         "-1.000000",
         "1.000000",
         "0.000000",
-        "1.000000",
+        "0.009950",
     ]
 
 

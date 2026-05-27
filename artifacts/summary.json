@@ -3,10 +3,10 @@
   "total_events": 149239,
   "bot_events": 3732,
   "bot_rate": 0.025006868177889156,
-  "threshold": 0.5767736903469626,
-  "heuristic_flag_rate": 0.006794470614249626,
+  "threshold": 0.5861989305672818,
+  "heuristic_flag_rate": 0.0072099116182767235,
   "ml_tail_rate": 0.015002780774462439,
-  "estimated_precision": 0.7703804930332261,
+  "estimated_precision": 0.7868863879957128,
   "ml_backend": "sklearn",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
@@ -24,7 +24,7 @@
     "kp",
     "sld",
     "hour",
-    "is_mobile_search"
+    "log_ttc_seconds"
   ],
   "operational_tiers": {
     "suppress": "High-confidence bot traffic suitable for automatic suppression after policy approval.",
@@ -34,19 +34,19 @@
   "method_disagreement": [
     [
       "Heuristic + ML",
-      966
+      1073
     ],
     [
       "Heuristic only",
-      48
+      3
     ],
     [
       "ML only",
-      13958
+      13851
     ],
     [
       "Neither strong",
-      134267
+      134312
     ]
   ],
   "tier_thresholds": {
@@ -58,50 +58,50 @@
     "monitor": "is_bot == 0"
   },
   "tier_counts": {
-    "suppress": 981,
-    "quarantine": 2751,
+    "suppress": 1073,
+    "quarantine": 2659,
     "monitor": 145507
   },
   "top_reasons": [
     [
       "repeated query",
-      3325
+      3328
     ],
     [
       "repeated query/domain pair",
-      2065
-    ],
-    [
-      "high-volume clicked domain",
-      1902
+      2094
     ],
     [
       "same-second click burst",
-      1893
+      1928
+    ],
+    [
+      "high-volume clicked domain",
+      1906
     ],
     [
       "very short query",
-      1862
+      1822
     ],
     [
       "heavy region/browser/os cluster",
-      1732
+      1716
+    ],
+    [
+      "moderately long time-to-click",
+      546
     ],
     [
       "extreme time-to-click",
-      277
+      276
     ],
     [
       "implausibly fast click",
-      27
+      40
     ],
     [
       "regular inter-arrival timing",
-      11
-    ],
-    [
-      "reused exact time-to-click",
-      2
+      14
     ]
   ],
   "top_domains": [
@@ -207,15 +207,15 @@
   "bot_regions": [
     [
       "Earth",
-      1807
+      1852
     ],
     [
       "Mars",
-      1764
+      1718
     ],
     [
       "Mercury",
-      53
+      48
     ],
     [
       "Venus",
@@ -223,11 +223,11 @@
     ],
     [
       "Saturn",
-      36
+      40
     ],
     [
       "Jupiter",
-      29
+      31
     ]
   ]
 }

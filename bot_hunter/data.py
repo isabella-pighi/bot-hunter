@@ -125,7 +125,7 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "kp",
         "sld",
         "hour",
-        "is_mobile_search",
+        "log_ttc_seconds",
     ]
     for event in events:
         query_terms = len(event.query.split())
@@ -137,6 +137,7 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             sld = float(event.params.get("sld", "0"))
         except ValueError:
             sld = 0.0
+        ttc_seconds = max(event.ttc, 0) / 1000.0
         event.features = [
             log1p(counters["domain"][event.domain]),
             log1p(counters["query"][event.query]),
@@ -144,7 +145,7 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             log1p(counters["device"][(event.region, event.browser, event.os)]),
             log1p(counters["second"][event.event_time]),
             log1p(counters["ttc"][event.ttc]),
-            max(event.ttc, 0) / 1000.0,
+            ttc_seconds,
             float(query_terms),
             float(len(event.query)),
             1.0 if "bkl" in event.params else 0.0,
@@ -152,7 +153,7 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             kp,
             sld,
             float(event.event_time.hour),
-            1.0 if event.params.get("st") == "mobile_search_intl" else 0.0,
+            log1p(ttc_seconds),
         ]
     return names, counters
 
