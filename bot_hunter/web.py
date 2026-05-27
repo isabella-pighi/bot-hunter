@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -49,6 +50,50 @@ class Handler(BaseHTTPRequestHandler):
         else:
             self.send_error(404)
 
+    def do_POST(self) -> None:
+        parsed = urlparse(self.path)
+        if parsed.path != "/upload":
+            self.send_error(404)
+            return
+
+        content_type = self.headers.get("Content-Type", "")
+        content_length = _parse_int(self.headers.get("Content-Length", "0"), default=0)
+        if content_length <= 0:
+            self._send_json({"error": "Upload a TSV file before running the pipeline"}, status=400)
+            return
+
+        body = self.rfile.read(content_length)
+        try:
+            fields, files = _parse_multipart_form(content_type, body)
+        except ValueError as exc:
+            self._send_json({"error": str(exc)}, status=400)
+            return
+
+        upload = files.get("file")
+        if not upload or not upload.get("filename"):
+            self._send_json({"error": "Upload a TSV file before running the pipeline"}, status=400)
+            return
+
+        ml_backend = fields.get("ml_backend", "auto")
+        if ml_backend not in {"auto", "sklearn", "kmeans"}:
+            self._send_json({"error": "ml_backend must be auto, sklearn, or kmeans"}, status=400)
+            return
+
+        suffix = Path(upload.get("filename") or "upload.tsv").suffix or ".tsv"
+        tmp_path: Path | None = None
+        try:
+            with tempfile.NamedTemporaryFile("wb", suffix=suffix, delete=False) as handle:
+                handle.write(upload["content"])
+                tmp_path = Path(handle.name)
+            summary = run_pipeline(tmp_path, ROOT, ml_backend=ml_backend)
+        except (OSError, ValueError) as exc:
+            self._send_json({"error": str(exc)}, status=400)
+        else:
+            self._send_json(summary)
+        finally:
+            if tmp_path is not None:
+                tmp_path.unlink(missing_ok=True)
+
     def log_message(self, fmt: str, *args) -> None:
         print(f"{self.address_string()} - {fmt % args}")
 
@@ -80,6 +125,55 @@ def _parse_int(value: str, default: int) -> int:
         return max(0, int(value))
     except ValueError:
         return default
+
+
+def _parse_multipart_form(content_type: str, body: bytes) -> tuple[dict[str, str], dict[str, dict[str, object]]]:
+    marker = "boundary="
+    if "multipart/form-data" not in content_type or marker not in content_type:
+        raise ValueError("Upload request must use multipart/form-data")
+    boundary = content_type.split(marker, 1)[1].split(";", 1)[0].strip().strip('"')
+    if not boundary:
+        raise ValueError("Upload request is missing a multipart boundary")
+
+    fields: dict[str, str] = {}
+    files: dict[str, dict[str, object]] = {}
+    boundary_bytes = ("--" + boundary).encode("utf-8")
+    for part in body.split(boundary_bytes):
+        if part.startswith(b"\r\n"):
+            part = part[2:]
+        if part.endswith(b"--\r\n"):
+            part = part[:-4]
+        elif part.endswith(b"--"):
+            part = part[:-2]
+        if part.endswith(b"\r\n"):
+            part = part[:-2]
+        if not part or part == b"--":
+            continue
+        if b"\r\n\r\n" not in part:
+            continue
+        raw_headers, content = part.split(b"\r\n\r\n", 1)
+        headers = raw_headers.decode("utf-8", errors="replace").split("\r\n")
+        disposition = next((line for line in headers if line.lower().startswith("content-disposition:")), "")
+        params = _parse_content_disposition(disposition)
+        name = params.get("name")
+        if not name:
+            continue
+        filename = params.get("filename")
+        if filename is not None:
+            files[name] = {"filename": filename, "content": content}
+        else:
+            fields[name] = content.decode("utf-8", errors="replace")
+    return fields, files
+
+
+def _parse_content_disposition(header: str) -> dict[str, str]:
+    params: dict[str, str] = {}
+    for item in header.split(";"):
+        if "=" not in item:
+            continue
+        key, value = item.split("=", 1)
+        params[key.strip().lower()] = value.strip().strip('"')
+    return params
 
 
 def _read_features(path: Path, offset: int = 0, limit: int = 200) -> object:
@@ -151,6 +245,7 @@ def _dashboard_html() -> str:
   <header>
     <h1>Bot Hunter</h1>
     <div class="actions">
+      <input id="inputFile" type="file" accept=".tsv,text/tab-separated-values,text/plain" aria-label="Upload input TSV">
       <input id="inputPath" placeholder="/path/to/bot-hunter-dataset.tsv" aria-label="Input path">
       <select id="mlBackend" aria-label="ML backend">
         <option value="auto">Auto backend</option>
@@ -229,17 +324,17 @@ def _dashboard_html() -> str:
       </tr>`).join('');
     }
     async function runPipeline() {
+      const file = document.getElementById('inputFile').files[0];
       const inputPath = document.getElementById('inputPath').value.trim();
-      if (!inputPath) {
-        document.getElementById('metrics').innerHTML = '<div class="card">Enter an input TSV path before running the pipeline.</div>';
+      const mlBackend = document.getElementById('mlBackend').value;
+      if (!file && !inputPath) {
+        document.getElementById('metrics').innerHTML = '<div class="card">Choose a TSV file or enter an input path before running the pipeline.</div>';
         return;
       }
-      const input = encodeURIComponent(inputPath);
-      const mlBackend = encodeURIComponent(document.getElementById('mlBackend').value);
       document.getElementById('runButton').disabled = true;
       document.getElementById('metrics').innerHTML = '<div class="card">Running pipeline...</div>';
       try {
-        const response = await fetch('/run?input=' + input + '&ml_backend=' + mlBackend);
+        const response = file ? await uploadAndRun(file, mlBackend) : await runPath(inputPath, mlBackend);
         if (!response.ok) {
           const payload = await response.json();
           document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(payload.error || 'Pipeline run failed')}</div>`;
@@ -249,6 +344,15 @@ def _dashboard_html() -> str:
       } finally {
         document.getElementById('runButton').disabled = false;
       }
+    }
+    function runPath(inputPath, mlBackend) {
+      return fetch('/run?input=' + encodeURIComponent(inputPath) + '&ml_backend=' + encodeURIComponent(mlBackend));
+    }
+    function uploadAndRun(file, mlBackend) {
+      const data = new FormData();
+      data.append('file', file);
+      data.append('ml_backend', mlBackend);
+      return fetch('/upload', { method: 'POST', body: data });
     }
     load();
   </script>
