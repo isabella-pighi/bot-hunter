@@ -9,7 +9,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 2623 >>
+<< /Length 2943 >>
 stream
 BT
 /F1 10 Tf
@@ -41,51 +41,53 @@ T*
 T*
 (The application implements two classifiers. The first is a rules-based classifier that) Tj
 T*
-(scores repeated query/domain pairs, repeated queries, high-volume domains, dense) Tj
+(scores repeated query/domain pairs, repeated queries, confirmed query repetition, high-) Tj
 T*
-(region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly) Tj
+(volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second) Tj
 T*
-(fast clicks, moderately long time-to-click values, extreme time-to-click values, and) Tj
+(bursts, dense burst repetition clusters, implausibly fast clicks, moderately long time-) Tj
 T*
-(regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively) Tj
+(to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival) Tj
 T*
-(calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule) Tj
+(timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile) Tj
 T*
-(can adapt to timer reuse patterns without letting low-count coincidences fire. The) Tj
+(reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns) Tj
 T*
-(second classifier is an Isolation Forest anomaly model over 18 standardized behavioral) Tj
+(without letting low-count coincidences fire. Confirmed query repetition is intentionally) Tj
 T*
-(features, including explicit mechanical features for sub-200ms clicks, local burst) Tj
+(conjunctive: it requires the query/domain pair to repeat and the query to be widely) Tj
 T*
-(density, and query entropy. Events that isolate unusually quickly in the fitted forest) Tj
+(repeated. Dense burst repetition is also conjunctive: it requires a heavy) Tj
 T*
-(receive higher anomaly scores. The forest uses explicit sampling settings tuned for the) Tj
+(region/browser/OS cluster, at least five same-second clicks, and a repeated query or) Tj
 T*
-(expanded mechanical feature set.) Tj
+(query/domain pattern on the same event. The second classifier is an Extended Isolation) Tj
+T*
+(Forest anomaly model over 15 ML features selected from 15 engineered behavioral) Tj
+T*
+(features, including region/browser/OS frequency, global ct country frequency, explicit) Tj
+T*
+(mechanical features for sub-200ms clicks, local burst density, and query entropy. Query) Tj
+T*
+(length, query word count, and uncertain URL flags are no longer engineered features.) Tj
+T*
+(High-volume domain frequency and global country frequency remain available but are down-) Tj
+T*
+(weighted to 0.50 and 0.50, respectively, in the standardized ML matrix. Repetition and) Tj
+T*
+(timing features that can dominate standalone EIF tail evidence are also down-weighted to) Tj
+T*
+(0.50: query/domain repetition, query repetition, log-scaled time-to-click magnitude,) Tj
+T*
+(sub-200ms click flags, and query entropy. Events isolated quickly by random hyperplane) Tj
+T*
+(splits receive higher anomaly scores. EIF is the only production anomaly model;) Tj
+T*
+(alternate ML backends and supervised pilots have been removed.) Tj
 T*
 () Tj
 T*
-( 3. Methods evaluated but not included) Tj
-T*
-() Tj
-T*
-(Bot Hunter also evaluated HDBSCAN, a shallow autoencoder, and a small VAE as optional) Tj
-T*
-(anomaly backends in prior benchmark work. They were not promoted because they did not) Tj
-T*
-(improve reviewer utility enough to justify their runtime, memory, or complexity costs.) Tj
-T*
-(HDBSCAN was much slower than the current anomaly path on the full dataset, while the) Tj
-T*
-(neural models used more memory and did not produce clearer explanations than Isolation) Tj
-T*
-(Forest. The production ML path therefore remains Isolation Forest when scikit-learn is) Tj
-T*
-(available, with k-means as the lightweight fallback.) Tj
-T*
-() Tj
-T*
-( 4. Anomalies found) Tj
+( 3. Anomalies found) Tj
 T*
 () Tj
 T*
@@ -95,9 +97,7 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,278 events) Tj
-T*
-(- repeated query/domain pair: 2,097 events) Tj
+(- repeated query: 3,427 events) Tj
 T*
 ET
 endstream
@@ -106,27 +106,29 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2106 >>
+<< /Length 2393 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(- same-second click burst: 1,936 events) Tj
+(- repeated query/domain pair: 2,099 events) Tj
 T*
-(- high-volume clicked domain: 1,884 events) Tj
+(- confirmed query repetition: 2,023 events) Tj
 T*
-(- very short query: 1,800 events) Tj
+(- same-second click burst: 1,994 events) Tj
 T*
-(- heavy region/browser/os cluster: 1,730 events) Tj
+(- very short query: 1,828 events) Tj
 T*
-(- moderately long time-to-click: 492 events) Tj
+(- heavy region/browser/os cluster: 1,784 events) Tj
 T*
-(- extreme time-to-click: 211 events) Tj
+(- high-volume clicked domain: 1,773 events) Tj
 T*
-(- implausibly fast click: 155 events) Tj
+(- dense burst repetition cluster: 517 events) Tj
 T*
-(- regular inter-arrival timing: 13 events) Tj
+(- moderately long time-to-click: 461 events) Tj
+T*
+(- extreme time-to-click: 176 events) Tj
 T*
 () Tj
 T*
@@ -136,7 +138,7 @@ T*
 T*
 () Tj
 T*
-( 5. Filtering options) Tj
+( 4. Filtering options) Tj
 T*
 () Tj
 T*
@@ -150,9 +152,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,069 events) Tj
+(- suppress: 1,728 events) Tj
 T*
-(- quarantine: 2,663 events) Tj
+(- quarantine: 2,004 events) Tj
 T*
 (- monitor: 145,507 events) Tj
 T*
@@ -166,7 +168,7 @@ T*
 T*
 () Tj
 T*
-( 6. Method disagreement) Tj
+( 5. Method disagreement) Tj
 T*
 () Tj
 T*
@@ -176,25 +178,23 @@ T*
 T*
 (weight to move borderline cases and catch multivariate oddities. The thresholds are) Tj
 T*
-(conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.90 ML) Tj
+(conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.995 EIF) Tj
 T*
-(agreement thresholds used in suppression are also reported separately so blind spots are) Tj
+(rank-tail agreement thresholds used in suppression are also reported separately so blind) Tj
 T*
-(visible:) Tj
+(spots are visible. The EIF agreement threshold is intentionally narrow: this run reports) Tj
 T*
-() Tj
+(590 ML only events in the extreme anomaly tail, while broad top-decile anomaly ranks) Tj
 T*
-(- Heuristic + ML: 1,065 events) Tj
+(previously created too many standalone ML entries without enough explainable support.) Tj
 T*
-(- Heuristic only: 11 events) Tj
+(The method-disagreement table is diagnostic; it does not expose another production model) Tj
 T*
-(- ML only: 13,859 events) Tj
-T*
-(- Neither strong: 134,304 events) Tj
+(path.) Tj
 T*
 () Tj
 T*
-( 7. Threshold rationale) Tj
+(- Heuristic + ML: 157 events) Tj
 T*
 ET
 endstream
@@ -203,19 +203,29 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 3356 >>
+<< /Length 3200 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(- Heuristic only: 1,913 events) Tj
+T*
+(- ML only: 590 events) Tj
+T*
+(- Neither strong: 146,579 events) Tj
+T*
+() Tj
+T*
+( 6. Threshold rationale) Tj
+T*
 () Tj
 T*
 (The binary decision uses the stronger of two conservative gates: the event is selected) Tj
 T*
 (when its combined score is at or above the run-specific 97.5th-percentile cutoff) Tj
 T*
-(\(0.590243 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
+(\(0.598913 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
 T*
 (The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset) Tj
 T*
@@ -231,15 +241,17 @@ T*
 T*
 (review-first workflow where false positives and false negatives are treated as roughly) Tj
 T*
-(comparable. In this run, the heuristic-only flag rate was 0.72%, while the ML upper-tail) Tj
+(comparable. In this run, the heuristic-only flag rate was 1.39%, while the EIF) Tj
 T*
-(reference rate was 1.50%; those rates are reported separately so reviewers can see how) Tj
+(agreement-tail reference rate was 0.50%; those rates are reported separately so) Tj
 T*
-(much each method contributes before the combined decision is applied.) Tj
+(reviewers can see how much each method contributes before the combined decision is) Tj
+T*
+(applied.) Tj
 T*
 () Tj
 T*
-( 8. Rationale and generalization) Tj
+( 7. Rationale and generalization) Tj
 T*
 () Tj
 T*
@@ -253,45 +265,33 @@ T*
 T*
 (smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they) Tj
 T*
-(represent separate behavioral concepts. The time-to-click timing bands are intentionally) Tj
+(represent separate behavioral concepts. The confirmed query repetition rule reuses the) Tj
 T*
-(tiered: clicks from 0 to 250 ms are treated as implausibly fast direct evidence, clicks) Tj
+(repeated query/domain and repeated query thresholds and adds weight only when both fire) Tj
 T*
-(from 20 to 60 seconds add low-weight support for delayed or mechanical click patterns,) Tj
+(on the same event. The dense burst repetition rule reuses those existing component) Tj
 T*
-(and clicks above 120 seconds remain a separate extreme timing signal. The regular inter-) Tj
+(thresholds and adds weight only when all three are present together, which targets many) Tj
 T*
-(arrival rule is intentionally narrow because the dataset has no explicit user or session) Tj
+(clicks from the same device cluster in the same second with repeated query patterns. The) Tj
 T*
-(identifier: it only compares clicks with the same region, browser, OS, query, and) Tj
+(time-to-click timing bands are intentionally tiered: clicks from 0 to 250 ms are treated) Tj
 T*
-(clicked domain, requires at least eight events, and adds low-weight supporting evidence) Tj
+(as implausibly fast direct evidence, clicks from 20 to 60 seconds add low-weight support) Tj
 T*
-(rather than a standalone bot decision. Structured rule contributions include) Tj
+(for delayed or mechanical click patterns, and clicks above 120 seconds remain a separate) Tj
 T*
-(threshold_mode, with fixed rules reported as absolute and adaptive exact-ttc reuse) Tj
+(extreme timing signal. The regular inter-arrival rule is intentionally narrow because) Tj
 T*
-(reported as adaptive_percentile when present. The Isolation Forest model catches) Tj
+(the dataset has no explicit user or session identifier: it only compares clicks with the) Tj
 T*
-(multivariate oddities that a small rule set may miss. Both should generalize when bot) Tj
+(same region, browser, OS, query, and clicked domain, requires at least eight events, and) Tj
 T*
-(traffic is repetitive or mechanically timed, but they may miss human-like bots and may) Tj
+(adds low-weight supporting evidence rather than a standalone bot decision. Structured) Tj
 T*
-(over-flag legitimate campaigns that naturally produce high repetition. The thresholds) Tj
+(rule contributions include threshold_mode, with fixed rules reported as absolute and) Tj
 T*
-(should be recalibrated when traffic mix, geography, or ad inventory changes materially.) Tj
-T*
-() Tj
-T*
-( 9. Probability assessment) Tj
-T*
-() Tj
-T*
-(The estimated probability that a flagged event is fraudulent is 79%. This is not label-) Tj
-T*
-(calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
-T*
-(signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
+(adaptive exact-ttc reuse reported as adaptive_percentile when present. The Extended) Tj
 T*
 ET
 endstream
@@ -300,12 +300,34 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 2656 >>
+<< /Length 2682 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(Isolation Forest model catches multivariate oddities that a small rule set may miss.) Tj
+T*
+(Both should generalize when bot traffic is repetitive or mechanically timed, but they) Tj
+T*
+(may miss human-like bots and may over-flag legitimate campaigns that naturally produce) Tj
+T*
+(high repetition. The thresholds should be recalibrated when traffic mix, geography, or) Tj
+T*
+(ad inventory changes materially.) Tj
+T*
+() Tj
+T*
+( 8. Probability assessment) Tj
+T*
+() Tj
+T*
+(The estimated probability that a flagged event is fraudulent is 60%. This is not label-) Tj
+T*
+(calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
+T*
+(signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
+T*
 (score are more likely to be fraudulent than events flagged by only one weak signal. The) Tj
 T*
 (report therefore treats probability as an operational confidence estimate, not a) Tj
@@ -314,7 +336,7 @@ T*
 T*
 () Tj
 T*
-( 10. Known limitations) Tj
+( 9. Known limitations) Tj
 T*
 () Tj
 T*
@@ -346,7 +368,7 @@ T*
 T*
 () Tj
 T*
-( 11. Recommended actions) Tj
+( 10. Recommended actions) Tj
 T*
 () Tj
 T*
@@ -364,10 +386,23 @@ T*
 T*
 () Tj
 T*
-( 12. Future work) Tj
+( 11. Future work) Tj
 T*
 () Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 1247 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (With more time, I would add labeled validation data, campaign-level normalization,) Tj
 T*
 (browser/user-agent fingerprinting if available, time-series burst detection by inventory) Tj
@@ -378,7 +413,7 @@ T*
 T*
 () Tj
 T*
-( 13. Submission and decision summary) Tj
+( 12. Submission and decision summary) Tj
 T*
 () Tj
 T*
@@ -386,23 +421,10 @@ T*
 T*
 (preserving the final binary prediction while adding a workflow tier. This run selected) Tj
 T*
-(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,069 suppress,) Tj
+(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,728 suppress,) Tj
 T*
-(2,663 quarantine, and 145,507 monitor events.) Tj
+(2,004 quarantine, and 145,507 monitor events.) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 515 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 (Use the binary is_bot field as the compatibility output for downstream systems. Use) Tj
@@ -430,16 +452,16 @@ xref
 0000000058 00000 n
 0000000141 00000 n
 0000000211 00000 n
-0000002886 00000 n
-0000003012 00000 n
-0000005170 00000 n
-0000005296 00000 n
-0000008704 00000 n
-0000008830 00000 n
-0000011539 00000 n
-0000011667 00000 n
-0000012234 00000 n
+0000003206 00000 n
+0000003332 00000 n
+0000005777 00000 n
+0000005903 00000 n
+0000009155 00000 n
+0000009281 00000 n
+0000012016 00000 n
+0000012144 00000 n
+0000013444 00000 n
 trailer << /Size 14 /Root 1 0 R >>
 startxref
-12362
+13572
 %%EOF

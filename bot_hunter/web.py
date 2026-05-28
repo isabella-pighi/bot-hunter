@@ -34,15 +34,11 @@ class Handler(BaseHTTPRequestHandler):
         elif parsed.path == "/run":
             params = parse_qs(parsed.query)
             input_path = params.get("input", [""])[0]
-            ml_backend = params.get("ml_backend", ["auto"])[0]
             if not input_path:
                 self._send_json({"error": "Pass ?input=/path/to/raw.tsv"}, status=400)
                 return
-            if ml_backend not in {"auto", "sklearn", "kmeans"}:
-                self._send_json({"error": "ml_backend must be auto, sklearn, or kmeans"}, status=400)
-                return
             try:
-                summary = run_pipeline(input_path, ROOT, ml_backend=ml_backend)
+                summary = run_pipeline(input_path, ROOT)
             except (OSError, ValueError) as exc:
                 self._send_json({"error": str(exc)}, status=400)
             else:
@@ -74,18 +70,13 @@ class Handler(BaseHTTPRequestHandler):
             self._send_json({"error": "Upload a TSV file before running the pipeline"}, status=400)
             return
 
-        ml_backend = fields.get("ml_backend", "auto")
-        if ml_backend not in {"auto", "sklearn", "kmeans"}:
-            self._send_json({"error": "ml_backend must be auto, sklearn, or kmeans"}, status=400)
-            return
-
         suffix = Path(upload.get("filename") or "upload.tsv").suffix or ".tsv"
         tmp_path: Path | None = None
         try:
             with tempfile.NamedTemporaryFile("wb", suffix=suffix, delete=False) as handle:
                 handle.write(upload["content"])
                 tmp_path = Path(handle.name)
-            summary = run_pipeline(tmp_path, ROOT, ml_backend=ml_backend)
+            summary = run_pipeline(tmp_path, ROOT)
         except (OSError, ValueError) as exc:
             self._send_json({"error": str(exc)}, status=400)
         else:
@@ -266,11 +257,6 @@ def _dashboard_html() -> str:
           <p class="input-help">Use only when the TSV already exists on the machine running this dashboard.</p>
         </div>
       </div>
-      <select id="mlBackend" aria-label="ML backend">
-        <option value="auto">Auto backend</option>
-        <option value="sklearn">Require sklearn</option>
-        <option value="kmeans">Use k-means</option>
-      </select>
       <button id="runButton" onclick="runPipeline()">Run</button>
       <a class="secondary" href="/features">Features</a>
       <a class="secondary" href="/report">Report</a>
@@ -284,7 +270,7 @@ def _dashboard_html() -> str:
     </section>
     <section class="card" style="margin-bottom:20px;">
       <h2>Method Disagreement</h2>
-      <div class="label">Buckets use the same 0.62 heuristic and 0.90 ML agreement thresholds that feed suppression.</div>
+      <div class="label" id="disagreementNote"></div>
       <div id="disagreement"></div>
     </section>
     <section class="card" style="margin-bottom:20px;">
@@ -327,7 +313,15 @@ def _dashboard_html() -> str:
       renderBars('reasons', s.top_reasons || []);
       renderBars('regions', s.bot_regions || []);
       renderBars('disagreement', s.method_disagreement || []);
+      renderDisagreementNote(s);
       renderBars('tiers', Object.entries(s.tier_counts || {}));
+    }
+    function renderDisagreementNote(s) {
+      const thresholds = s.tier_thresholds || {};
+      const heuristic = Number(thresholds.suppress_agreement_heuristic_score ?? 0.62).toFixed(2);
+      const ml = Number(thresholds.suppress_agreement_ml_score ?? 0.995).toFixed(3);
+      document.getElementById('disagreementNote').textContent =
+        `Buckets use rules >= ${heuristic} and EIF tail >= ${ml}. ML only means extreme EIF evidence without a high rules score.`;
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);
@@ -359,7 +353,6 @@ def _dashboard_html() -> str:
     async function runPipeline() {
       const file = document.getElementById('inputFile').files[0];
       const inputPath = document.getElementById('inputPath').value.trim();
-      const mlBackend = document.getElementById('mlBackend').value;
       if (inputMode === 'upload' && !file) {
         document.getElementById('metrics').innerHTML = '<div class="card">Choose a TSV file before running the pipeline.</div>';
         return;
@@ -372,7 +365,7 @@ def _dashboard_html() -> str:
       document.getElementById('metrics').innerHTML = '<div class="card">Running pipeline...</div>';
       try {
         // Only the active mode is submitted; the other input is ignored regardless of its state.
-        const response = inputMode === 'upload' ? await uploadAndRun(file, mlBackend) : await runPath(inputPath, mlBackend);
+        const response = inputMode === 'upload' ? await uploadAndRun(file) : await runPath(inputPath);
         if (!response.ok) {
           const payload = await response.json();
           document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(payload.error || 'Pipeline run failed')}</div>`;
@@ -383,13 +376,12 @@ def _dashboard_html() -> str:
         document.getElementById('runButton').disabled = false;
       }
     }
-    function runPath(inputPath, mlBackend) {
-      return fetch('/run?input=' + encodeURIComponent(inputPath) + '&ml_backend=' + encodeURIComponent(mlBackend));
+    function runPath(inputPath) {
+      return fetch('/run?input=' + encodeURIComponent(inputPath));
     }
-    function uploadAndRun(file, mlBackend) {
+    function uploadAndRun(file) {
       const data = new FormData();
       data.append('file', file);
-      data.append('ml_backend', mlBackend);
       return fetch('/upload', { method: 'POST', body: data });
     }
     load();

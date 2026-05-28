@@ -102,6 +102,132 @@ def test_high_volume_rule_contribution_fields() -> None:
     assert contribution.condition == "domain_count >= threshold"
 
 
+def test_dense_burst_repetition_cluster_requires_all_signals() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search",
+        params={"d": "a.com", "ttc": "3000", "q": "human search"},
+    )
+    counters = {
+        "query_domain": Counter({("human search", "a.com"): 1}),
+        "query": Counter({"human search": 12}),
+        "domain": Counter({"a.com": 1}),
+        "device": Counter({("Mars", "Chrome", "Android"): 600}),
+        "ttc": Counter({3000: 1}),
+        "second": Counter({event.event_time: 5}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert event.reasons == [
+        "query repeated 12 times",
+        "heavy region/browser/os cluster (600)",
+        "5 clicks in the same second",
+        "dense burst repetition cluster (device 600, same-second 5, query 12)",
+    ]
+    assert event.heuristic_score == 0.50
+    contribution = event.rule_contributions[-1]
+    assert contribution.rule_id == "dense_burst_repetition_cluster"
+    assert contribution.label == "Dense burst repetition cluster"
+    assert contribution.weight == 0.12
+    assert contribution.observed == "device=600; same_second=5; query=12"
+    assert contribution.threshold == "device>=600; same_second>=5; repeated_query_pattern"
+    assert contribution.condition == (
+        "device_count >= total-rate threshold and same_second_count >= 5 "
+        "and (query_count >= threshold or query_domain_count >= threshold)"
+    )
+
+
+def test_dense_burst_repetition_cluster_does_not_fire_without_dense_burst() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search",
+        params={"d": "a.com", "ttc": "3000", "q": "human search"},
+    )
+    counters = {
+        "query_domain": Counter({("human search", "a.com"): 1}),
+        "query": Counter({"human search": 12}),
+        "domain": Counter({"a.com": 1}),
+        "device": Counter({("Mars", "Chrome", "Android"): 600}),
+        "ttc": Counter({3000: 1}),
+        "second": Counter({event.event_time: 4}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert "dense_burst_repetition_cluster" not in {
+        contribution.rule_id for contribution in event.rule_contributions
+    }
+
+
+def test_confirmed_query_repetition_requires_query_and_query_domain_repetition() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search",
+        params={"d": "a.com", "ttc": "3000", "q": "human search"},
+    )
+    counters = {
+        "query_domain": Counter({("human search", "a.com"): 4}),
+        "query": Counter({"human search": 12}),
+        "domain": Counter({"a.com": 1}),
+        "device": Counter({("Mars", "Chrome", "Android"): 1}),
+        "ttc": Counter({3000: 1}),
+        "second": Counter({event.event_time: 1}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert event.reasons == [
+        "query/domain repeated 4 times",
+        "query repeated 12 times",
+        "confirmed query repetition (query/domain 4, query 12)",
+    ]
+    assert event.heuristic_score == 0.62
+    contribution = event.rule_contributions[-1]
+    assert contribution.rule_id == "confirmed_query_repetition"
+    assert contribution.label == "Confirmed query repetition"
+    assert contribution.weight == 0.12
+    assert contribution.observed == "query_domain=4; query=12"
+    assert contribution.threshold == "query_domain>=4; query>=12"
+    assert contribution.condition == "query_domain_count >= threshold and query_count >= threshold"
+
+
+def test_confirmed_query_repetition_does_not_fire_for_query_only_repetition() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search",
+        params={"d": "a.com", "ttc": "3000", "q": "human search"},
+    )
+    counters = {
+        "query_domain": Counter({("human search", "a.com"): 3}),
+        "query": Counter({"human search": 12}),
+        "domain": Counter({"a.com": 1}),
+        "device": Counter({("Mars", "Chrome", "Android"): 1}),
+        "ttc": Counter({3000: 1}),
+        "second": Counter({event.event_time: 1}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert [contribution.rule_id for contribution in event.rule_contributions] == ["repeat_query"]
+
+
 def test_adaptive_ttc_reuse_threshold_uses_percentile_with_floor() -> None:
     counts = Counter({-1: 1000})
     counts.update({ttc: 1 for ttc in range(98)})

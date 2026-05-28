@@ -1,14 +1,12 @@
 from __future__ import annotations
 
-import random
-from importlib.util import find_spec
 from math import sqrt
 
 from .data import ClickEvent
 
-MLBackend = str
-ISOLATION_FOREST_MAX_SAMPLES = 4096
-ISOLATION_FOREST_MAX_FEATURES = 0.85
+EIF_TREES = 100
+EIF_EXTENSION_DIMS = 2
+EIF_SAMPLE_SIZE = 4096
 
 
 def _standardize(matrix: list[list[float]]) -> tuple[list[list[float]], list[float], list[float]]:
@@ -21,109 +19,70 @@ def _standardize(matrix: list[list[float]]) -> tuple[list[list[float]], list[flo
     return [[(row[i] - means[i]) / stds[i] for i in range(cols)] for row in matrix], means, stds
 
 
-def _distance(a: list[float], b: list[float]) -> float:
-    return sqrt(sum((x - y) ** 2 for x, y in zip(a, b)))
-
-
-def _nearest(row: list[float], centers: list[list[float]]) -> tuple[int, float]:
-    best_idx = 0
-    best_dist = _distance(row, centers[0])
-    for idx, center in enumerate(centers[1:], start=1):
-        dist = _distance(row, center)
-        if dist < best_dist:
-            best_idx = idx
-            best_dist = dist
-    return best_idx, best_dist
-
-
-def score_anomalies(events: list[ClickEvent], backend: MLBackend = "kmeans") -> MLBackend:
-    if backend == "kmeans":
-        score_with_kmeans(events)
-        return "kmeans"
-    if backend == "sklearn":
-        try:
-            score_with_isolation_forest(events)
-        except ImportError as exc:
-            raise ValueError(
-                "sklearn backend requested but scikit-learn is not installed; "
-                "install with: pip install bot-hunter[sklearn]"
-            ) from exc
-        return "sklearn"
-    if backend == "auto":
-        if not _sklearn_available():
-            score_with_kmeans(events)
-            return "kmeans"
-        try:
-            score_with_isolation_forest(events)
-        except ImportError:
-            score_with_kmeans(events)
-            return "kmeans"
-        return "sklearn"
-    raise ValueError(f"Unknown ML backend: {backend}")
-
-
-def _sklearn_available() -> bool:
+def score_anomalies(events: list[ClickEvent]) -> str:
     try:
-        return find_spec("sklearn.ensemble") is not None
-    except (ImportError, ValueError):
-        return False
+        score_with_extended_isolation_forest(events)
+    except ImportError as exc:
+        raise ValueError(
+            "Extended Isolation Forest requires isotree; install with: uv sync --extra eif"
+        ) from exc
+    return "eif"
 
 
-def score_with_kmeans(
+def score_with_extended_isolation_forest(events: list[ClickEvent], seed: int = 7) -> None:
+    score_with_extended_isolation_forest_config(
+        events,
+        seed=seed,
+        sample_size=EIF_SAMPLE_SIZE,
+        ntrees=EIF_TREES,
+        ndim=EIF_EXTENSION_DIMS,
+    )
+
+
+def score_with_extended_isolation_forest_config(
     events: list[ClickEvent],
-    clusters: int = 8,
-    iterations: int = 18,
-    sample_size: int = 25000,
+    *,
     seed: int = 7,
+    sample_size: int | str = EIF_SAMPLE_SIZE,
+    ntrees: int = EIF_TREES,
+    ndim: int = EIF_EXTENSION_DIMS,
 ) -> None:
     if not events:
         return
-    rng = random.Random(seed)
-    matrix = [event.features for event in events]
+    import numpy as np
+    from isotree import IsolationForest
+
+    matrix = [_ml_features(event) for event in events]
     scaled, means, stds = _standardize(matrix)
-    train = scaled if len(scaled) <= sample_size else rng.sample(scaled, sample_size)
-    clusters = min(clusters, len(train))
-    centers = rng.sample(train, clusters)
-
-    for _ in range(iterations):
-        buckets = [[] for _ in centers]
-        for row in train:
-            idx, _ = _nearest(row, centers)
-            buckets[idx].append(row)
-        new_centers: list[list[float]] = []
-        for idx, bucket in enumerate(buckets):
-            if not bucket:
-                new_centers.append(centers[idx])
-                continue
-            new_centers.append([sum(row[col] for row in bucket) / len(bucket) for col in range(len(bucket[0]))])
-        centers = new_centers
-
-    distances = [_nearest(row, centers)[1] for row in scaled]
-    _assign_rank_scores(events, distances)
-
-    # Keep variables visible to linters and readers; means/stds document that scoring is standardized.
-    _ = (means, stds)
-
-
-def score_with_isolation_forest(events: list[ClickEvent], seed: int = 7) -> None:
-    if not events:
-        return
-    from sklearn.ensemble import IsolationForest
-
-    matrix = [event.features for event in events]
-    scaled, means, stds = _standardize(matrix)
+    _apply_feature_weights(scaled, events[0].ml_feature_weights)
+    scaled_array = np.asarray(scaled, dtype=float)
+    model_sample_size = min(sample_size, len(scaled_array)) if isinstance(sample_size, int) else sample_size
     model = IsolationForest(
-        random_state=seed,
-        contamination="auto",
-        max_samples=min(ISOLATION_FOREST_MAX_SAMPLES, len(scaled)),
-        max_features=ISOLATION_FOREST_MAX_FEATURES,
+        sample_size=model_sample_size,
+        ntrees=ntrees,
+        ndim=min(ndim, scaled_array.shape[1]),
+        missing_action="fail",
+        standardize_data=False,
+        random_seed=seed,
+        nthreads=1,
     )
-    model.fit(scaled)
-    normality_scores = model.decision_function(scaled)
-    anomaly_scores = [-float(score) for score in normality_scores]
+    model.fit(scaled_array)
+    anomaly_scores = [float(score) for score in model.decision_function(scaled_array)]
     _assign_rank_scores(events, anomaly_scores)
 
     _ = (means, stds)
+
+
+def _ml_features(event: ClickEvent) -> list[float]:
+    return event.ml_features or event.features
+
+
+def _apply_feature_weights(matrix: list[list[float]], weights: list[float]) -> None:
+    if not matrix or not weights:
+        return
+    for row in matrix:
+        for idx, weight in enumerate(weights[: len(row)]):
+            row[idx] *= weight
 
 
 def _assign_rank_scores(events: list[ClickEvent], anomaly_values) -> None:

@@ -3,24 +3,21 @@
   "total_events": 149239,
   "bot_events": 3732,
   "bot_rate": 0.025006868177889156,
-  "threshold": 0.5902429140031359,
-  "heuristic_flag_rate": 0.0072099116182767235,
-  "ml_tail_rate": 0.015002780774462439,
-  "estimated_precision": 0.7851045016077169,
-  "ml_backend": "sklearn",
+  "threshold": 0.5989127005186345,
+  "heuristic_flag_rate": 0.013870369005420834,
+  "ml_tail_rate": 0.005005394032390997,
+  "estimated_precision": 0.5963183279742765,
+  "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
     "log_domain_count",
     "log_query_count",
     "log_query_domain_count",
     "log_device_count",
+    "log_country_count",
     "log_same_second_count",
     "log_ttc_count",
     "ttc_seconds",
-    "query_terms",
-    "query_chars",
-    "has_bkl",
-    "has_om",
     "kp",
     "sld",
     "hour",
@@ -29,6 +26,40 @@
     "log_pseudo_session_10s_click_count",
     "query_entropy"
   ],
+  "ml_feature_names": [
+    "log_domain_count",
+    "log_query_count",
+    "log_query_domain_count",
+    "log_device_count",
+    "log_country_count",
+    "log_same_second_count",
+    "log_ttc_count",
+    "ttc_seconds",
+    "kp",
+    "sld",
+    "hour",
+    "log_ttc_seconds",
+    "is_sub_200ms_click",
+    "log_pseudo_session_10s_click_count",
+    "query_entropy"
+  ],
+  "ml_feature_weights": {
+    "log_domain_count": 0.5,
+    "log_query_count": 0.5,
+    "log_query_domain_count": 0.5,
+    "log_device_count": 1.0,
+    "log_country_count": 0.5,
+    "log_same_second_count": 1.0,
+    "log_ttc_count": 1.0,
+    "ttc_seconds": 1.0,
+    "kp": 1.0,
+    "sld": 1.0,
+    "hour": 1.0,
+    "log_ttc_seconds": 0.5,
+    "is_sub_200ms_click": 0.5,
+    "log_pseudo_session_10s_click_count": 1.0,
+    "query_entropy": 0.5
+  },
   "operational_tiers": {
     "suppress": "High-confidence bot traffic suitable for automatic suppression after policy approval.",
     "quarantine": "Bot traffic that should be held for review before suppression.",
@@ -37,74 +68,75 @@
   "method_disagreement": [
     [
       "Heuristic + ML",
-      1065
+      157
     ],
     [
       "Heuristic only",
-      11
+      1913
     ],
     [
       "ML only",
-      13859
+      590
     ],
     [
       "Neither strong",
-      134304
+      146579
     ]
   ],
   "tier_thresholds": {
     "suppress_combined_score": 0.8,
     "suppress_heuristic_score": 0.8,
     "suppress_agreement_heuristic_score": 0.62,
-    "suppress_agreement_ml_score": 0.9,
+    "suppress_agreement_ml_score": 0.995,
+    "ml_only_tuning": "EIF agreement uses the extreme rank tail so the disagreement report does not treat broad unsupervised anomaly ranks as standalone bot evidence.",
     "quarantine": "is_bot == 1 and suppress conditions are not met",
     "monitor": "is_bot == 0"
   },
   "tier_counts": {
-    "suppress": 1069,
-    "quarantine": 2663,
+    "suppress": 1728,
+    "quarantine": 2004,
     "monitor": 145507
   },
   "top_reasons": [
     [
       "repeated query",
-      3278
+      3427
     ],
     [
       "repeated query/domain pair",
-      2097
+      2099
+    ],
+    [
+      "confirmed query repetition",
+      2023
     ],
     [
       "same-second click burst",
-      1936
-    ],
-    [
-      "high-volume clicked domain",
-      1884
+      1994
     ],
     [
       "very short query",
-      1800
+      1828
     ],
     [
       "heavy region/browser/os cluster",
-      1730
+      1784
+    ],
+    [
+      "high-volume clicked domain",
+      1773
+    ],
+    [
+      "dense burst repetition cluster",
+      517
     ],
     [
       "moderately long time-to-click",
-      492
+      461
     ],
     [
       "extreme time-to-click",
-      211
-    ],
-    [
-      "implausibly fast click",
-      155
-    ],
-    [
-      "regular inter-arrival timing",
-      13
+      176
     ]
   ],
   "top_domains": [
@@ -210,7 +242,7 @@
   "bot_regions": [
     [
       "Earth",
-      1838
+      1846
     ],
     [
       "Mars",
@@ -218,19 +250,19 @@
     ],
     [
       "Mercury",
-      51
+      53
     ],
     [
       "Saturn",
-      44
+      40
     ],
     [
       "Venus",
-      39
+      36
     ],
     [
       "Jupiter",
-      32
+      29
     ]
   ]
 }

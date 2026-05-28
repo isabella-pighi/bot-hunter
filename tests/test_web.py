@@ -43,12 +43,14 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Choose a local .tsv file to upload and analyze." in dashboard
         assert "Use only when the TSV already exists on the machine running this dashboard." in dashboard
         assert "Only the active mode is submitted; the other input is ignored regardless of its state." in dashboard
-        assert "inputMode === 'upload' ? await uploadAndRun(file, mlBackend) : await runPath(inputPath, mlBackend)" in dashboard
+        assert "inputMode === 'upload' ? await uploadAndRun(file) : await runPath(inputPath)" in dashboard
         assert "Choose a TSV file before running the pipeline." in dashboard
         assert "Enter a file path before running the pipeline." in dashboard
-        assert 'id="mlBackend"' in dashboard
+        assert 'id="mlBackend"' not in dashboard
         assert "Operational confidence" in dashboard
         assert "Method Disagreement" in dashboard
+        assert "EIF tail >= ${ml}" in dashboard
+        assert "0.90 ML agreement" not in dashboard
 
         features_page = urlopen(base_url + "/features", timeout=5).read().decode("utf-8")
         assert "Bot Hunter Features" in features_page
@@ -72,12 +74,12 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
 def test_web_upload_runs_pipeline_and_cleans_temp_file(monkeypatch, tmp_path: Path) -> None:
     calls = []
 
-    def fake_run_pipeline(input_path, output_dir, ml_backend="auto"):
+    def fake_run_pipeline(input_path, output_dir):
         path = Path(input_path)
         assert path.exists()
         assert path.read_text(encoding="utf-8") == "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com\n"
-        calls.append((path, output_dir, ml_backend))
-        return {"total_events": 1, "ml_backend": ml_backend}
+        calls.append((path, output_dir))
+        return {"total_events": 1, "ml_backend": "eif"}
 
     monkeypatch.setattr(web, "ROOT", tmp_path)
     monkeypatch.setattr(web, "run_pipeline", fake_run_pipeline)
@@ -88,14 +90,14 @@ def test_web_upload_runs_pipeline_and_cleans_temp_file(monkeypatch, tmp_path: Pa
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
         body, content_type = _multipart(
-            {"ml_backend": "kmeans"},
+            {},
             {"file": ("clicks.tsv", b"evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com\n")},
         )
         request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
         payload = json.loads(urlopen(request, timeout=5).read())
-        assert payload == {"total_events": 1, "ml_backend": "kmeans"}
+        assert payload == {"total_events": 1, "ml_backend": "eif"}
         assert len(calls) == 1
-        assert calls[0][1:] == (tmp_path, "kmeans")
+        assert calls[0][1] == tmp_path
         assert not calls[0][0].exists()
     finally:
         server.shutdown()
@@ -110,7 +112,7 @@ def test_web_upload_reports_missing_file(monkeypatch, tmp_path: Path) -> None:
     thread.start()
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
-        body, content_type = _multipart({"ml_backend": "auto"}, {})
+        body, content_type = _multipart({}, {})
         request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
         try:
             urlopen(request, timeout=5)
@@ -129,7 +131,7 @@ def test_web_upload_reports_missing_file(monkeypatch, tmp_path: Path) -> None:
 def test_web_upload_reports_invalid_upload_and_cleans_temp_file(monkeypatch, tmp_path: Path) -> None:
     temp_paths = []
 
-    def fake_run_pipeline(input_path, output_dir, ml_backend="auto"):
+    def fake_run_pipeline(input_path, output_dir):
         path = Path(input_path)
         assert path.exists()
         temp_paths.append(path)
@@ -143,7 +145,7 @@ def test_web_upload_reports_invalid_upload_and_cleans_temp_file(monkeypatch, tmp
     thread.start()
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
-        body, content_type = _multipart({"ml_backend": "auto"}, {"file": ("bad.tsv", b"bad row\n")})
+        body, content_type = _multipart({}, {"file": ("bad.tsv", b"bad row\n")})
         request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
         try:
             urlopen(request, timeout=5)
@@ -161,12 +163,12 @@ def test_web_upload_reports_invalid_upload_and_cleans_temp_file(monkeypatch, tmp
         thread.join(timeout=5)
 
 
-def test_web_run_passes_selected_backend(monkeypatch, tmp_path: Path) -> None:
+def test_web_run_uses_production_pipeline(monkeypatch, tmp_path: Path) -> None:
     calls = []
 
-    def fake_run_pipeline(input_path, output_dir, ml_backend="auto"):
-        calls.append((str(input_path), output_dir, ml_backend))
-        return {"total_events": 0, "ml_backend": ml_backend}
+    def fake_run_pipeline(input_path, output_dir):
+        calls.append((str(input_path), output_dir))
+        return {"total_events": 0, "ml_backend": "eif"}
 
     monkeypatch.setattr(web, "ROOT", tmp_path)
     monkeypatch.setattr(web, "run_pipeline", fake_run_pipeline)
@@ -176,20 +178,9 @@ def test_web_run_passes_selected_backend(monkeypatch, tmp_path: Path) -> None:
     thread.start()
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
-        payload = json.loads(
-            urlopen(base_url + "/run?input=/tmp/clicks.tsv&ml_backend=kmeans", timeout=5).read()
-        )
-        assert payload == {"total_events": 0, "ml_backend": "kmeans"}
-        assert calls == [("/tmp/clicks.tsv", tmp_path, "kmeans")]
-
-        try:
-            urlopen(base_url + "/run?input=/tmp/clicks.tsv&ml_backend=bad", timeout=5)
-        except HTTPError as exc:
-            assert exc.code == 400
-            error_payload = json.loads(exc.read().decode("utf-8"))
-            assert error_payload["error"] == "ml_backend must be auto, sklearn, or kmeans"
-        else:
-            raise AssertionError("invalid backend should return HTTP 400")
+        payload = json.loads(urlopen(base_url + "/run?input=/tmp/clicks.tsv", timeout=5).read())
+        assert payload == {"total_events": 0, "ml_backend": "eif"}
+        assert calls == [("/tmp/clicks.tsv", tmp_path)]
     finally:
         server.shutdown()
         server.server_close()

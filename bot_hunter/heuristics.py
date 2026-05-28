@@ -14,6 +14,9 @@ MODERATE_LONG_TTC_MAX_MS = 60_000
 MODERATE_LONG_TTC_WEIGHT = 0.06
 TTC_REUSE_COUNT_FLOOR = 40
 TTC_REUSE_COUNT_PERCENTILE = 0.99
+DENSE_BURST_REPETITION_MIN_SAME_SECOND = 5
+DENSE_BURST_REPETITION_WEIGHT = 0.12
+CONFIRMED_QUERY_REPETITION_WEIGHT = 0.12
 
 
 def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> None:
@@ -61,6 +64,22 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     q_count,
                     query_hi,
                     "query_count >= threshold",
+                )
+            )
+
+        if qd_count >= query_domain_hi and q_count >= query_hi:
+            score += CONFIRMED_QUERY_REPETITION_WEIGHT
+            reason = f"confirmed query repetition (query/domain {qd_count}, query {q_count})"
+            reasons.append(reason)
+            contributions.append(
+                _contribution(
+                    "confirmed_query_repetition",
+                    "Confirmed query repetition",
+                    reason,
+                    CONFIRMED_QUERY_REPETITION_WEIGHT,
+                    f"query_domain={qd_count}; query={q_count}",
+                    f"query_domain>={query_domain_hi}; query>={query_hi}",
+                    "query_domain_count >= threshold and query_count >= threshold",
                 )
             )
 
@@ -133,6 +152,34 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     same_second,
                     4,
                     "same_second_count >= threshold",
+                )
+            )
+
+        if (
+            device_count >= device_hi
+            and same_second >= DENSE_BURST_REPETITION_MIN_SAME_SECOND
+            and (q_count >= query_hi or qd_count >= query_domain_hi)
+        ):
+            score += DENSE_BURST_REPETITION_WEIGHT
+            repeated_observed = max(q_count, qd_count)
+            repeated_label = "query/domain" if qd_count >= query_domain_hi else "query"
+            reason = (
+                "dense burst repetition cluster "
+                f"(device {device_count}, same-second {same_second}, {repeated_label} {repeated_observed})"
+            )
+            reasons.append(reason)
+            contributions.append(
+                _contribution(
+                    "dense_burst_repetition_cluster",
+                    "Dense burst repetition cluster",
+                    reason,
+                    DENSE_BURST_REPETITION_WEIGHT,
+                    f"device={device_count}; same_second={same_second}; {repeated_label}={repeated_observed}",
+                    f"device>={device_hi}; same_second>={DENSE_BURST_REPETITION_MIN_SAME_SECOND}; repeated_query_pattern",
+                    (
+                        "device_count >= total-rate threshold and same_second_count >= 5 "
+                        "and (query_count >= threshold or query_domain_count >= threshold)"
+                    ),
                 )
             )
 

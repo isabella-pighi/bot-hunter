@@ -11,6 +11,16 @@ from urllib.parse import parse_qs, urlsplit
 EXPECTED_FIELD_COUNT = 6
 EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 EPOCH = datetime(1970, 1, 1)
+EXCLUDED_ML_FEATURE_NAMES: set[str] = set()
+ML_FEATURE_WEIGHTS = {
+    "log_domain_count": 0.5,
+    "log_country_count": 0.5,
+    "log_query_domain_count": 0.5,
+    "log_query_count": 0.5,
+    "log_ttc_seconds": 0.5,
+    "is_sub_200ms_click": 0.5,
+    "query_entropy": 0.5,
+}
 
 
 @dataclass
@@ -35,6 +45,8 @@ class ClickEvent:
     url: str
     params: dict[str, str] = field(default_factory=dict)
     features: list[float] = field(default_factory=list)
+    ml_features: list[float] = field(default_factory=list)
+    ml_feature_weights: list[float] = field(default_factory=list)
     heuristic_score: float = 0.0
     ml_score: float = 0.0
     combined_score: float = 0.0
@@ -116,13 +128,10 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "log_query_count",
         "log_query_domain_count",
         "log_device_count",
+        "log_country_count",
         "log_same_second_count",
         "log_ttc_count",
         "ttc_seconds",
-        "query_terms",
-        "query_chars",
-        "has_bkl",
-        "has_om",
         "kp",
         "sld",
         "hour",
@@ -131,9 +140,9 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "log_pseudo_session_10s_click_count",
         "query_entropy",
     ]
+    ml_feature_weights = select_ml_feature_weights(names)
     burst_counts = _pseudo_session_burst_counts(events)
     for event in events:
-        query_terms = len(event.query.split())
         try:
             kp = float(event.params.get("kp", "-9"))
         except ValueError:
@@ -148,13 +157,10 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             log1p(counters["query"][event.query]),
             log1p(counters["query_domain"][(event.query, event.domain)]),
             log1p(counters["device"][(event.region, event.browser, event.os)]),
+            log1p(counters["country"][event.params.get("ct", "")]),
             log1p(counters["second"][event.event_time]),
             log1p(counters["ttc"][event.ttc]),
             ttc_seconds,
-            float(query_terms),
-            float(len(event.query)),
-            1.0 if "bkl" in event.params else 0.0,
-            1.0 if "om" in event.params else 0.0,
             kp,
             sld,
             float(event.event_time.hour),
@@ -163,7 +169,21 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             log1p(burst_counts[id(event)]),
             _query_entropy(event.query),
         ]
+        event.ml_features = _select_ml_features(names, event.features)
+        event.ml_feature_weights = ml_feature_weights
     return names, counters
+
+
+def select_ml_feature_names(feature_names: list[str]) -> list[str]:
+    return [name for name in feature_names if name not in EXCLUDED_ML_FEATURE_NAMES]
+
+
+def select_ml_feature_weights(feature_names: list[str]) -> list[float]:
+    return [ML_FEATURE_WEIGHTS.get(name, 1.0) for name in select_ml_feature_names(feature_names)]
+
+
+def _select_ml_features(feature_names: list[str], values: list[float]) -> list[float]:
+    return [value for name, value in zip(feature_names, values) if name not in EXCLUDED_ML_FEATURE_NAMES]
 
 
 def _pseudo_session_burst_counts(events: list[ClickEvent], window_seconds: int = 10) -> dict[int, int]:
