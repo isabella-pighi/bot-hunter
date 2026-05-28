@@ -220,7 +220,7 @@ evt_000217	0	monitor
 evt_000218	0	monitor
 evt_000219	0	monitor
 evt_000220	0	monitor
-evt_000221	0	monitor
+evt_000221	1	quarantine
 evt_000222	0	monitor
 evt_000223	0	monitor
 evt_000224	0	monitor
@@ -385,7 +385,7 @@ evt_000382	0	monitor
 evt_000383	0	monitor
 evt_000384	0	monitor
 evt_000385	0	monitor
-evt_000386	0	monitor
+evt_000386	1	quarantine
 evt_000387	0	monitor
 evt_000388	0	monitor
 evt_000389	0	monitor
@@ -488,7 +488,7 @@ evt_000485	0	monitor
 evt_000486	0	monitor
 evt_000487	0	monitor
 evt_000488	0	monitor
-evt_000489	0	monitor
+evt_000489	1	quarantine
 evt_000490	0	monitor
 evt_000491	0	monitor
 evt_000492	0	monitor
@@ -2557,7 +2557,7 @@ evt_002554	0	monitor
 evt_002555	0	monitor
 evt_002556	0	monitor
 evt_002557	0	monitor
-evt_002558	1	quarantine
+evt_002558	0	monitor
 evt_002559	0	monitor
 evt_002560	0	monitor
 evt_002561	0	monitor
@@ -2631,7 +2631,7 @@ evt_002628	0	monitor
 evt_002629	0	monitor
 evt_002630	0	monitor
 evt_002631	0	monitor
-evt_002632	0	monitor
+evt_002632	1	quarantine
 evt_002633	0	monitor
 evt_002634	0	monitor
 evt_002635	0	monitor
@@ -3008,7 +3008,7 @@ evt_003005	0	monitor
 evt_003006	0	monitor
 evt_003007	0	monitor
 evt_003008	0	monitor
-evt_003009	1	quarantine
+evt_003009	0	monitor
 evt_003010	0	monitor
 evt_003011	0	monitor
 evt_003012	0	monitor
@@ -4159,7 +4159,7 @@ evt_004156	0	monitor
 evt_004157	0	monitor
 evt_004158	0	monitor
 evt_004159	0	monitor
-evt_004160	0	monitor
+evt_004160	1	quarantine
 evt_004161	0	monitor
 evt_004162	0	monitor
 evt_004163	0	monitor
@@ -4474,7 +4474,7 @@ evt_004471	0	monitor
 evt_004472	0	monitor
 evt_004473	0	monitor
 evt_004474	0	monitor
-evt_004475	0	monitor
+evt_004475	1	quarantine
 evt_004476	0	monitor
 evt_004477	0	monitor
 evt_004478	0	monitor
@@ -4756,7 +4756,7 @@ evt_004753	0	monitor
 evt_004754	0	monitor
 evt_004755	0	monitor
 evt_004756	0	monitor
-evt_004757	0	monitor
+evt_004757	1	quarantine
 evt_004758	0	monitor
 evt_004759	0	monitor
 evt_004760	0	monitor
@@ -5679,7 +5679,7 @@ evt_005676	0	monitor
 evt_005677	0	monitor
 evt_005678	0	monitor
 evt_005679	0	monitor
-evt_005680	0	monitor
+evt_005680	1	quarantine
 evt_005681	0	monitor
 evt_005682	0	monitor
 evt_005683	0	monitor
@@ -5705,7 +5705,7 @@ evt_005702	0	monitor
 evt_005703	0	monitor
 evt_005704	0	monitor
 evt_005705	0	monitor
-evt_005706	1	quarantine
+evt_005706	0	monitor
 evt_005707	0	monitor
 evt_005708	0	monitor
 evt_005709	0	monitor
@@ -5795,7 +5795,7 @@ evt_005792	0	monitor
 evt_005793	0	monitor
 evt_005794	1	quarantine
 evt_005795	0	monitor
-evt_005796	0	monitor
+evt_005796	1	quarantine
 evt_005797	0	monitor
 evt_005798	0	monitor
 evt_005799	0	monitor
@@ -7963,7 +7963,7 @@ evt_007960	0	monitor
 evt_007961	0	monitor
 evt_007962	0	monitor
 evt_007963	0	monitor
-evt_007964	0	monitor
+evt_007964	1	quarantine
 evt_007965	0	monitor
 evt_007966	0	monitor
 evt_007967	0	monitor
@@ -8460,7 +8460,7 @@ evt_008457	0	monitor
 evt_008458	0	monitor
 evt_008459	0	monitor
 evt_008460	0	monitor
-evt_008461	1	quarantine
+evt_008461	0	monitor
 evt_008462	0	monitor
 evt_008463	1	quarantine
 evt_008464	0	monitor
@@ -8810,7 +8810,7 @@ evt_008807	0	monitor
 evt_008808	0	monitor
 evt_008809	0	monitor
 evt_008810	0	monitor
-evt_008811	1	quarantine
+evt_008811	0	monitor
 evt_008812	0	monitor
 evt_008813	0	monitor
 evt_008814	0	monitor
@@ -9219,7 +9219,7 @@ evt_009216	0	monitor
 evt_009217	0	monitor
 evt_009218	0	monitor
 evt_009219	0	monitor
-evt_009220	0	monitor
+evt_009220	1	quarantine
 evt_009221	0	monitor
 evt_009222	0	monitor
 evt_009223	0	monitor
@@ -11130,7 +11130,7 @@ evt_011127	0	monitor
 evt_011128	0	monitor
 evt_011129	0	monitor
 evt_011130	0	monitor
-evt_011131	1	quarantine
+evt_011131	0	monitor
 evt_011132	0	monitor
 evt_011133	0	monitor
 evt_011134	0	monitor
@@ -11324,7 +11324,7 @@ evt_011321	0	monitor
 evt_011322	0	monitor
 evt_011323	0	monitor
 evt_011324	0	monitor
-evt_011325	0	monitor
+evt_011325	1	quarantine
 evt_011326	0	monitor
 evt_011327	0	monitor
 evt_011328	0	monitor
@@ -12044,7 +12044,7 @@ evt_012041	0	monitor
 evt_012042	0	monitor
 evt_012043	0	monitor
 evt_012044	0	monitor
-evt_012045	0	monitor
+evt_012045	1	quarantine
 evt_012046	0	monitor
 evt_012047	0	monitor
 evt_012048	0	monitor
@@ -12104,7 +12104,7 @@ evt_012101	0	monitor
 evt_012102	0	monitor
 evt_012103	0	monitor
 evt_012104	0	monitor
-evt_012105	0	monitor
+evt_012105	1	quarantine
 evt_012106	0	monitor
 evt_012107	0	monitor
 evt_012108	0	monitor
@@ -12831,7 +12831,7 @@ evt_012828	0	monitor
 evt_012829	0	monitor
 evt_012830	1	quarantine
 evt_012831	1	suppress
-evt_012832	1	quarantine
+evt_012832	0	monitor
 evt_012833	0	monitor
 evt_012834	0	monitor
 evt_012835	0	monitor
@@ -13120,7 +13120,7 @@ evt_013117	1	quarantine
 evt_013118	0	monitor
 evt_013119	0	monitor
 evt_013120	0	monitor
-evt_013121	0	monitor
+evt_013121	1	quarantine
 evt_013122	0	monitor
 evt_013123	0	monitor
 evt_013124	0	monitor
@@ -13155,7 +13155,7 @@ evt_013152	0	monitor
 evt_013153	0	monitor
 evt_013154	0	monitor
 evt_013155	0	monitor
-evt_013156	1	quarantine
+evt_013156	0	monitor
 evt_013157	0	monitor
 evt_013158	0	monitor
 evt_013159	0	monitor
@@ -13194,7 +13194,7 @@ evt_013191	0	monitor
 evt_013192	0	monitor
 evt_013193	0	monitor
 evt_013194	0	monitor
-evt_013195	0	monitor
+evt_013195	1	quarantine
 evt_013196	0	monitor
 evt_013197	0	monitor
 evt_013198	0	monitor
@@ -13540,7 +13540,7 @@ evt_013537	0	monitor
 evt_013538	0	monitor
 evt_013539	1	quarantine
 evt_013540	0	monitor
-evt_013541	1	quarantine
+evt_013541	0	monitor
 evt_013542	0	monitor
 evt_013543	0	monitor
 evt_013544	0	monitor
@@ -13741,7 +13741,7 @@ evt_013738	0	monitor
 evt_013739	0	monitor
 evt_013740	0	monitor
 evt_013741	0	monitor
-evt_013742	0	monitor
+evt_013742	1	quarantine
 evt_013743	0	monitor
 evt_013744	1	quarantine
 evt_013745	0	monitor
@@ -13763,7 +13763,7 @@ evt_013760	0	monitor
 evt_013762	0	monitor
 evt_013761	0	monitor
 evt_013763	0	monitor
-evt_013764	1	quarantine
+evt_013764	0	monitor
 evt_013765	0	monitor
 evt_013766	0	monitor
 evt_013767	0	monitor
@@ -13786,7 +13786,7 @@ evt_013783	0	monitor
 evt_013784	0	monitor
 evt_013785	0	monitor
 evt_013786	0	monitor
-evt_013787	1	quarantine
+evt_013787	0	monitor
 evt_013788	0	monitor
 evt_013789	1	suppress
 evt_013790	0	monitor
@@ -14335,7 +14335,7 @@ evt_014332	0	monitor
 evt_014333	0	monitor
 evt_014334	1	suppress
 evt_014335	0	monitor
-evt_014336	0	monitor
+evt_014336	1	quarantine
 evt_014337	0	monitor
 evt_014338	0	monitor
 evt_014339	0	monitor
@@ -15010,7 +15010,7 @@ evt_015007	1	suppress
 evt_015008	0	monitor
 evt_015009	0	monitor
 evt_015010	0	monitor
-evt_015011	0	monitor
+evt_015011	1	quarantine
 evt_015012	0	monitor
 evt_015013	0	monitor
 evt_015014	0	monitor
@@ -16110,7 +16110,7 @@ evt_016107	0	monitor
 evt_016108	0	monitor
 evt_016109	0	monitor
 evt_016110	0	monitor
-evt_016111	1	quarantine
+evt_016111	0	monitor
 evt_016112	0	monitor
 evt_016113	0	monitor
 evt_016114	0	monitor
@@ -16875,7 +16875,7 @@ evt_016872	0	monitor
 evt_016873	0	monitor
 evt_016874	0	monitor
 evt_016875	0	monitor
-evt_016876	0	monitor
+evt_016876	1	quarantine
 evt_016877	0	monitor
 evt_016878	0	monitor
 evt_016879	0	monitor
@@ -17198,7 +17198,7 @@ evt_017195	0	monitor
 evt_017196	0	monitor
 evt_017197	0	monitor
 evt_017198	0	monitor
-evt_017199	1	quarantine
+evt_017199	0	monitor
 evt_017200	0	monitor
 evt_017201	0	monitor
 evt_017202	0	monitor
@@ -17285,7 +17285,7 @@ evt_017282	0	monitor
 evt_017283	0	monitor
 evt_017284	0	monitor
 evt_017285	0	monitor
-evt_017286	0	monitor
+evt_017286	1	quarantine
 evt_017287	0	monitor
 evt_017288	0	monitor
 evt_017289	0	monitor
@@ -17752,7 +17752,7 @@ evt_017749	0	monitor
 evt_017750	0	monitor
 evt_017751	0	monitor
 evt_017752	0	monitor
-evt_017753	0	monitor
+evt_017753	1	quarantine
 evt_017754	0	monitor
 evt_017755	0	monitor
 evt_017756	0	monitor
@@ -18024,7 +18024,7 @@ evt_018021	0	monitor
 evt_018022	0	monitor
 evt_018023	0	monitor
 evt_018024	0	monitor
-evt_018025	1	quarantine
+evt_018025	0	monitor
 evt_018026	0	monitor
 evt_018027	0	monitor
 evt_018028	0	monitor
@@ -18063,7 +18063,7 @@ evt_018060	0	monitor
 evt_018061	0	monitor
 evt_018062	0	monitor
 evt_018063	0	monitor
-evt_018064	0	monitor
+evt_018064	1	quarantine
 evt_018065	0	monitor
 evt_018066	0	monitor
 evt_018067	0	monitor
@@ -18533,7 +18533,7 @@ evt_018530	0	monitor
 evt_018531	0	monitor
 evt_018532	0	monitor
 evt_018533	0	monitor
-evt_018534	1	quarantine
+evt_018534	0	monitor
 evt_018535	0	monitor
 evt_018536	0	monitor
 evt_018537	0	monitor
@@ -18571,7 +18571,7 @@ evt_018568	1	suppress
 evt_018569	0	monitor
 evt_018570	0	monitor
 evt_018571	0	monitor
-evt_018572	1	quarantine
+evt_018572	0	monitor
 evt_018573	0	monitor
 evt_018574	0	monitor
 evt_018575	0	monitor
@@ -19449,12 +19449,12 @@ evt_019446	0	monitor
 evt_019447	0	monitor
 evt_019448	0	monitor
 evt_019449	0	monitor
-evt_019450	0	monitor
+evt_019450	1	quarantine
 evt_019451	0	monitor
 evt_019452	0	monitor
 evt_019453	0	monitor
 evt_019454	0	monitor
-evt_019455	1	suppress
+evt_019455	1	quarantine
 evt_019456	0	monitor
 evt_019457	0	monitor
 evt_019458	0	monitor
@@ -19778,7 +19778,7 @@ evt_019775	0	monitor
 evt_019776	0	monitor
 evt_019777	0	monitor
 evt_019778	0	monitor
-evt_019779	1	quarantine
+evt_019779	0	monitor
 evt_019780	0	monitor
 evt_019781	0	monitor
 evt_019782	0	monitor
@@ -20162,7 +20162,7 @@ evt_020159	0	monitor
 evt_020160	0	monitor
 evt_020161	0	monitor
 evt_020162	0	monitor
-evt_020163	0	monitor
+evt_020163	1	quarantine
 evt_020164	0	monitor
 evt_020165	0	monitor
 evt_020166	0	monitor
@@ -21195,7 +21195,7 @@ evt_021192	0	monitor
 evt_021193	0	monitor
 evt_021194	0	monitor
 evt_021195	0	monitor
-evt_021196	0	monitor
+evt_021196	1	quarantine
 evt_021197	0	monitor
 evt_021198	0	monitor
 evt_021199	0	monitor
@@ -21572,7 +21572,7 @@ evt_021569	0	monitor
 evt_021570	0	monitor
 evt_021571	0	monitor
 evt_021572	0	monitor
-evt_021573	0	monitor
+evt_021573	1	quarantine
 evt_021574	0	monitor
 evt_021575	0	monitor
 evt_021576	0	monitor
@@ -22123,7 +22123,7 @@ evt_022120	0	monitor
 evt_022121	0	monitor
 evt_022122	0	monitor
 evt_022123	0	monitor
-evt_022124	1	quarantine
+evt_022124	0	monitor
 evt_022125	0	monitor
 evt_022126	0	monitor
 evt_022127	0	monitor
@@ -22701,7 +22701,7 @@ evt_022698	0	monitor
 evt_022699	0	monitor
 evt_022700	0	monitor
 evt_022701	0	monitor
-evt_022702	1	quarantine
+evt_022702	0	monitor
 evt_022703	0	monitor
 evt_022704	0	monitor
 evt_022705	0	monitor
@@ -23460,7 +23460,7 @@ evt_023457	0	monitor
 evt_023458	0	monitor
 evt_023459	0	monitor
 evt_023460	0	monitor
-evt_023461	1	quarantine
+evt_023461	0	monitor
 evt_023462	0	monitor
 evt_023463	0	monitor
 evt_023464	0	monitor
@@ -23821,7 +23821,7 @@ evt_023818	0	monitor
 evt_023819	0	monitor
 evt_023820	0	monitor
 evt_023821	0	monitor
-evt_023822	0	monitor
+evt_023822	1	quarantine
 evt_023823	0	monitor
 evt_023824	0	monitor
 evt_023825	0	monitor
@@ -23941,7 +23941,7 @@ evt_023938	0	monitor
 evt_023939	0	monitor
 evt_023940	0	monitor
 evt_023941	0	monitor
-evt_023942	0	monitor
+evt_023942	1	quarantine
 evt_023943	0	monitor
 evt_023944	0	monitor
 evt_023945	0	monitor
@@ -24127,7 +24127,7 @@ evt_024124	0	monitor
 evt_024125	0	monitor
 evt_024126	0	monitor
 evt_024127	0	monitor
-evt_024128	0	monitor
+evt_024128	1	quarantine
 evt_024129	0	monitor
 evt_024130	0	monitor
 evt_024131	0	monitor
@@ -24588,7 +24588,7 @@ evt_024585	0	monitor
 evt_024586	0	monitor
 evt_024587	0	monitor
 evt_024588	0	monitor
-evt_024589	0	monitor
+evt_024589	1	quarantine
 evt_024590	0	monitor
 evt_024591	0	monitor
 evt_024593	0	monitor
@@ -24964,7 +24964,7 @@ evt_024961	0	monitor
 evt_024962	0	monitor
 evt_024963	0	monitor
 evt_024964	0	monitor
-evt_024965	0	monitor
+evt_024965	1	quarantine
 evt_024966	0	monitor
 evt_024967	0	monitor
 evt_024968	0	monitor
@@ -25008,7 +25008,7 @@ evt_025005	0	monitor
 evt_025006	0	monitor
 evt_025007	0	monitor
 evt_025008	0	monitor
-evt_025009	0	monitor
+evt_025009	1	quarantine
 evt_025010	0	monitor
 evt_025011	0	monitor
 evt_025012	0	monitor
@@ -25235,7 +25235,7 @@ evt_025232	0	monitor
 evt_025233	0	monitor
 evt_025234	0	monitor
 evt_025235	0	monitor
-evt_025236	0	monitor
+evt_025236	1	quarantine
 evt_025237	0	monitor
 evt_025238	0	monitor
 evt_025239	0	monitor
@@ -26602,7 +26602,7 @@ evt_026599	0	monitor
 evt_026600	0	monitor
 evt_026601	0	monitor
 evt_026602	0	monitor
-evt_026603	0	monitor
+evt_026603	1	quarantine
 evt_026604	0	monitor
 evt_026605	0	monitor
 evt_026606	0	monitor
@@ -26629,7 +26629,7 @@ evt_026626	0	monitor
 evt_026627	0	monitor
 evt_026628	0	monitor
 evt_026629	0	monitor
-evt_026630	0	monitor
+evt_026630	1	quarantine
 evt_026631	0	monitor
 evt_026632	0	monitor
 evt_026633	0	monitor
@@ -26954,7 +26954,7 @@ evt_026951	0	monitor
 evt_026952	0	monitor
 evt_026953	0	monitor
 evt_026954	0	monitor
-evt_026955	1	quarantine
+evt_026955	0	monitor
 evt_026956	0	monitor
 evt_026957	0	monitor
 evt_026958	0	monitor
@@ -27024,7 +27024,7 @@ evt_027021	0	monitor
 evt_027022	0	monitor
 evt_027023	0	monitor
 evt_027024	0	monitor
-evt_027025	1	quarantine
+evt_027025	0	monitor
 evt_027026	0	monitor
 evt_027027	0	monitor
 evt_027028	0	monitor
@@ -27309,7 +27309,7 @@ evt_027306	0	monitor
 evt_027307	0	monitor
 evt_027308	0	monitor
 evt_027309	0	monitor
-evt_027310	0	monitor
+evt_027310	1	quarantine
 evt_027311	0	monitor
 evt_027312	0	monitor
 evt_027313	0	monitor
@@ -28084,7 +28084,7 @@ evt_028081	0	monitor
 evt_028082	0	monitor
 evt_028083	0	monitor
 evt_028084	0	monitor
-evt_028085	1	quarantine
+evt_028085	0	monitor
 evt_028086	0	monitor
 evt_028087	0	monitor
 evt_028088	0	monitor
@@ -30075,7 +30075,7 @@ evt_030072	0	monitor
 evt_030073	0	monitor
 evt_030074	0	monitor
 evt_030075	0	monitor
-evt_030076	1	quarantine
+evt_030076	0	monitor
 evt_030077	0	monitor
 evt_030078	0	monitor
 evt_030079	0	monitor
@@ -30834,7 +30834,7 @@ evt_030831	1	quarantine
 evt_030832	0	monitor
 evt_030833	0	monitor
 evt_030834	0	monitor
-evt_030835	1	quarantine
+evt_030835	0	monitor
 evt_030836	0	monitor
 evt_030837	0	monitor
 evt_030838	0	monitor
@@ -32669,7 +32669,7 @@ evt_032666	0	monitor
 evt_032667	0	monitor
 evt_032668	0	monitor
 evt_032669	0	monitor
-evt_032670	0	monitor
+evt_032670	1	quarantine
 evt_032671	0	monitor
 evt_032672	0	monitor
 evt_032673	0	monitor
@@ -33067,7 +33067,7 @@ evt_033064	0	monitor
 evt_033065	0	monitor
 evt_033066	0	monitor
 evt_033067	0	monitor
-evt_033068	0	monitor
+evt_033068	1	quarantine
 evt_033069	0	monitor
 evt_033070	0	monitor
 evt_033071	0	monitor
@@ -33249,7 +33249,7 @@ evt_033246	0	monitor
 evt_033247	0	monitor
 evt_033248	0	monitor
 evt_033249	0	monitor
-evt_033250	0	monitor
+evt_033250	1	quarantine
 evt_033251	0	monitor
 evt_033252	0	monitor
 evt_033253	0	monitor
@@ -33920,7 +33920,7 @@ evt_033917	0	monitor
 evt_033918	0	monitor
 evt_033919	0	monitor
 evt_033920	0	monitor
-evt_033921	0	monitor
+evt_033921	1	quarantine
 evt_033922	0	monitor
 evt_033923	0	monitor
 evt_033924	0	monitor
@@ -34295,7 +34295,7 @@ evt_034292	0	monitor
 evt_034293	0	monitor
 evt_034294	0	monitor
 evt_034295	0	monitor
-evt_034296	0	monitor
+evt_034296	1	quarantine
 evt_034297	0	monitor
 evt_034298	0	monitor
 evt_034299	0	monitor
@@ -34728,7 +34728,7 @@ evt_034725	0	monitor
 evt_034726	0	monitor
 evt_034727	0	monitor
 evt_034728	0	monitor
-evt_034729	1	quarantine
+evt_034729	0	monitor
 evt_034730	0	monitor
 evt_034731	0	monitor
 evt_034732	0	monitor
@@ -35526,7 +35526,7 @@ evt_035523	0	monitor
 evt_035524	0	monitor
 evt_035525	1	quarantine
 evt_035526	0	monitor
-evt_035527	0	monitor
+evt_035527	1	quarantine
 evt_035528	0	monitor
 evt_035529	0	monitor
 evt_035530	0	monitor
@@ -35931,7 +35931,7 @@ evt_035928	0	monitor
 evt_035929	0	monitor
 evt_035930	0	monitor
 evt_035931	0	monitor
-evt_035932	1	quarantine
+evt_035932	0	monitor
 evt_035933	0	monitor
 evt_035934	0	monitor
 evt_035935	0	monitor
@@ -36124,7 +36124,7 @@ evt_036121	0	monitor
 evt_036122	0	monitor
 evt_036123	0	monitor
 evt_036124	0	monitor
-evt_036125	0	monitor
+evt_036125	1	quarantine
 evt_036126	0	monitor
 evt_036127	0	monitor
 evt_036128	0	monitor
@@ -36279,7 +36279,7 @@ evt_036276	0	monitor
 evt_036277	0	monitor
 evt_036278	0	monitor
 evt_036279	0	monitor
-evt_036280	1	quarantine
+evt_036280	0	monitor
 evt_036281	0	monitor
 evt_036282	0	monitor
 evt_036283	0	monitor
@@ -36541,7 +36541,7 @@ evt_036538	0	monitor
 evt_036539	0	monitor
 evt_036540	0	monitor
 evt_036541	0	monitor
-evt_036542	0	monitor
+evt_036542	1	quarantine
 evt_036543	0	monitor
 evt_036544	0	monitor
 evt_036545	0	monitor
@@ -36749,7 +36749,7 @@ evt_036746	0	monitor
 evt_036747	0	monitor
 evt_036748	1	suppress
 evt_036749	0	monitor
-evt_036750	0	monitor
+evt_036750	1	quarantine
 evt_036751	0	monitor
 evt_036752	0	monitor
 evt_036753	0	monitor
@@ -36831,7 +36831,7 @@ evt_036828	0	monitor
 evt_036829	0	monitor
 evt_036830	0	monitor
 evt_036831	0	monitor
-evt_036832	0	monitor
+evt_036832	1	quarantine
 evt_036833	0	monitor
 evt_036834	0	monitor
 evt_036835	0	monitor
@@ -37040,7 +37040,7 @@ evt_037037	0	monitor
 evt_037038	0	monitor
 evt_037039	0	monitor
 evt_037040	0	monitor
-evt_037041	1	quarantine
+evt_037041	0	monitor
 evt_037042	0	monitor
 evt_037043	0	monitor
 evt_037044	0	monitor
@@ -37099,7 +37099,7 @@ evt_037096	0	monitor
 evt_037097	0	monitor
 evt_037098	0	monitor
 evt_037099	0	monitor
-evt_037100	0	monitor
+evt_037100	1	quarantine
 evt_037101	0	monitor
 evt_037102	0	monitor
 evt_037103	1	quarantine
@@ -38253,7 +38253,7 @@ evt_038250	1	quarantine
 evt_038251	0	monitor
 evt_038252	0	monitor
 evt_038253	0	monitor
-evt_038254	0	monitor
+evt_038254	1	quarantine
 evt_038255	0	monitor
 evt_038256	0	monitor
 evt_038257	0	monitor
@@ -38302,7 +38302,7 @@ evt_038299	0	monitor
 evt_038300	0	monitor
 evt_038301	0	monitor
 evt_038302	0	monitor
-evt_038303	0	monitor
+evt_038303	1	quarantine
 evt_038304	0	monitor
 evt_038305	0	monitor
 evt_038306	0	monitor
@@ -39043,9 +39043,9 @@ evt_039040	0	monitor
 evt_039041	0	monitor
 evt_039042	0	monitor
 evt_039043	0	monitor
-evt_039044	1	quarantine
+evt_039044	0	monitor
 evt_039045	0	monitor
-evt_039046	1	quarantine
+evt_039046	0	monitor
 evt_039047	0	monitor
 evt_039048	0	monitor
 evt_039049	1	quarantine
@@ -39096,7 +39096,7 @@ evt_039093	0	monitor
 evt_039094	0	monitor
 evt_039095	0	monitor
 evt_039096	1	quarantine
-evt_039097	0	monitor
+evt_039097	1	quarantine
 evt_039098	0	monitor
 evt_039099	0	monitor
 evt_039100	0	monitor
@@ -39155,7 +39155,7 @@ evt_039152	0	monitor
 evt_039153	0	monitor
 evt_039154	0	monitor
 evt_039155	1	quarantine
-evt_039157	0	monitor
+evt_039157	1	quarantine
 evt_039156	0	monitor
 evt_039158	0	monitor
 evt_039159	0	monitor
@@ -39426,7 +39426,7 @@ evt_039423	0	monitor
 evt_039424	0	monitor
 evt_039425	0	monitor
 evt_039426	1	quarantine
-evt_039427	0	monitor
+evt_039427	1	quarantine
 evt_039428	0	monitor
 evt_039429	0	monitor
 evt_039430	0	monitor
@@ -39456,7 +39456,7 @@ evt_039453	0	monitor
 evt_039454	1	suppress
 evt_039455	0	monitor
 evt_039456	0	monitor
-evt_039457	0	monitor
+evt_039457	1	quarantine
 evt_039458	0	monitor
 evt_039459	0	monitor
 evt_039460	0	monitor
@@ -39521,7 +39521,7 @@ evt_039518	0	monitor
 evt_039519	0	monitor
 evt_039520	0	monitor
 evt_039521	1	suppress
-evt_039522	0	monitor
+evt_039522	1	quarantine
 evt_039523	0	monitor
 evt_039524	0	monitor
 evt_039525	0	monitor
@@ -39663,7 +39663,7 @@ evt_039660	0	monitor
 evt_039661	0	monitor
 evt_039662	0	monitor
 evt_039663	0	monitor
-evt_039664	0	monitor
+evt_039664	1	quarantine
 evt_039665	0	monitor
 evt_039666	0	monitor
 evt_039667	0	monitor
@@ -39962,7 +39962,7 @@ evt_039959	0	monitor
 evt_039960	0	monitor
 evt_039961	0	monitor
 evt_039962	0	monitor
-evt_039963	0	monitor
+evt_039963	1	quarantine
 evt_039964	0	monitor
 evt_039965	0	monitor
 evt_039966	0	monitor
@@ -40147,7 +40147,7 @@ evt_040144	0	monitor
 evt_040145	0	monitor
 evt_040146	0	monitor
 evt_040147	0	monitor
-evt_040148	0	monitor
+evt_040148	1	quarantine
 evt_040149	0	monitor
 evt_040150	0	monitor
 evt_040151	0	monitor
@@ -40238,7 +40238,7 @@ evt_040235	0	monitor
 evt_040236	0	monitor
 evt_040237	0	monitor
 evt_040238	0	monitor
-evt_040239	0	monitor
+evt_040239	1	quarantine
 evt_040240	0	monitor
 evt_040241	0	monitor
 evt_040242	0	monitor
@@ -40327,7 +40327,7 @@ evt_040324	0	monitor
 evt_040325	0	monitor
 evt_040326	1	suppress
 evt_040327	0	monitor
-evt_040328	1	quarantine
+evt_040328	0	monitor
 evt_040329	0	monitor
 evt_040330	0	monitor
 evt_040331	0	monitor
@@ -40598,7 +40598,7 @@ evt_040595	0	monitor
 evt_040596	0	monitor
 evt_040597	0	monitor
 evt_040598	0	monitor
-evt_040599	0	monitor
+evt_040599	1	quarantine
 evt_040600	0	monitor
 evt_040601	0	monitor
 evt_040602	0	monitor
@@ -40871,7 +40871,7 @@ evt_040868	0	monitor
 evt_040869	0	monitor
 evt_040870	0	monitor
 evt_040871	0	monitor
-evt_040872	1	quarantine
+evt_040872	0	monitor
 evt_040873	0	monitor
 evt_040874	0	monitor
 evt_040875	0	monitor
@@ -40902,7 +40902,7 @@ evt_040899	0	monitor
 evt_040900	0	monitor
 evt_040901	0	monitor
 evt_040902	0	monitor
-evt_040903	1	quarantine
+evt_040903	0	monitor
 evt_040904	0	monitor
 evt_040905	0	monitor
 evt_040906	0	monitor
@@ -42833,7 +42833,7 @@ evt_042830	0	monitor
 evt_042831	0	monitor
 evt_042832	0	monitor
 evt_042833	0	monitor
-evt_042834	0	monitor
+evt_042834	1	quarantine
 evt_042835	0	monitor
 evt_042836	0	monitor
 evt_042837	0	monitor
@@ -42980,7 +42980,7 @@ evt_042977	0	monitor
 evt_042978	0	monitor
 evt_042979	0	monitor
 evt_042980	0	monitor
-evt_042981	1	quarantine
+evt_042981	0	monitor
 evt_042982	0	monitor
 evt_042983	0	monitor
 evt_042984	0	monitor
@@ -43024,7 +43024,7 @@ evt_043021	0	monitor
 evt_043022	0	monitor
 evt_043023	0	monitor
 evt_043024	0	monitor
-evt_043025	0	monitor
+evt_043025	1	quarantine
 evt_043026	0	monitor
 evt_043027	0	monitor
 evt_043028	0	monitor
@@ -43138,7 +43138,7 @@ evt_043135	0	monitor
 evt_043136	0	monitor
 evt_043137	0	monitor
 evt_043138	0	monitor
-evt_043139	1	quarantine
+evt_043139	0	monitor
 evt_043140	0	monitor
 evt_043141	0	monitor
 evt_043142	0	monitor
@@ -43282,7 +43282,7 @@ evt_043279	1	quarantine
 evt_043280	0	monitor
 evt_043281	0	monitor
 evt_043282	0	monitor
-evt_043283	0	monitor
+evt_043283	1	quarantine
 evt_043284	0	monitor
 evt_043285	0	monitor
 evt_043286	0	monitor
@@ -43494,8 +43494,8 @@ evt_043491	0	monitor
 evt_043492	0	monitor
 evt_043493	0	monitor
 evt_043494	0	monitor
-evt_043495	0	monitor
-evt_043496	1	quarantine
+evt_043495	1	quarantine
+evt_043496	0	monitor
 evt_043497	0	monitor
 evt_043498	0	monitor
 evt_043499	1	suppress
@@ -43906,7 +43906,7 @@ evt_043903	0	monitor
 evt_043904	0	monitor
 evt_043905	0	monitor
 evt_043906	0	monitor
-evt_043907	0	monitor
+evt_043907	1	quarantine
 evt_043908	0	monitor
 evt_043909	0	monitor
 evt_043910	0	monitor
@@ -44408,7 +44408,7 @@ evt_044405	0	monitor
 evt_044406	0	monitor
 evt_044407	0	monitor
 evt_044408	1	quarantine
-evt_044409	1	quarantine
+evt_044409	0	monitor
 evt_044410	0	monitor
 evt_044411	0	monitor
 evt_044412	0	monitor
@@ -44452,7 +44452,7 @@ evt_044449	0	monitor
 evt_044450	0	monitor
 evt_044451	0	monitor
 evt_044452	0	monitor
-evt_044453	1	quarantine
+evt_044453	0	monitor
 evt_044454	0	monitor
 evt_044455	0	monitor
 evt_044456	0	monitor
@@ -44519,7 +44519,7 @@ evt_044516	0	monitor
 evt_044517	0	monitor
 evt_044518	0	monitor
 evt_044519	0	monitor
-evt_044520	0	monitor
+evt_044520	1	quarantine
 evt_044522	0	monitor
 evt_044521	0	monitor
 evt_044523	1	quarantine
@@ -44649,7 +44649,7 @@ evt_044646	0	monitor
 evt_044647	0	monitor
 evt_044648	0	monitor
 evt_044649	0	monitor
-evt_044650	0	monitor
+evt_044650	1	quarantine
 evt_044651	0	monitor
 evt_044652	0	monitor
 evt_044653	0	monitor
@@ -45458,7 +45458,7 @@ evt_045455	0	monitor
 evt_045456	0	monitor
 evt_045457	0	monitor
 evt_045458	0	monitor
-evt_045459	0	monitor
+evt_045459	1	quarantine
 evt_045460	0	monitor
 evt_045461	0	monitor
 evt_045462	0	monitor
@@ -45992,7 +45992,7 @@ evt_045989	0	monitor
 evt_045990	0	monitor
 evt_045991	0	monitor
 evt_045992	0	monitor
-evt_045993	1	quarantine
+evt_045993	0	monitor
 evt_045994	0	monitor
 evt_045995	0	monitor
 evt_045996	0	monitor
@@ -46399,12 +46399,12 @@ evt_046396	0	monitor
 evt_046397	0	monitor
 evt_046398	0	monitor
 evt_046399	0	monitor
-evt_046400	1	quarantine
+evt_046400	0	monitor
 evt_046401	0	monitor
 evt_046402	0	monitor
 evt_046403	0	monitor
 evt_046404	0	monitor
-evt_046405	1	quarantine
+evt_046405	0	monitor
 evt_046406	0	monitor
 evt_046407	0	monitor
 evt_046408	1	quarantine
@@ -46492,7 +46492,7 @@ evt_046489	0	monitor
 evt_046490	0	monitor
 evt_046491	0	monitor
 evt_046492	0	monitor
-evt_046493	1	suppress
+evt_046493	1	quarantine
 evt_046494	0	monitor
 evt_046495	0	monitor
 evt_046496	0	monitor
@@ -46656,7 +46656,7 @@ evt_046653	0	monitor
 evt_046654	0	monitor
 evt_046655	0	monitor
 evt_046656	0	monitor
-evt_046657	1	quarantine
+evt_046657	0	monitor
 evt_046658	0	monitor
 evt_046659	0	monitor
 evt_046660	0	monitor
@@ -48455,7 +48455,7 @@ evt_048452	0	monitor
 evt_048453	0	monitor
 evt_048454	0	monitor
 evt_048455	0	monitor
-evt_048456	0	monitor
+evt_048456	1	quarantine
 evt_048457	0	monitor
 evt_048458	0	monitor
 evt_048459	0	monitor
@@ -48903,7 +48903,7 @@ evt_048900	0	monitor
 evt_048901	0	monitor
 evt_048902	0	monitor
 evt_048903	0	monitor
-evt_048904	0	monitor
+evt_048904	1	quarantine
 evt_048905	0	monitor
 evt_048906	0	monitor
 evt_048907	0	monitor
@@ -48931,7 +48931,7 @@ evt_048928	0	monitor
 evt_048929	1	quarantine
 evt_048930	0	monitor
 evt_048931	0	monitor
-evt_048932	0	monitor
+evt_048932	1	quarantine
 evt_048933	0	monitor
 evt_048934	0	monitor
 evt_048935	0	monitor
@@ -48945,7 +48945,7 @@ evt_048942	0	monitor
 evt_048943	0	monitor
 evt_048944	0	monitor
 evt_048945	0	monitor
-evt_048946	1	quarantine
+evt_048946	0	monitor
 evt_048947	0	monitor
 evt_048948	0	monitor
 evt_048949	0	monitor
@@ -48960,7 +48960,7 @@ evt_048957	0	monitor
 evt_048958	0	monitor
 evt_048959	0	monitor
 evt_048960	0	monitor
-evt_048961	0	monitor
+evt_048961	1	quarantine
 evt_048962	0	monitor
 evt_048963	0	monitor
 evt_048964	0	monitor
@@ -48990,7 +48990,7 @@ evt_048987	0	monitor
 evt_048988	0	monitor
 evt_048989	0	monitor
 evt_048990	0	monitor
-evt_048991	0	monitor
+evt_048991	1	quarantine
 evt_048992	0	monitor
 evt_048993	0	monitor
 evt_048994	0	monitor
@@ -49650,7 +49650,7 @@ evt_049647	0	monitor
 evt_049648	0	monitor
 evt_049649	0	monitor
 evt_049650	0	monitor
-evt_049651	0	monitor
+evt_049651	1	quarantine
 evt_049652	0	monitor
 evt_049653	0	monitor
 evt_049654	0	monitor
@@ -49740,7 +49740,7 @@ evt_049737	0	monitor
 evt_049738	0	monitor
 evt_049739	0	monitor
 evt_049740	0	monitor
-evt_049741	1	quarantine
+evt_049741	0	monitor
 evt_049742	0	monitor
 evt_049743	0	monitor
 evt_049744	0	monitor
@@ -50182,7 +50182,7 @@ evt_050179	0	monitor
 evt_050180	1	quarantine
 evt_050181	0	monitor
 evt_050182	0	monitor
-evt_050183	1	quarantine
+evt_050183	0	monitor
 evt_050184	0	monitor
 evt_050185	0	monitor
 evt_050186	0	monitor
@@ -50383,7 +50383,7 @@ evt_050380	0	monitor
 evt_050381	0	monitor
 evt_050382	0	monitor
 evt_050383	0	monitor
-evt_050384	1	quarantine
+evt_050384	0	monitor
 evt_050385	0	monitor
 evt_050386	0	monitor
 evt_050387	0	monitor
@@ -50433,7 +50433,7 @@ evt_050430	0	monitor
 evt_050431	0	monitor
 evt_050432	0	monitor
 evt_050433	0	monitor
-evt_050434	1	quarantine
+evt_050434	0	monitor
 evt_050435	0	monitor
 evt_050436	0	monitor
 evt_050437	0	monitor
@@ -50673,7 +50673,7 @@ evt_050670	0	monitor
 evt_050671	0	monitor
 evt_050672	0	monitor
 evt_050673	0	monitor
-evt_050674	1	quarantine
+evt_050674	0	monitor
 evt_050675	0	monitor
 evt_050676	0	monitor
 evt_050677	0	monitor
@@ -51174,7 +51174,7 @@ evt_051171	0	monitor
 evt_051172	0	monitor
 evt_051173	0	monitor
 evt_051174	0	monitor
-evt_051175	1	quarantine
+evt_051175	0	monitor
 evt_051176	0	monitor
 evt_051177	0	monitor
 evt_051178	0	monitor
@@ -52217,7 +52217,7 @@ evt_052214	0	monitor
 evt_052215	0	monitor
 evt_052216	0	monitor
 evt_052217	0	monitor
-evt_052218	0	monitor
+evt_052218	1	quarantine
 evt_052219	0	monitor
 evt_052220	0	monitor
 evt_052221	0	monitor
@@ -53110,7 +53110,7 @@ evt_053107	0	monitor
 evt_053108	0	monitor
 evt_053109	0	monitor
 evt_053110	0	monitor
-evt_053111	0	monitor
+evt_053111	1	quarantine
 evt_053112	0	monitor
 evt_053113	0	monitor
 evt_053114	0	monitor
@@ -53770,7 +53770,7 @@ evt_053767	0	monitor
 evt_053768	0	monitor
 evt_053769	0	monitor
 evt_053770	0	monitor
-evt_053771	0	monitor
+evt_053771	1	quarantine
 evt_053772	0	monitor
 evt_053773	0	monitor
 evt_053774	0	monitor
@@ -53976,7 +53976,7 @@ evt_053973	0	monitor
 evt_053974	0	monitor
 evt_053975	0	monitor
 evt_053976	0	monitor
-evt_053977	0	monitor
+evt_053977	1	quarantine
 evt_053978	0	monitor
 evt_053979	0	monitor
 evt_053980	0	monitor
@@ -54157,7 +54157,7 @@ evt_054154	0	monitor
 evt_054155	0	monitor
 evt_054156	0	monitor
 evt_054157	0	monitor
-evt_054158	0	monitor
+evt_054158	1	quarantine
 evt_054159	0	monitor
 evt_054160	0	monitor
 evt_054161	0	monitor
@@ -54598,7 +54598,7 @@ evt_054595	0	monitor
 evt_054596	0	monitor
 evt_054597	0	monitor
 evt_054598	0	monitor
-evt_054599	1	quarantine
+evt_054599	0	monitor
 evt_054600	0	monitor
 evt_054601	0	monitor
 evt_054602	0	monitor
@@ -54632,7 +54632,7 @@ evt_054629	0	monitor
 evt_054630	0	monitor
 evt_054631	0	monitor
 evt_054632	0	monitor
-evt_054633	0	monitor
+evt_054633	1	quarantine
 evt_054634	0	monitor
 evt_054635	0	monitor
 evt_054636	0	monitor
@@ -54662,7 +54662,7 @@ evt_054659	0	monitor
 evt_054660	0	monitor
 evt_054661	0	monitor
 evt_054662	0	monitor
-evt_054663	0	monitor
+evt_054663	1	quarantine
 evt_054664	0	monitor
 evt_054665	0	monitor
 evt_054666	0	monitor
@@ -54825,7 +54825,7 @@ evt_054822	0	monitor
 evt_054823	0	monitor
 evt_054824	0	monitor
 evt_054825	0	monitor
-evt_054826	0	monitor
+evt_054826	1	quarantine
 evt_054827	0	monitor
 evt_054828	0	monitor
 evt_054829	0	monitor
@@ -54964,7 +54964,7 @@ evt_054961	0	monitor
 evt_054962	0	monitor
 evt_054963	0	monitor
 evt_054964	0	monitor
-evt_054965	0	monitor
+evt_054965	1	quarantine
 evt_054966	0	monitor
 evt_054967	0	monitor
 evt_054968	0	monitor
@@ -55142,7 +55142,7 @@ evt_055139	0	monitor
 evt_055140	0	monitor
 evt_055141	0	monitor
 evt_055142	0	monitor
-evt_055143	0	monitor
+evt_055143	1	quarantine
 evt_055144	0	monitor
 evt_055145	0	monitor
 evt_055146	0	monitor
@@ -55237,7 +55237,7 @@ evt_055234	0	monitor
 evt_055235	0	monitor
 evt_055236	0	monitor
 evt_055237	0	monitor
-evt_055238	1	quarantine
+evt_055238	0	monitor
 evt_055239	0	monitor
 evt_055240	0	monitor
 evt_055241	0	monitor
@@ -55413,7 +55413,7 @@ evt_055410	0	monitor
 evt_055411	0	monitor
 evt_055412	0	monitor
 evt_055413	0	monitor
-evt_055414	1	suppress
+evt_055414	1	quarantine
 evt_055415	0	monitor
 evt_055416	0	monitor
 evt_055417	0	monitor
@@ -55528,7 +55528,7 @@ evt_055525	0	monitor
 evt_055526	1	quarantine
 evt_055527	0	monitor
 evt_055528	0	monitor
-evt_055529	0	monitor
+evt_055529	1	quarantine
 evt_055530	0	monitor
 evt_055531	0	monitor
 evt_055532	0	monitor
@@ -55582,7 +55582,7 @@ evt_055579	0	monitor
 evt_055580	0	monitor
 evt_055581	0	monitor
 evt_055582	0	monitor
-evt_055583	0	monitor
+evt_055583	1	quarantine
 evt_055584	0	monitor
 evt_055585	0	monitor
 evt_055586	0	monitor
@@ -55626,7 +55626,7 @@ evt_055623	0	monitor
 evt_055624	0	monitor
 evt_055625	0	monitor
 evt_055626	0	monitor
-evt_055627	0	monitor
+evt_055627	1	quarantine
 evt_055628	0	monitor
 evt_055629	0	monitor
 evt_055630	0	monitor
@@ -55790,7 +55790,7 @@ evt_055787	0	monitor
 evt_055788	0	monitor
 evt_055789	0	monitor
 evt_055790	0	monitor
-evt_055791	1	quarantine
+evt_055791	0	monitor
 evt_055792	0	monitor
 evt_055793	0	monitor
 evt_055794	0	monitor
@@ -56431,7 +56431,7 @@ evt_056428	0	monitor
 evt_056429	0	monitor
 evt_056430	0	monitor
 evt_056431	0	monitor
-evt_056432	1	quarantine
+evt_056432	0	monitor
 evt_056433	0	monitor
 evt_056434	0	monitor
 evt_056435	0	monitor
@@ -56497,7 +56497,7 @@ evt_056494	0	monitor
 evt_056495	0	monitor
 evt_056496	0	monitor
 evt_056497	0	monitor
-evt_056498	1	quarantine
+evt_056498	0	monitor
 evt_056499	0	monitor
 evt_056500	0	monitor
 evt_056501	0	monitor
@@ -56639,11 +56639,11 @@ evt_056636	0	monitor
 evt_056637	0	monitor
 evt_056638	0	monitor
 evt_056639	0	monitor
-evt_056640	1	quarantine
+evt_056640	0	monitor
 evt_056641	0	monitor
 evt_056642	0	monitor
 evt_056643	0	monitor
-evt_056644	0	monitor
+evt_056644	1	quarantine
 evt_056645	0	monitor
 evt_056646	0	monitor
 evt_056647	0	monitor
@@ -57231,7 +57231,7 @@ evt_057228	0	monitor
 evt_057229	0	monitor
 evt_057230	0	monitor
 evt_057231	0	monitor
-evt_057232	0	monitor
+evt_057232	1	quarantine
 evt_057233	0	monitor
 evt_057234	0	monitor
 evt_057235	0	monitor
@@ -57529,7 +57529,7 @@ evt_057526	0	monitor
 evt_057527	0	monitor
 evt_057528	0	monitor
 evt_057529	0	monitor
-evt_057530	0	monitor
+evt_057530	1	quarantine
 evt_057531	0	monitor
 evt_057532	0	monitor
 evt_057533	0	monitor
@@ -58246,7 +58246,7 @@ evt_058243	0	monitor
 evt_058244	0	monitor
 evt_058245	0	monitor
 evt_058246	0	monitor
-evt_058247	0	monitor
+evt_058247	1	quarantine
 evt_058248	0	monitor
 evt_058249	0	monitor
 evt_058250	0	monitor
@@ -58254,7 +58254,7 @@ evt_058251	0	monitor
 evt_058252	0	monitor
 evt_058253	0	monitor
 evt_058254	1	suppress
-evt_058255	1	quarantine
+evt_058255	0	monitor
 evt_058256	0	monitor
 evt_058257	0	monitor
 evt_058258	0	monitor
@@ -58436,7 +58436,7 @@ evt_058433	0	monitor
 evt_058434	0	monitor
 evt_058435	0	monitor
 evt_058436	0	monitor
-evt_058437	1	quarantine
+evt_058437	0	monitor
 evt_058438	0	monitor
 evt_058439	0	monitor
 evt_058440	0	monitor
@@ -58656,7 +58656,7 @@ evt_058653	0	monitor
 evt_058654	0	monitor
 evt_058655	0	monitor
 evt_058656	0	monitor
-evt_058657	1	quarantine
+evt_058657	0	monitor
 evt_058658	0	monitor
 evt_058659	0	monitor
 evt_058660	0	monitor
@@ -58740,7 +58740,7 @@ evt_058737	0	monitor
 evt_058738	0	monitor
 evt_058739	0	monitor
 evt_058740	0	monitor
-evt_058741	1	quarantine
+evt_058741	0	monitor
 evt_058742	0	monitor
 evt_058743	0	monitor
 evt_058744	0	monitor
@@ -58928,7 +58928,7 @@ evt_058925	0	monitor
 evt_058926	0	monitor
 evt_058927	0	monitor
 evt_058928	0	monitor
-evt_058929	1	quarantine
+evt_058929	0	monitor
 evt_058930	0	monitor
 evt_058931	0	monitor
 evt_058932	0	monitor
@@ -59150,7 +59150,7 @@ evt_059147	0	monitor
 evt_059148	0	monitor
 evt_059149	0	monitor
 evt_059150	0	monitor
-evt_059151	1	quarantine
+evt_059151	0	monitor
 evt_059152	0	monitor
 evt_059153	0	monitor
 evt_059154	0	monitor
@@ -59282,7 +59282,7 @@ evt_059279	0	monitor
 evt_059280	0	monitor
 evt_059281	0	monitor
 evt_059282	0	monitor
-evt_059283	1	quarantine
+evt_059283	0	monitor
 evt_059284	0	monitor
 evt_059285	0	monitor
 evt_059286	0	monitor
@@ -59517,7 +59517,7 @@ evt_059514	0	monitor
 evt_059515	0	monitor
 evt_059516	0	monitor
 evt_059517	0	monitor
-evt_059518	1	quarantine
+evt_059518	0	monitor
 evt_059519	0	monitor
 evt_059520	0	monitor
 evt_059521	0	monitor
@@ -59888,7 +59888,7 @@ evt_059885	0	monitor
 evt_059886	0	monitor
 evt_059887	0	monitor
 evt_059888	0	monitor
-evt_059889	0	monitor
+evt_059889	1	quarantine
 evt_059890	0	monitor
 evt_059891	0	monitor
 evt_059892	0	monitor
@@ -60311,7 +60311,7 @@ evt_060308	0	monitor
 evt_060309	0	monitor
 evt_060310	0	monitor
 evt_060311	0	monitor
-evt_060312	1	quarantine
+evt_060312	0	monitor
 evt_060313	0	monitor
 evt_060314	0	monitor
 evt_060315	0	monitor
@@ -61056,7 +61056,7 @@ evt_061053	0	monitor
 evt_061054	0	monitor
 evt_061055	0	monitor
 evt_061056	0	monitor
-evt_061057	1	quarantine
+evt_061057	0	monitor
 evt_061058	0	monitor
 evt_061059	0	monitor
 evt_061060	0	monitor
@@ -61287,7 +61287,7 @@ evt_061284	0	monitor
 evt_061285	0	monitor
 evt_061286	0	monitor
 evt_061287	0	monitor
-evt_061288	1	quarantine
+evt_061288	0	monitor
 evt_061289	0	monitor
 evt_061290	0	monitor
 evt_061291	0	monitor
@@ -61344,7 +61344,7 @@ evt_061341	0	monitor
 evt_061342	0	monitor
 evt_061343	0	monitor
 evt_061344	0	monitor
-evt_061345	0	monitor
+evt_061345	1	quarantine
 evt_061346	0	monitor
 evt_061347	0	monitor
 evt_061348	0	monitor
@@ -61365,7 +61365,7 @@ evt_061362	0	monitor
 evt_061363	0	monitor
 evt_061364	0	monitor
 evt_061365	0	monitor
-evt_061366	1	quarantine
+evt_061366	0	monitor
 evt_061367	0	monitor
 evt_061368	0	monitor
 evt_061369	0	monitor
@@ -61640,7 +61640,7 @@ evt_061637	0	monitor
 evt_061638	0	monitor
 evt_061639	0	monitor
 evt_061640	0	monitor
-evt_061641	0	monitor
+evt_061641	1	quarantine
 evt_061642	0	monitor
 evt_061643	0	monitor
 evt_061644	0	monitor
@@ -61880,7 +61880,7 @@ evt_061877	0	monitor
 evt_061878	0	monitor
 evt_061879	0	monitor
 evt_061880	0	monitor
-evt_061881	0	monitor
+evt_061881	1	quarantine
 evt_061882	0	monitor
 evt_061883	0	monitor
 evt_061884	0	monitor
@@ -62017,7 +62017,7 @@ evt_062014	0	monitor
 evt_062015	0	monitor
 evt_062016	0	monitor
 evt_062017	0	monitor
-evt_062018	1	quarantine
+evt_062018	0	monitor
 evt_062019	0	monitor
 evt_062020	0	monitor
 evt_062021	0	monitor
@@ -62116,12 +62116,12 @@ evt_062113	0	monitor
 evt_062114	0	monitor
 evt_062115	0	monitor
 evt_062116	0	monitor
-evt_062117	0	monitor
+evt_062117	1	quarantine
 evt_062118	0	monitor
 evt_062119	0	monitor
 evt_062120	0	monitor
 evt_062121	0	monitor
-evt_062122	1	quarantine
+evt_062122	0	monitor
 evt_062123	0	monitor
 evt_062124	0	monitor
 evt_062125	0	monitor
@@ -62169,7 +62169,7 @@ evt_062166	0	monitor
 evt_062167	0	monitor
 evt_062168	0	monitor
 evt_062169	0	monitor
-evt_062170	0	monitor
+evt_062170	1	quarantine
 evt_062171	0	monitor
 evt_062172	0	monitor
 evt_062173	0	monitor
@@ -63046,7 +63046,7 @@ evt_063043	0	monitor
 evt_063044	0	monitor
 evt_063045	0	monitor
 evt_063046	0	monitor
-evt_063047	0	monitor
+evt_063047	1	quarantine
 evt_063048	0	monitor
 evt_063049	0	monitor
 evt_063050	0	monitor
@@ -63350,7 +63350,7 @@ evt_063347	0	monitor
 evt_063348	0	monitor
 evt_063349	0	monitor
 evt_063350	0	monitor
-evt_063351	1	quarantine
+evt_063351	0	monitor
 evt_063352	0	monitor
 evt_063353	0	monitor
 evt_063354	0	monitor
@@ -63855,7 +63855,7 @@ evt_063852	0	monitor
 evt_063853	0	monitor
 evt_063854	0	monitor
 evt_063855	0	monitor
-evt_063856	1	quarantine
+evt_063856	0	monitor
 evt_063857	0	monitor
 evt_063858	0	monitor
 evt_063859	0	monitor
@@ -63864,7 +63864,7 @@ evt_063861	0	monitor
 evt_063862	0	monitor
 evt_063863	0	monitor
 evt_063864	0	monitor
-evt_063865	1	quarantine
+evt_063865	0	monitor
 evt_063866	0	monitor
 evt_063867	0	monitor
 evt_063868	0	monitor
@@ -64096,7 +64096,7 @@ evt_064093	0	monitor
 evt_064094	0	monitor
 evt_064095	0	monitor
 evt_064096	0	monitor
-evt_064098	1	quarantine
+evt_064098	0	monitor
 evt_064097	0	monitor
 evt_064099	0	monitor
 evt_064100	0	monitor
@@ -64113,7 +64113,7 @@ evt_064110	0	monitor
 evt_064111	0	monitor
 evt_064112	0	monitor
 evt_064113	0	monitor
-evt_064114	0	monitor
+evt_064114	1	quarantine
 evt_064115	0	monitor
 evt_064116	0	monitor
 evt_064117	0	monitor
@@ -64327,7 +64327,7 @@ evt_064324	0	monitor
 evt_064325	0	monitor
 evt_064326	0	monitor
 evt_064327	0	monitor
-evt_064328	1	quarantine
+evt_064328	0	monitor
 evt_064329	0	monitor
 evt_064330	0	monitor
 evt_064331	0	monitor
@@ -64990,7 +64990,7 @@ evt_064987	0	monitor
 evt_064988	0	monitor
 evt_064989	0	monitor
 evt_064990	0	monitor
-evt_064991	0	monitor
+evt_064991	1	quarantine
 evt_064992	0	monitor
 evt_064993	0	monitor
 evt_064994	0	monitor
@@ -65001,7 +65001,7 @@ evt_064998	1	quarantine
 evt_064999	1	quarantine
 evt_065000	0	monitor
 evt_065001	0	monitor
-evt_065002	1	quarantine
+evt_065002	0	monitor
 evt_065003	0	monitor
 evt_065004	0	monitor
 evt_065005	0	monitor
@@ -65196,7 +65196,7 @@ evt_065193	0	monitor
 evt_065194	0	monitor
 evt_065195	0	monitor
 evt_065196	0	monitor
-evt_065197	0	monitor
+evt_065197	1	quarantine
 evt_065198	0	monitor
 evt_065199	1	suppress
 evt_065200	0	monitor
@@ -65240,7 +65240,7 @@ evt_065237	0	monitor
 evt_065238	0	monitor
 evt_065239	0	monitor
 evt_065240	1	suppress
-evt_065241	0	monitor
+evt_065241	1	quarantine
 evt_065242	0	monitor
 evt_065243	0	monitor
 evt_065244	0	monitor
@@ -65389,7 +65389,7 @@ evt_065386	0	monitor
 evt_065387	0	monitor
 evt_065388	0	monitor
 evt_065389	0	monitor
-evt_065390	0	monitor
+evt_065390	1	quarantine
 evt_065391	0	monitor
 evt_065392	0	monitor
 evt_065393	0	monitor
@@ -66078,7 +66078,7 @@ evt_066075	0	monitor
 evt_066076	0	monitor
 evt_066077	0	monitor
 evt_066078	0	monitor
-evt_066079	0	monitor
+evt_066079	1	quarantine
 evt_066080	0	monitor
 evt_066081	0	monitor
 evt_066082	0	monitor
@@ -66089,7 +66089,7 @@ evt_066086	0	monitor
 evt_066087	0	monitor
 evt_066088	0	monitor
 evt_066089	0	monitor
-evt_066090	0	monitor
+evt_066090	1	quarantine
 evt_066091	0	monitor
 evt_066092	0	monitor
 evt_066093	0	monitor
@@ -66109,7 +66109,7 @@ evt_066106	1	quarantine
 evt_066107	0	monitor
 evt_066108	0	monitor
 evt_066109	0	monitor
-evt_066110	1	quarantine
+evt_066110	0	monitor
 evt_066111	1	quarantine
 evt_066112	0	monitor
 evt_066113	0	monitor
@@ -66170,7 +66170,7 @@ evt_066167	0	monitor
 evt_066168	0	monitor
 evt_066169	0	monitor
 evt_066170	0	monitor
-evt_066171	0	monitor
+evt_066171	1	quarantine
 evt_066172	0	monitor
 evt_066173	1	quarantine
 evt_066174	0	monitor
@@ -66870,7 +66870,7 @@ evt_066867	0	monitor
 evt_066868	0	monitor
 evt_066869	0	monitor
 evt_066870	0	monitor
-evt_066871	0	monitor
+evt_066871	1	quarantine
 evt_066872	0	monitor
 evt_066873	0	monitor
 evt_066874	0	monitor
@@ -66912,7 +66912,7 @@ evt_066909	0	monitor
 evt_066910	0	monitor
 evt_066911	0	monitor
 evt_066912	0	monitor
-evt_066913	0	monitor
+evt_066913	1	quarantine
 evt_066914	0	monitor
 evt_066915	0	monitor
 evt_066916	0	monitor
@@ -67134,7 +67134,7 @@ evt_067131	0	monitor
 evt_067132	0	monitor
 evt_067133	0	monitor
 evt_067134	0	monitor
-evt_067135	0	monitor
+evt_067135	1	quarantine
 evt_067136	0	monitor
 evt_067137	0	monitor
 evt_067138	0	monitor
@@ -67194,7 +67194,7 @@ evt_067191	1	suppress
 evt_067192	0	monitor
 evt_067193	0	monitor
 evt_067194	0	monitor
-evt_067195	0	monitor
+evt_067195	1	quarantine
 evt_067196	0	monitor
 evt_067197	0	monitor
 evt_067198	0	monitor
@@ -67367,7 +67367,7 @@ evt_067364	0	monitor
 evt_067365	0	monitor
 evt_067366	0	monitor
 evt_067367	0	monitor
-evt_067368	0	monitor
+evt_067368	1	quarantine
 evt_067369	0	monitor
 evt_067370	0	monitor
 evt_067371	1	quarantine
@@ -67721,7 +67721,7 @@ evt_067718	0	monitor
 evt_067719	0	monitor
 evt_067720	1	suppress
 evt_067721	0	monitor
-evt_067722	0	monitor
+evt_067722	1	quarantine
 evt_067723	0	monitor
 evt_067724	0	monitor
 evt_067725	1	quarantine
@@ -68540,7 +68540,7 @@ evt_068537	0	monitor
 evt_068538	0	monitor
 evt_068539	0	monitor
 evt_068540	0	monitor
-evt_068541	1	quarantine
+evt_068541	0	monitor
 evt_068542	0	monitor
 evt_068543	0	monitor
 evt_068544	0	monitor
@@ -68945,7 +68945,7 @@ evt_068942	0	monitor
 evt_068943	0	monitor
 evt_068944	0	monitor
 evt_068945	0	monitor
-evt_068946	1	quarantine
+evt_068946	0	monitor
 evt_068947	0	monitor
 evt_068948	0	monitor
 evt_068949	0	monitor
@@ -69257,7 +69257,7 @@ evt_069254	0	monitor
 evt_069255	0	monitor
 evt_069256	0	monitor
 evt_069257	0	monitor
-evt_069258	0	monitor
+evt_069258	1	quarantine
 evt_069259	0	monitor
 evt_069260	0	monitor
 evt_069261	0	monitor
@@ -69420,9 +69420,9 @@ evt_069417	0	monitor
 evt_069418	0	monitor
 evt_069419	0	monitor
 evt_069420	0	monitor
-evt_069421	1	quarantine
+evt_069421	0	monitor
 evt_069422	0	monitor
-evt_069423	0	monitor
+evt_069423	1	quarantine
 evt_069424	0	monitor
 evt_069425	0	monitor
 evt_069426	0	monitor
@@ -70159,7 +70159,7 @@ evt_070156	0	monitor
 evt_070157	0	monitor
 evt_070158	0	monitor
 evt_070159	0	monitor
-evt_070160	0	monitor
+evt_070160	1	quarantine
 evt_070161	0	monitor
 evt_070162	0	monitor
 evt_070163	0	monitor
@@ -70256,7 +70256,7 @@ evt_070253	0	monitor
 evt_070254	0	monitor
 evt_070255	0	monitor
 evt_070256	0	monitor
-evt_070257	0	monitor
+evt_070257	1	quarantine
 evt_070258	0	monitor
 evt_070259	0	monitor
 evt_070260	0	monitor
@@ -70418,7 +70418,7 @@ evt_070415	0	monitor
 evt_070416	0	monitor
 evt_070417	0	monitor
 evt_070418	0	monitor
-evt_070419	1	quarantine
+evt_070419	0	monitor
 evt_070420	0	monitor
 evt_070421	0	monitor
 evt_070422	0	monitor
@@ -70570,7 +70570,7 @@ evt_070567	0	monitor
 evt_070568	0	monitor
 evt_070569	1	suppress
 evt_070570	0	monitor
-evt_070571	1	quarantine
+evt_070571	0	monitor
 evt_070572	0	monitor
 evt_070573	0	monitor
 evt_070574	0	monitor
@@ -70608,7 +70608,7 @@ evt_070605	0	monitor
 evt_070606	0	monitor
 evt_070607	0	monitor
 evt_070608	0	monitor
-evt_070609	0	monitor
+evt_070609	1	quarantine
 evt_070610	0	monitor
 evt_070611	0	monitor
 evt_070612	0	monitor
@@ -70825,7 +70825,7 @@ evt_070822	0	monitor
 evt_070823	0	monitor
 evt_070824	0	monitor
 evt_070825	0	monitor
-evt_070826	1	quarantine
+evt_070826	0	monitor
 evt_070827	0	monitor
 evt_070828	0	monitor
 evt_070830	0	monitor
@@ -70911,7 +70911,7 @@ evt_070908	0	monitor
 evt_070909	0	monitor
 evt_070910	1	suppress
 evt_070911	0	monitor
-evt_070912	0	monitor
+evt_070912	1	quarantine
 evt_070913	0	monitor
 evt_070914	0	monitor
 evt_070915	0	monitor
@@ -70950,7 +70950,7 @@ evt_070947	0	monitor
 evt_070948	0	monitor
 evt_070949	0	monitor
 evt_070950	0	monitor
-evt_070951	0	monitor
+evt_070951	1	quarantine
 evt_070952	1	quarantine
 evt_070953	0	monitor
 evt_070954	0	monitor
@@ -70964,10 +70964,10 @@ evt_070961	0	monitor
 evt_070962	0	monitor
 evt_070963	0	monitor
 evt_070964	0	monitor
-evt_070965	0	monitor
+evt_070965	1	quarantine
 evt_070966	0	monitor
 evt_070967	0	monitor
-evt_070968	1	quarantine
+evt_070968	0	monitor
 evt_070969	0	monitor
 evt_070970	1	suppress
 evt_070971	0	monitor
@@ -71120,7 +71120,7 @@ evt_071117	0	monitor
 evt_071118	1	quarantine
 evt_071119	1	quarantine
 evt_071120	0	monitor
-evt_071121	0	monitor
+evt_071121	1	quarantine
 evt_071122	0	monitor
 evt_071123	0	monitor
 evt_071124	0	monitor
@@ -71128,7 +71128,7 @@ evt_071125	0	monitor
 evt_071126	0	monitor
 evt_071127	0	monitor
 evt_071128	0	monitor
-evt_071129	1	quarantine
+evt_071129	0	monitor
 evt_071130	0	monitor
 evt_071131	0	monitor
 evt_071132	0	monitor
@@ -71145,7 +71145,7 @@ evt_071142	0	monitor
 evt_071143	0	monitor
 evt_071144	0	monitor
 evt_071145	0	monitor
-evt_071146	0	monitor
+evt_071146	1	quarantine
 evt_071147	0	monitor
 evt_071148	0	monitor
 evt_071149	0	monitor
@@ -71172,7 +71172,7 @@ evt_071169	0	monitor
 evt_071170	0	monitor
 evt_071171	0	monitor
 evt_071172	0	monitor
-evt_071173	1	quarantine
+evt_071173	0	monitor
 evt_071174	0	monitor
 evt_071175	0	monitor
 evt_071176	0	monitor
@@ -71201,7 +71201,7 @@ evt_071198	0	monitor
 evt_071199	0	monitor
 evt_071200	0	monitor
 evt_071201	0	monitor
-evt_071202	1	quarantine
+evt_071202	0	monitor
 evt_071203	0	monitor
 evt_071204	0	monitor
 evt_071205	1	quarantine
@@ -71320,7 +71320,7 @@ evt_071317	0	monitor
 evt_071318	0	monitor
 evt_071319	0	monitor
 evt_071320	0	monitor
-evt_071321	0	monitor
+evt_071321	1	quarantine
 evt_071322	0	monitor
 evt_071323	0	monitor
 evt_071324	0	monitor
@@ -71441,7 +71441,7 @@ evt_071438	0	monitor
 evt_071439	0	monitor
 evt_071440	0	monitor
 evt_071441	1	quarantine
-evt_071442	1	quarantine
+evt_071442	0	monitor
 evt_071443	0	monitor
 evt_071444	0	monitor
 evt_071445	0	monitor
@@ -71493,7 +71493,7 @@ evt_071490	0	monitor
 evt_071491	0	monitor
 evt_071492	0	monitor
 evt_071493	0	monitor
-evt_071494	0	monitor
+evt_071494	1	quarantine
 evt_071495	0	monitor
 evt_071496	0	monitor
 evt_071497	0	monitor
@@ -71558,7 +71558,7 @@ evt_071555	0	monitor
 evt_071556	0	monitor
 evt_071557	0	monitor
 evt_071558	0	monitor
-evt_071559	1	quarantine
+evt_071559	0	monitor
 evt_071560	0	monitor
 evt_071561	0	monitor
 evt_071562	1	quarantine
@@ -71575,7 +71575,7 @@ evt_071572	0	monitor
 evt_071573	0	monitor
 evt_071574	0	monitor
 evt_071575	0	monitor
-evt_071576	0	monitor
+evt_071576	1	quarantine
 evt_071577	0	monitor
 evt_071578	1	quarantine
 evt_071579	0	monitor
@@ -71661,7 +71661,7 @@ evt_071658	0	monitor
 evt_071659	0	monitor
 evt_071660	0	monitor
 evt_071661	0	monitor
-evt_071662	0	monitor
+evt_071662	1	quarantine
 evt_071663	0	monitor
 evt_071664	1	quarantine
 evt_071665	0	monitor
@@ -71692,7 +71692,7 @@ evt_071689	1	quarantine
 evt_071690	1	quarantine
 evt_071691	0	monitor
 evt_071692	0	monitor
-evt_071693	1	quarantine
+evt_071693	0	monitor
 evt_071694	0	monitor
 evt_071695	0	monitor
 evt_071696	0	monitor
@@ -71796,7 +71796,7 @@ evt_071793	0	monitor
 evt_071794	1	quarantine
 evt_071795	0	monitor
 evt_071796	0	monitor
-evt_071797	0	monitor
+evt_071797	1	quarantine
 evt_071798	0	monitor
 evt_071799	0	monitor
 evt_071800	1	quarantine
@@ -71834,7 +71834,7 @@ evt_071831	0	monitor
 evt_071832	0	monitor
 evt_071833	0	monitor
 evt_071834	0	monitor
-evt_071835	0	monitor
+evt_071835	1	quarantine
 evt_071836	1	suppress
 evt_071837	0	monitor
 evt_071838	0	monitor
@@ -71993,7 +71993,7 @@ evt_071990	0	monitor
 evt_071991	0	monitor
 evt_071992	0	monitor
 evt_071993	0	monitor
-evt_071994	1	quarantine
+evt_071994	0	monitor
 evt_071995	0	monitor
 evt_071996	1	quarantine
 evt_071997	0	monitor
@@ -72094,7 +72094,7 @@ evt_072091	0	monitor
 evt_072092	0	monitor
 evt_072093	0	monitor
 evt_072094	0	monitor
-evt_072095	1	quarantine
+evt_072095	0	monitor
 evt_072096	0	monitor
 evt_072097	0	monitor
 evt_072098	0	monitor
@@ -72105,7 +72105,7 @@ evt_072102	0	monitor
 evt_072103	0	monitor
 evt_072104	0	monitor
 evt_072105	1	quarantine
-evt_072106	0	monitor
+evt_072106	1	quarantine
 evt_072107	0	monitor
 evt_072108	0	monitor
 evt_072109	0	monitor
@@ -72113,7 +72113,7 @@ evt_072110	0	monitor
 evt_072111	0	monitor
 evt_072112	0	monitor
 evt_072113	0	monitor
-evt_072114	1	quarantine
+evt_072114	0	monitor
 evt_072115	0	monitor
 evt_072116	0	monitor
 evt_072117	0	monitor
@@ -72159,7 +72159,7 @@ evt_072156	0	monitor
 evt_072157	0	monitor
 evt_072158	0	monitor
 evt_072159	0	monitor
-evt_072160	0	monitor
+evt_072160	1	quarantine
 evt_072161	0	monitor
 evt_072162	0	monitor
 evt_072163	0	monitor
@@ -72167,7 +72167,7 @@ evt_072164	0	monitor
 evt_072165	0	monitor
 evt_072166	0	monitor
 evt_072167	0	monitor
-evt_072168	0	monitor
+evt_072168	1	quarantine
 evt_072169	0	monitor
 evt_072170	0	monitor
 evt_072171	0	monitor
@@ -72220,7 +72220,7 @@ evt_072217	0	monitor
 evt_072218	0	monitor
 evt_072219	1	quarantine
 evt_072220	0	monitor
-evt_072221	1	quarantine
+evt_072221	0	monitor
 evt_072222	0	monitor
 evt_072223	0	monitor
 evt_072224	0	monitor
@@ -72417,7 +72417,7 @@ evt_072414	0	monitor
 evt_072415	1	quarantine
 evt_072416	0	monitor
 evt_072417	0	monitor
-evt_072418	1	quarantine
+evt_072418	0	monitor
 evt_072419	0	monitor
 evt_072420	0	monitor
 evt_072421	0	monitor
@@ -72475,7 +72475,7 @@ evt_072472	0	monitor
 evt_072473	0	monitor
 evt_072474	0	monitor
 evt_072475	1	quarantine
-evt_072476	1	quarantine
+evt_072476	0	monitor
 evt_072477	0	monitor
 evt_072478	0	monitor
 evt_072479	0	monitor
@@ -72492,7 +72492,7 @@ evt_072489	0	monitor
 evt_072490	0	monitor
 evt_072491	0	monitor
 evt_072492	0	monitor
-evt_072493	1	quarantine
+evt_072493	0	monitor
 evt_072494	0	monitor
 evt_072495	0	monitor
 evt_072496	0	monitor
@@ -72534,7 +72534,7 @@ evt_072531	0	monitor
 evt_072532	0	monitor
 evt_072533	0	monitor
 evt_072534	0	monitor
-evt_072535	0	monitor
+evt_072535	1	quarantine
 evt_072536	0	monitor
 evt_072537	0	monitor
 evt_072538	0	monitor
@@ -72577,12 +72577,12 @@ evt_072574	0	monitor
 evt_072575	0	monitor
 evt_072576	0	monitor
 evt_072577	0	monitor
-evt_072578	1	quarantine
+evt_072578	0	monitor
 evt_072579	0	monitor
 evt_072580	0	monitor
 evt_072581	0	monitor
 evt_072582	0	monitor
-evt_072583	1	quarantine
+evt_072583	0	monitor
 evt_072584	0	monitor
 evt_072585	0	monitor
 evt_072586	0	monitor
@@ -72661,7 +72661,7 @@ evt_072658	0	monitor
 evt_072659	0	monitor
 evt_072660	0	monitor
 evt_072661	0	monitor
-evt_072662	1	quarantine
+evt_072662	0	monitor
 evt_072663	0	monitor
 evt_072664	0	monitor
 evt_072665	0	monitor
@@ -72718,7 +72718,7 @@ evt_072715	0	monitor
 evt_072716	0	monitor
 evt_072717	0	monitor
 evt_072718	0	monitor
-evt_072719	1	quarantine
+evt_072719	0	monitor
 evt_072720	0	monitor
 evt_072721	0	monitor
 evt_072722	0	monitor
@@ -72734,7 +72734,7 @@ evt_072731	0	monitor
 evt_072732	0	monitor
 evt_072733	0	monitor
 evt_072734	0	monitor
-evt_072735	1	quarantine
+evt_072735	0	monitor
 evt_072736	1	suppress
 evt_072737	0	monitor
 evt_072738	0	monitor
@@ -72746,7 +72746,7 @@ evt_072743	0	monitor
 evt_072744	0	monitor
 evt_072745	0	monitor
 evt_072746	0	monitor
-evt_072747	1	quarantine
+evt_072747	0	monitor
 evt_072748	0	monitor
 evt_072749	1	quarantine
 evt_072750	1	quarantine
@@ -72754,7 +72754,7 @@ evt_072751	0	monitor
 evt_072752	0	monitor
 evt_072753	0	monitor
 evt_072754	0	monitor
-evt_072755	1	quarantine
+evt_072755	0	monitor
 evt_072756	0	monitor
 evt_072757	0	monitor
 evt_072758	0	monitor
@@ -72765,7 +72765,7 @@ evt_072762	0	monitor
 evt_072763	0	monitor
 evt_072764	0	monitor
 evt_072765	0	monitor
-evt_072766	0	monitor
+evt_072766	1	quarantine
 evt_072767	0	monitor
 evt_072768	0	monitor
 evt_072769	1	quarantine
@@ -72799,7 +72799,7 @@ evt_072796	0	monitor
 evt_072797	0	monitor
 evt_072798	0	monitor
 evt_072799	0	monitor
-evt_072800	1	quarantine
+evt_072800	0	monitor
 evt_072801	0	monitor
 evt_072802	0	monitor
 evt_072803	0	monitor
@@ -72818,7 +72818,7 @@ evt_072815	0	monitor
 evt_072816	0	monitor
 evt_072817	0	monitor
 evt_072818	1	quarantine
-evt_072819	1	quarantine
+evt_072819	0	monitor
 evt_072820	0	monitor
 evt_072821	0	monitor
 evt_072822	0	monitor
@@ -72864,14 +72864,14 @@ evt_072861	0	monitor
 evt_072862	0	monitor
 evt_072863	0	monitor
 evt_072864	0	monitor
-evt_072865	1	quarantine
+evt_072865	0	monitor
 evt_072866	0	monitor
 evt_072867	0	monitor
 evt_072868	0	monitor
 evt_072869	0	monitor
 evt_072870	0	monitor
 evt_072871	0	monitor
-evt_072872	1	quarantine
+evt_072872	0	monitor
 evt_072873	0	monitor
 evt_072874	0	monitor
 evt_072875	0	monitor
@@ -72888,7 +72888,7 @@ evt_072885	1	suppress
 evt_072886	0	monitor
 evt_072887	0	monitor
 evt_072888	0	monitor
-evt_072889	0	monitor
+evt_072889	1	quarantine
 evt_072890	0	monitor
 evt_072891	0	monitor
 evt_072892	0	monitor
@@ -72949,7 +72949,7 @@ evt_072946	0	monitor
 evt_072947	0	monitor
 evt_072948	0	monitor
 evt_072949	0	monitor
-evt_072950	0	monitor
+evt_072950	1	quarantine
 evt_072951	0	monitor
 evt_072952	0	monitor
 evt_072953	0	monitor
@@ -72967,7 +72967,7 @@ evt_072964	0	monitor
 evt_072965	0	monitor
 evt_072966	0	monitor
 evt_072967	0	monitor
-evt_072968	0	monitor
+evt_072968	1	quarantine
 evt_072969	0	monitor
 evt_072970	0	monitor
 evt_072971	0	monitor
@@ -72980,7 +72980,7 @@ evt_072977	0	monitor
 evt_072978	1	quarantine
 evt_072979	0	monitor
 evt_072980	0	monitor
-evt_072981	0	monitor
+evt_072981	1	quarantine
 evt_072982	0	monitor
 evt_072983	0	monitor
 evt_072984	0	monitor
@@ -73074,7 +73074,7 @@ evt_073071	0	monitor
 evt_073072	0	monitor
 evt_073073	0	monitor
 evt_073074	0	monitor
-evt_073075	0	monitor
+evt_073075	1	quarantine
 evt_073076	0	monitor
 evt_073077	0	monitor
 evt_073078	1	quarantine
@@ -73155,7 +73155,7 @@ evt_073152	0	monitor
 evt_073153	0	monitor
 evt_073154	1	quarantine
 evt_073155	1	suppress
-evt_073156	1	quarantine
+evt_073156	0	monitor
 evt_073157	0	monitor
 evt_073158	0	monitor
 evt_073159	0	monitor
@@ -73181,10 +73181,10 @@ evt_073178	0	monitor
 evt_073179	0	monitor
 evt_073180	0	monitor
 evt_073181	0	monitor
-evt_073182	1	quarantine
+evt_073182	0	monitor
 evt_073183	0	monitor
 evt_073184	0	monitor
-evt_073185	1	quarantine
+evt_073185	0	monitor
 evt_073186	0	monitor
 evt_073187	0	monitor
 evt_073188	0	monitor
@@ -73247,7 +73247,7 @@ evt_073244	0	monitor
 evt_073245	0	monitor
 evt_073246	0	monitor
 evt_073247	0	monitor
-evt_073248	1	quarantine
+evt_073248	0	monitor
 evt_073249	0	monitor
 evt_073250	0	monitor
 evt_073251	0	monitor
@@ -73449,7 +73449,7 @@ evt_073446	0	monitor
 evt_073447	0	monitor
 evt_073448	0	monitor
 evt_073449	0	monitor
-evt_073450	0	monitor
+evt_073450	1	quarantine
 evt_073451	0	monitor
 evt_073452	0	monitor
 evt_073453	0	monitor
@@ -73486,7 +73486,7 @@ evt_073483	0	monitor
 evt_073484	0	monitor
 evt_073485	0	monitor
 evt_073486	0	monitor
-evt_073487	1	quarantine
+evt_073487	0	monitor
 evt_073488	0	monitor
 evt_073489	0	monitor
 evt_073490	0	monitor
@@ -73571,7 +73571,7 @@ evt_073568	0	monitor
 evt_073569	0	monitor
 evt_073570	0	monitor
 evt_073571	0	monitor
-evt_073572	1	quarantine
+evt_073572	0	monitor
 evt_073573	1	suppress
 evt_073574	1	quarantine
 evt_073575	0	monitor
@@ -73603,7 +73603,7 @@ evt_073600	0	monitor
 evt_073601	0	monitor
 evt_073602	0	monitor
 evt_073603	0	monitor
-evt_073604	1	quarantine
+evt_073604	0	monitor
 evt_073605	0	monitor
 evt_073606	0	monitor
 evt_073607	0	monitor
@@ -73612,7 +73612,7 @@ evt_073609	0	monitor
 evt_073610	0	monitor
 evt_073611	0	monitor
 evt_073612	0	monitor
-evt_073613	0	monitor
+evt_073613	1	quarantine
 evt_073614	0	monitor
 evt_073615	0	monitor
 evt_073616	0	monitor
@@ -73629,11 +73629,11 @@ evt_073626	0	monitor
 evt_073627	0	monitor
 evt_073628	0	monitor
 evt_073629	0	monitor
-evt_073630	0	monitor
+evt_073630	1	quarantine
 evt_073631	1	quarantine
 evt_073632	0	monitor
 evt_073633	0	monitor
-evt_073634	1	quarantine
+evt_073634	0	monitor
 evt_073635	0	monitor
 evt_073636	0	monitor
 evt_073637	0	monitor
@@ -73661,8 +73661,8 @@ evt_073658	0	monitor
 evt_073659	0	monitor
 evt_073660	0	monitor
 evt_073661	0	monitor
-evt_073662	1	quarantine
-evt_073663	0	monitor
+evt_073662	0	monitor
+evt_073663	1	quarantine
 evt_073664	0	monitor
 evt_073665	1	quarantine
 evt_073666	0	monitor
@@ -73673,7 +73673,7 @@ evt_073670	0	monitor
 evt_073671	0	monitor
 evt_073672	0	monitor
 evt_073673	0	monitor
-evt_073674	1	quarantine
+evt_073674	0	monitor
 evt_073675	0	monitor
 evt_073676	0	monitor
 evt_073677	1	quarantine
@@ -73739,7 +73739,7 @@ evt_073736	0	monitor
 evt_073737	0	monitor
 evt_073738	0	monitor
 evt_073739	0	monitor
-evt_073740	1	quarantine
+evt_073740	0	monitor
 evt_073741	0	monitor
 evt_073742	0	monitor
 evt_073743	0	monitor
@@ -73909,7 +73909,7 @@ evt_073906	1	quarantine
 evt_073907	0	monitor
 evt_073908	0	monitor
 evt_073909	0	monitor
-evt_073910	0	monitor
+evt_073910	1	quarantine
 evt_073911	0	monitor
 evt_073912	0	monitor
 evt_073913	0	monitor
@@ -74011,7 +74011,7 @@ evt_074008	0	monitor
 evt_074009	0	monitor
 evt_074010	0	monitor
 evt_074011	0	monitor
-evt_074012	1	quarantine
+evt_074012	0	monitor
 evt_074013	1	quarantine
 evt_074014	0	monitor
 evt_074015	1	quarantine
@@ -74039,7 +74039,7 @@ evt_074038	0	monitor
 evt_074036	0	monitor
 evt_074037	0	monitor
 evt_074039	0	monitor
-evt_074040	0	monitor
+evt_074040	1	quarantine
 evt_074041	0	monitor
 evt_074042	0	monitor
 evt_074043	0	monitor
@@ -74052,7 +74052,7 @@ evt_074049	0	monitor
 evt_074050	0	monitor
 evt_074051	0	monitor
 evt_074052	0	monitor
-evt_074053	1	quarantine
+evt_074053	0	monitor
 evt_074054	0	monitor
 evt_074055	1	quarantine
 evt_074056	1	quarantine
@@ -74164,7 +74164,7 @@ evt_074161	0	monitor
 evt_074162	0	monitor
 evt_074163	0	monitor
 evt_074164	0	monitor
-evt_074165	0	monitor
+evt_074165	1	quarantine
 evt_074166	0	monitor
 evt_074167	0	monitor
 evt_074168	0	monitor
@@ -74173,7 +74173,7 @@ evt_074170	0	monitor
 evt_074171	0	monitor
 evt_074172	1	quarantine
 evt_074173	0	monitor
-evt_074174	0	monitor
+evt_074174	1	quarantine
 evt_074175	0	monitor
 evt_074176	0	monitor
 evt_074177	0	monitor
@@ -74283,7 +74283,7 @@ evt_074280	0	monitor
 evt_074281	0	monitor
 evt_074282	0	monitor
 evt_074283	0	monitor
-evt_074284	0	monitor
+evt_074284	1	quarantine
 evt_074285	0	monitor
 evt_074286	0	monitor
 evt_074287	0	monitor
@@ -74353,8 +74353,8 @@ evt_074350	0	monitor
 evt_074351	0	monitor
 evt_074352	1	suppress
 evt_074353	0	monitor
-evt_074354	1	quarantine
-evt_074355	1	quarantine
+evt_074354	0	monitor
+evt_074355	0	monitor
 evt_074356	0	monitor
 evt_074357	0	monitor
 evt_074358	0	monitor
@@ -74548,7 +74548,7 @@ evt_074545	0	monitor
 evt_074546	0	monitor
 evt_074547	0	monitor
 evt_074548	0	monitor
-evt_074549	1	quarantine
+evt_074549	0	monitor
 evt_074550	0	monitor
 evt_074551	0	monitor
 evt_074552	1	quarantine
@@ -74618,7 +74618,7 @@ evt_074615	0	monitor
 evt_074616	0	monitor
 evt_074617	0	monitor
 evt_074618	0	monitor
-evt_074619	0	monitor
+evt_074619	1	quarantine
 evt_074620	1	quarantine
 evt_074621	0	monitor
 evt_074622	0	monitor
@@ -74628,7 +74628,7 @@ evt_074625	0	monitor
 evt_074626	0	monitor
 evt_074627	0	monitor
 evt_074628	0	monitor
-evt_074629	1	quarantine
+evt_074629	0	monitor
 evt_074630	0	monitor
 evt_074631	0	monitor
 evt_074632	0	monitor
@@ -74734,7 +74734,7 @@ evt_074731	0	monitor
 evt_074732	0	monitor
 evt_074733	0	monitor
 evt_074734	0	monitor
-evt_074735	1	quarantine
+evt_074735	0	monitor
 evt_074736	0	monitor
 evt_074737	0	monitor
 evt_074738	0	monitor
@@ -74756,7 +74756,7 @@ evt_074753	0	monitor
 evt_074754	0	monitor
 evt_074755	0	monitor
 evt_074756	0	monitor
-evt_074757	0	monitor
+evt_074757	1	quarantine
 evt_074758	1	quarantine
 evt_074759	0	monitor
 evt_074760	0	monitor
@@ -74805,7 +74805,7 @@ evt_074802	0	monitor
 evt_074803	0	monitor
 evt_074804	0	monitor
 evt_074805	0	monitor
-evt_074806	1	quarantine
+evt_074806	0	monitor
 evt_074807	0	monitor
 evt_074808	0	monitor
 evt_074809	0	monitor
@@ -74979,7 +74979,7 @@ evt_074976	0	monitor
 evt_074977	0	monitor
 evt_074978	0	monitor
 evt_074979	0	monitor
-evt_074980	1	quarantine
+evt_074980	0	monitor
 evt_074981	0	monitor
 evt_074983	0	monitor
 evt_074982	0	monitor
@@ -74996,7 +74996,7 @@ evt_074993	0	monitor
 evt_074994	0	monitor
 evt_074995	0	monitor
 evt_074996	0	monitor
-evt_074997	1	quarantine
+evt_074997	0	monitor
 evt_074998	0	monitor
 evt_074999	0	monitor
 evt_075000	0	monitor
@@ -75049,7 +75049,7 @@ evt_075046	0	monitor
 evt_075047	0	monitor
 evt_075048	0	monitor
 evt_075049	1	quarantine
-evt_075050	0	monitor
+evt_075050	1	quarantine
 evt_075051	0	monitor
 evt_075052	0	monitor
 evt_075053	0	monitor
@@ -75316,7 +75316,7 @@ evt_075313	0	monitor
 evt_075314	0	monitor
 evt_075315	0	monitor
 evt_075316	0	monitor
-evt_075317	1	quarantine
+evt_075317	0	monitor
 evt_075318	0	monitor
 evt_075319	0	monitor
 evt_075320	0	monitor
@@ -75350,7 +75350,7 @@ evt_075347	0	monitor
 evt_075348	0	monitor
 evt_075349	0	monitor
 evt_075350	1	suppress
-evt_075351	0	monitor
+evt_075351	1	quarantine
 evt_075352	0	monitor
 evt_075353	0	monitor
 evt_075354	0	monitor
@@ -75411,7 +75411,7 @@ evt_075408	0	monitor
 evt_075409	0	monitor
 evt_075410	1	quarantine
 evt_075411	0	monitor
-evt_075412	1	quarantine
+evt_075412	0	monitor
 evt_075413	0	monitor
 evt_075414	0	monitor
 evt_075415	0	monitor
@@ -75426,9 +75426,9 @@ evt_075423	0	monitor
 evt_075424	0	monitor
 evt_075425	0	monitor
 evt_075426	0	monitor
-evt_075427	0	monitor
+evt_075427	1	quarantine
 evt_075428	0	monitor
-evt_075429	0	monitor
+evt_075429	1	quarantine
 evt_075430	0	monitor
 evt_075431	0	monitor
 evt_075432	0	monitor
@@ -75438,10 +75438,10 @@ evt_075435	0	monitor
 evt_075436	0	monitor
 evt_075437	0	monitor
 evt_075438	0	monitor
-evt_075439	1	quarantine
+evt_075439	0	monitor
 evt_075440	1	quarantine
 evt_075441	0	monitor
-evt_075442	1	quarantine
+evt_075442	0	monitor
 evt_075443	0	monitor
 evt_075444	0	monitor
 evt_075445	0	monitor
@@ -75524,7 +75524,7 @@ evt_075521	0	monitor
 evt_075522	0	monitor
 evt_075523	0	monitor
 evt_075524	0	monitor
-evt_075525	1	quarantine
+evt_075525	0	monitor
 evt_075526	0	monitor
 evt_075527	1	quarantine
 evt_075528	0	monitor
@@ -75559,8 +75559,8 @@ evt_075556	0	monitor
 evt_075557	0	monitor
 evt_075558	0	monitor
 evt_075559	1	quarantine
-evt_075560	1	quarantine
-evt_075561	0	monitor
+evt_075560	0	monitor
+evt_075561	1	quarantine
 evt_075562	0	monitor
 evt_075563	0	monitor
 evt_075564	0	monitor
@@ -75642,7 +75642,7 @@ evt_075639	1	quarantine
 evt_075640	0	monitor
 evt_075641	0	monitor
 evt_075642	0	monitor
-evt_075643	0	monitor
+evt_075643	1	quarantine
 evt_075644	0	monitor
 evt_075645	0	monitor
 evt_075646	0	monitor
@@ -75676,7 +75676,7 @@ evt_075673	0	monitor
 evt_075674	0	monitor
 evt_075675	0	monitor
 evt_075676	0	monitor
-evt_075677	0	monitor
+evt_075677	1	quarantine
 evt_075678	0	monitor
 evt_075679	0	monitor
 evt_075680	0	monitor
@@ -75714,7 +75714,7 @@ evt_075711	0	monitor
 evt_075712	0	monitor
 evt_075713	0	monitor
 evt_075714	0	monitor
-evt_075715	0	monitor
+evt_075715	1	quarantine
 evt_075716	0	monitor
 evt_075717	1	suppress
 evt_075718	0	monitor
@@ -75728,7 +75728,7 @@ evt_075725	0	monitor
 evt_075726	0	monitor
 evt_075727	0	monitor
 evt_075728	0	monitor
-evt_075729	0	monitor
+evt_075729	1	quarantine
 evt_075730	0	monitor
 evt_075731	0	monitor
 evt_075732	0	monitor
@@ -75756,7 +75756,7 @@ evt_075753	0	monitor
 evt_075754	0	monitor
 evt_075755	1	quarantine
 evt_075756	0	monitor
-evt_075757	0	monitor
+evt_075757	1	quarantine
 evt_075758	0	monitor
 evt_075759	0	monitor
 evt_075760	1	quarantine
@@ -75814,7 +75814,7 @@ evt_075811	0	monitor
 evt_075812	0	monitor
 evt_075813	0	monitor
 evt_075814	0	monitor
-evt_075815	0	monitor
+evt_075815	1	quarantine
 evt_075816	0	monitor
 evt_075817	0	monitor
 evt_075818	0	monitor
@@ -75838,12 +75838,12 @@ evt_075835	0	monitor
 evt_075836	0	monitor
 evt_075837	0	monitor
 evt_075838	0	monitor
-evt_075839	1	quarantine
+evt_075839	0	monitor
 evt_075840	0	monitor
 evt_075841	0	monitor
 evt_075842	0	monitor
 evt_075843	1	suppress
-evt_075844	1	quarantine
+evt_075844	0	monitor
 evt_075845	0	monitor
 evt_075846	0	monitor
 evt_075847	0	monitor
@@ -75854,7 +75854,7 @@ evt_075851	0	monitor
 evt_075852	0	monitor
 evt_075853	0	monitor
 evt_075854	0	monitor
-evt_075855	1	quarantine
+evt_075855	0	monitor
 evt_075856	0	monitor
 evt_075857	0	monitor
 evt_075858	0	monitor
@@ -76091,9 +76091,9 @@ evt_076088	0	monitor
 evt_076089	0	monitor
 evt_076090	0	monitor
 evt_076091	0	monitor
-evt_076092	1	quarantine
+evt_076092	0	monitor
 evt_076093	0	monitor
-evt_076094	0	monitor
+evt_076094	1	quarantine
 evt_076095	0	monitor
 evt_076096	0	monitor
 evt_076097	0	monitor
@@ -76105,7 +76105,7 @@ evt_076102	0	monitor
 evt_076103	0	monitor
 evt_076104	0	monitor
 evt_076105	0	monitor
-evt_076106	1	quarantine
+evt_076106	0	monitor
 evt_076107	0	monitor
 evt_076108	0	monitor
 evt_076109	0	monitor
@@ -76114,7 +76114,7 @@ evt_076111	0	monitor
 evt_076112	0	monitor
 evt_076113	0	monitor
 evt_076114	0	monitor
-evt_076115	0	monitor
+evt_076115	1	quarantine
 evt_076116	0	monitor
 evt_076117	0	monitor
 evt_076118	0	monitor
@@ -76161,13 +76161,13 @@ evt_076158	0	monitor
 evt_076159	0	monitor
 evt_076160	0	monitor
 evt_076161	0	monitor
-evt_076162	0	monitor
+evt_076162	1	quarantine
 evt_076163	0	monitor
 evt_076164	0	monitor
 evt_076165	0	monitor
 evt_076166	0	monitor
 evt_076167	0	monitor
-evt_076168	1	quarantine
+evt_076168	0	monitor
 evt_076169	0	monitor
 evt_076170	0	monitor
 evt_076171	0	monitor
@@ -76197,7 +76197,7 @@ evt_076194	0	monitor
 evt_076195	0	monitor
 evt_076196	0	monitor
 evt_076197	0	monitor
-evt_076198	1	quarantine
+evt_076198	0	monitor
 evt_076199	0	monitor
 evt_076200	0	monitor
 evt_076201	0	monitor
@@ -76253,7 +76253,7 @@ evt_076250	0	monitor
 evt_076251	0	monitor
 evt_076252	0	monitor
 evt_076253	0	monitor
-evt_076254	1	quarantine
+evt_076254	0	monitor
 evt_076255	0	monitor
 evt_076256	0	monitor
 evt_076257	0	monitor
@@ -76292,7 +76292,7 @@ evt_076289	0	monitor
 evt_076290	1	quarantine
 evt_076291	1	quarantine
 evt_076292	0	monitor
-evt_076293	1	quarantine
+evt_076293	0	monitor
 evt_076294	0	monitor
 evt_076295	0	monitor
 evt_076296	0	monitor
@@ -76412,11 +76412,11 @@ evt_076409	0	monitor
 evt_076410	0	monitor
 evt_076411	0	monitor
 evt_076412	0	monitor
-evt_076413	0	monitor
+evt_076413	1	quarantine
 evt_076414	0	monitor
 evt_076415	0	monitor
 evt_076416	1	quarantine
-evt_076417	0	monitor
+evt_076417	1	quarantine
 evt_076418	0	monitor
 evt_076419	0	monitor
 evt_076420	0	monitor
@@ -76464,7 +76464,7 @@ evt_076461	0	monitor
 evt_076462	0	monitor
 evt_076463	0	monitor
 evt_076464	0	monitor
-evt_076465	1	quarantine
+evt_076465	0	monitor
 evt_076466	0	monitor
 evt_076467	0	monitor
 evt_076468	0	monitor
@@ -76634,13 +76634,13 @@ evt_076631	0	monitor
 evt_076632	0	monitor
 evt_076633	0	monitor
 evt_076634	0	monitor
-evt_076635	0	monitor
+evt_076635	1	quarantine
 evt_076636	0	monitor
 evt_076637	0	monitor
 evt_076638	0	monitor
 evt_076639	0	monitor
 evt_076640	0	monitor
-evt_076641	0	monitor
+evt_076641	1	quarantine
 evt_076642	0	monitor
 evt_076643	0	monitor
 evt_076644	0	monitor
@@ -77313,7 +77313,7 @@ evt_077310	0	monitor
 evt_077311	0	monitor
 evt_077312	0	monitor
 evt_077313	0	monitor
-evt_077314	0	monitor
+evt_077314	1	quarantine
 evt_077315	0	monitor
 evt_077316	0	monitor
 evt_077317	0	monitor
@@ -77428,7 +77428,7 @@ evt_077425	0	monitor
 evt_077426	0	monitor
 evt_077427	0	monitor
 evt_077428	0	monitor
-evt_077429	0	monitor
+evt_077429	1	quarantine
 evt_077430	0	monitor
 evt_077431	0	monitor
 evt_077432	0	monitor
@@ -78632,7 +78632,7 @@ evt_078629	0	monitor
 evt_078630	0	monitor
 evt_078631	0	monitor
 evt_078632	0	monitor
-evt_078633	1	quarantine
+evt_078633	0	monitor
 evt_078634	0	monitor
 evt_078635	0	monitor
 evt_078636	0	monitor
@@ -78650,7 +78650,7 @@ evt_078647	0	monitor
 evt_078648	0	monitor
 evt_078649	0	monitor
 evt_078650	0	monitor
-evt_078651	1	quarantine
+evt_078651	0	monitor
 evt_078652	0	monitor
 evt_078653	0	monitor
 evt_078654	0	monitor
@@ -78871,7 +78871,7 @@ evt_078868	0	monitor
 evt_078869	0	monitor
 evt_078870	0	monitor
 evt_078871	0	monitor
-evt_078872	0	monitor
+evt_078872	1	quarantine
 evt_078873	0	monitor
 evt_078874	0	monitor
 evt_078875	0	monitor
@@ -79021,7 +79021,7 @@ evt_079018	0	monitor
 evt_079019	0	monitor
 evt_079020	0	monitor
 evt_079021	0	monitor
-evt_079022	0	monitor
+evt_079022	1	quarantine
 evt_079023	0	monitor
 evt_079024	0	monitor
 evt_079025	0	monitor
@@ -79390,7 +79390,7 @@ evt_079387	0	monitor
 evt_079388	0	monitor
 evt_079389	0	monitor
 evt_079390	0	monitor
-evt_079391	1	quarantine
+evt_079391	0	monitor
 evt_079392	0	monitor
 evt_079393	0	monitor
 evt_079394	0	monitor
@@ -79433,7 +79433,7 @@ evt_079430	0	monitor
 evt_079431	0	monitor
 evt_079432	0	monitor
 evt_079433	0	monitor
-evt_079434	1	quarantine
+evt_079434	0	monitor
 evt_079435	0	monitor
 evt_079436	0	monitor
 evt_079437	0	monitor
@@ -79663,13 +79663,13 @@ evt_079660	0	monitor
 evt_079661	0	monitor
 evt_079662	0	monitor
 evt_079663	0	monitor
-evt_079665	0	monitor
+evt_079665	1	quarantine
 evt_079664	0	monitor
 evt_079666	0	monitor
 evt_079667	0	monitor
 evt_079668	0	monitor
 evt_079669	0	monitor
-evt_079670	1	quarantine
+evt_079670	0	monitor
 evt_079671	0	monitor
 evt_079672	0	monitor
 evt_079673	0	monitor
@@ -79960,7 +79960,7 @@ evt_079957	0	monitor
 evt_079958	0	monitor
 evt_079959	0	monitor
 evt_079960	0	monitor
-evt_079961	0	monitor
+evt_079961	1	quarantine
 evt_079962	0	monitor
 evt_079963	0	monitor
 evt_079964	0	monitor
@@ -80291,7 +80291,7 @@ evt_080288	0	monitor
 evt_080289	0	monitor
 evt_080290	0	monitor
 evt_080291	0	monitor
-evt_080292	0	monitor
+evt_080292	1	quarantine
 evt_080293	0	monitor
 evt_080294	0	monitor
 evt_080295	0	monitor
@@ -80374,7 +80374,7 @@ evt_080371	0	monitor
 evt_080372	0	monitor
 evt_080373	0	monitor
 evt_080374	0	monitor
-evt_080375	0	monitor
+evt_080375	1	quarantine
 evt_080376	0	monitor
 evt_080377	0	monitor
 evt_080378	0	monitor
@@ -80964,7 +80964,7 @@ evt_080961	0	monitor
 evt_080962	0	monitor
 evt_080963	0	monitor
 evt_080964	1	suppress
-evt_080965	1	quarantine
+evt_080965	0	monitor
 evt_080966	0	monitor
 evt_080967	0	monitor
 evt_080968	0	monitor
@@ -81165,7 +81165,7 @@ evt_081162	0	monitor
 evt_081163	0	monitor
 evt_081164	0	monitor
 evt_081165	0	monitor
-evt_081166	1	quarantine
+evt_081166	0	monitor
 evt_081167	0	monitor
 evt_081168	0	monitor
 evt_081169	0	monitor
@@ -81234,7 +81234,7 @@ evt_081231	0	monitor
 evt_081232	0	monitor
 evt_081233	0	monitor
 evt_081234	0	monitor
-evt_081235	0	monitor
+evt_081235	1	quarantine
 evt_081236	0	monitor
 evt_081237	0	monitor
 evt_081238	0	monitor
@@ -81377,7 +81377,7 @@ evt_081374	0	monitor
 evt_081375	0	monitor
 evt_081376	0	monitor
 evt_081377	0	monitor
-evt_081378	0	monitor
+evt_081378	1	quarantine
 evt_081379	0	monitor
 evt_081380	0	monitor
 evt_081381	0	monitor
@@ -81579,7 +81579,7 @@ evt_081576	0	monitor
 evt_081577	0	monitor
 evt_081578	0	monitor
 evt_081579	0	monitor
-evt_081580	0	monitor
+evt_081580	1	quarantine
 evt_081581	0	monitor
 evt_081582	0	monitor
 evt_081583	0	monitor
@@ -81728,7 +81728,7 @@ evt_081725	0	monitor
 evt_081726	0	monitor
 evt_081727	0	monitor
 evt_081728	0	monitor
-evt_081729	0	monitor
+evt_081729	1	quarantine
 evt_081730	0	monitor
 evt_081731	0	monitor
 evt_081732	0	monitor
@@ -82132,7 +82132,7 @@ evt_082129	0	monitor
 evt_082130	0	monitor
 evt_082131	0	monitor
 evt_082132	0	monitor
-evt_082133	1	quarantine
+evt_082133	0	monitor
 evt_082134	0	monitor
 evt_082135	0	monitor
 evt_082136	0	monitor
@@ -82625,7 +82625,7 @@ evt_082622	0	monitor
 evt_082623	0	monitor
 evt_082624	0	monitor
 evt_082625	0	monitor
-evt_082626	1	quarantine
+evt_082626	0	monitor
 evt_082627	0	monitor
 evt_082628	0	monitor
 evt_082629	0	monitor
@@ -83486,7 +83486,7 @@ evt_083483	0	monitor
 evt_083484	0	monitor
 evt_083485	0	monitor
 evt_083486	0	monitor
-evt_083487	0	monitor
+evt_083487	1	quarantine
 evt_083488	0	monitor
 evt_083489	0	monitor
 evt_083490	0	monitor
@@ -83619,7 +83619,7 @@ evt_083616	0	monitor
 evt_083617	0	monitor
 evt_083618	0	monitor
 evt_083619	0	monitor
-evt_083620	0	monitor
+evt_083620	1	quarantine
 evt_083621	0	monitor
 evt_083622	0	monitor
 evt_083623	0	monitor
@@ -83744,7 +83744,7 @@ evt_083741	0	monitor
 evt_083742	0	monitor
 evt_083743	0	monitor
 evt_083744	0	monitor
-evt_083745	1	quarantine
+evt_083745	0	monitor
 evt_083746	0	monitor
 evt_083747	0	monitor
 evt_083748	0	monitor
@@ -83765,7 +83765,7 @@ evt_083762	0	monitor
 evt_083763	0	monitor
 evt_083764	0	monitor
 evt_083765	0	monitor
-evt_083766	0	monitor
+evt_083766	1	quarantine
 evt_083767	0	monitor
 evt_083768	0	monitor
 evt_083769	0	monitor
@@ -83949,7 +83949,7 @@ evt_083946	0	monitor
 evt_083947	0	monitor
 evt_083948	0	monitor
 evt_083949	0	monitor
-evt_083950	1	quarantine
+evt_083950	0	monitor
 evt_083951	0	monitor
 evt_083952	0	monitor
 evt_083953	0	monitor
@@ -84052,7 +84052,7 @@ evt_084049	0	monitor
 evt_084050	0	monitor
 evt_084051	0	monitor
 evt_084052	0	monitor
-evt_084053	0	monitor
+evt_084053	1	quarantine
 evt_084054	0	monitor
 evt_084055	0	monitor
 evt_084056	0	monitor
@@ -84447,7 +84447,7 @@ evt_084444	0	monitor
 evt_084445	0	monitor
 evt_084446	0	monitor
 evt_084447	0	monitor
-evt_084448	0	monitor
+evt_084448	1	quarantine
 evt_084449	0	monitor
 evt_084450	0	monitor
 evt_084451	0	monitor
@@ -84592,7 +84592,7 @@ evt_084589	0	monitor
 evt_084590	0	monitor
 evt_084591	0	monitor
 evt_084592	0	monitor
-evt_084593	1	quarantine
+evt_084593	0	monitor
 evt_084594	0	monitor
 evt_084595	0	monitor
 evt_084596	0	monitor
@@ -84667,7 +84667,7 @@ evt_084664	0	monitor
 evt_084665	0	monitor
 evt_084666	0	monitor
 evt_084667	0	monitor
-evt_084668	1	quarantine
+evt_084668	0	monitor
 evt_084669	0	monitor
 evt_084670	0	monitor
 evt_084671	0	monitor
@@ -85205,7 +85205,7 @@ evt_085202	0	monitor
 evt_085203	0	monitor
 evt_085204	0	monitor
 evt_085205	0	monitor
-evt_085206	1	quarantine
+evt_085206	0	monitor
 evt_085207	0	monitor
 evt_085208	0	monitor
 evt_085209	0	monitor
@@ -85281,7 +85281,7 @@ evt_085278	0	monitor
 evt_085279	0	monitor
 evt_085280	0	monitor
 evt_085281	0	monitor
-evt_085282	0	monitor
+evt_085282	1	quarantine
 evt_085283	0	monitor
 evt_085284	0	monitor
 evt_085285	0	monitor
@@ -85295,7 +85295,7 @@ evt_085292	0	monitor
 evt_085293	0	monitor
 evt_085294	0	monitor
 evt_085295	0	monitor
-evt_085296	0	monitor
+evt_085296	1	quarantine
 evt_085297	0	monitor
 evt_085298	0	monitor
 evt_085299	0	monitor
@@ -85460,7 +85460,7 @@ evt_085457	0	monitor
 evt_085458	0	monitor
 evt_085459	0	monitor
 evt_085460	0	monitor
-evt_085461	1	quarantine
+evt_085461	0	monitor
 evt_085462	0	monitor
 evt_085463	0	monitor
 evt_085464	0	monitor
@@ -85567,7 +85567,7 @@ evt_085564	0	monitor
 evt_085565	0	monitor
 evt_085566	0	monitor
 evt_085567	0	monitor
-evt_085568	1	quarantine
+evt_085568	0	monitor
 evt_085569	0	monitor
 evt_085570	0	monitor
 evt_085571	0	monitor
@@ -85777,7 +85777,7 @@ evt_085774	0	monitor
 evt_085775	0	monitor
 evt_085776	0	monitor
 evt_085777	0	monitor
-evt_085778	0	monitor
+evt_085778	1	quarantine
 evt_085779	0	monitor
 evt_085780	0	monitor
 evt_085781	0	monitor
@@ -86316,7 +86316,7 @@ evt_086313	0	monitor
 evt_086314	0	monitor
 evt_086315	0	monitor
 evt_086316	0	monitor
-evt_086317	1	quarantine
+evt_086317	0	monitor
 evt_086318	0	monitor
 evt_086319	0	monitor
 evt_086320	0	monitor
@@ -86418,7 +86418,7 @@ evt_086415	0	monitor
 evt_086416	0	monitor
 evt_086417	0	monitor
 evt_086418	0	monitor
-evt_086419	0	monitor
+evt_086419	1	quarantine
 evt_086420	0	monitor
 evt_086421	0	monitor
 evt_086422	0	monitor
@@ -86769,7 +86769,7 @@ evt_086766	0	monitor
 evt_086767	0	monitor
 evt_086768	0	monitor
 evt_086769	0	monitor
-evt_086770	0	monitor
+evt_086770	1	quarantine
 evt_086771	0	monitor
 evt_086772	0	monitor
 evt_086773	0	monitor
@@ -86888,7 +86888,7 @@ evt_086885	0	monitor
 evt_086886	0	monitor
 evt_086887	0	monitor
 evt_086888	0	monitor
-evt_086889	1	quarantine
+evt_086889	0	monitor
 evt_086890	0	monitor
 evt_086891	0	monitor
 evt_086892	0	monitor
@@ -87222,7 +87222,7 @@ evt_087219	0	monitor
 evt_087220	0	monitor
 evt_087221	0	monitor
 evt_087222	0	monitor
-evt_087223	1	quarantine
+evt_087223	0	monitor
 evt_087224	0	monitor
 evt_087225	0	monitor
 evt_087226	0	monitor
@@ -87390,7 +87390,7 @@ evt_087387	0	monitor
 evt_087388	0	monitor
 evt_087389	0	monitor
 evt_087390	0	monitor
-evt_087391	1	quarantine
+evt_087391	0	monitor
 evt_087392	0	monitor
 evt_087393	0	monitor
 evt_087394	0	monitor
@@ -87405,7 +87405,7 @@ evt_087402	0	monitor
 evt_087403	0	monitor
 evt_087404	0	monitor
 evt_087405	0	monitor
-evt_087406	1	quarantine
+evt_087406	0	monitor
 evt_087407	0	monitor
 evt_087408	0	monitor
 evt_087409	0	monitor
@@ -87416,7 +87416,7 @@ evt_087413	0	monitor
 evt_087414	0	monitor
 evt_087415	1	suppress
 evt_087416	0	monitor
-evt_087417	1	quarantine
+evt_087417	0	monitor
 evt_087418	0	monitor
 evt_087419	0	monitor
 evt_087420	0	monitor
@@ -87453,7 +87453,7 @@ evt_087450	0	monitor
 evt_087451	0	monitor
 evt_087452	0	monitor
 evt_087453	0	monitor
-evt_087454	1	quarantine
+evt_087454	0	monitor
 evt_087455	0	monitor
 evt_087456	0	monitor
 evt_087457	0	monitor
@@ -87603,7 +87603,7 @@ evt_087600	0	monitor
 evt_087601	0	monitor
 evt_087602	0	monitor
 evt_087603	0	monitor
-evt_087604	1	quarantine
+evt_087604	0	monitor
 evt_087605	0	monitor
 evt_087606	0	monitor
 evt_087607	0	monitor
@@ -87788,7 +87788,7 @@ evt_087785	0	monitor
 evt_087786	0	monitor
 evt_087787	0	monitor
 evt_087788	0	monitor
-evt_087789	0	monitor
+evt_087789	1	quarantine
 evt_087790	0	monitor
 evt_087791	0	monitor
 evt_087792	0	monitor
@@ -87905,7 +87905,7 @@ evt_087902	0	monitor
 evt_087903	0	monitor
 evt_087904	0	monitor
 evt_087905	0	monitor
-evt_087906	1	quarantine
+evt_087906	0	monitor
 evt_087907	0	monitor
 evt_087908	0	monitor
 evt_087909	0	monitor
@@ -87953,7 +87953,7 @@ evt_087950	0	monitor
 evt_087951	0	monitor
 evt_087952	0	monitor
 evt_087953	0	monitor
-evt_087954	1	quarantine
+evt_087954	0	monitor
 evt_087955	0	monitor
 evt_087956	0	monitor
 evt_087957	0	monitor
@@ -88021,7 +88021,7 @@ evt_088018	0	monitor
 evt_088019	0	monitor
 evt_088020	0	monitor
 evt_088021	0	monitor
-evt_088022	0	monitor
+evt_088022	1	quarantine
 evt_088023	0	monitor
 evt_088024	0	monitor
 evt_088025	0	monitor
@@ -88188,7 +88188,7 @@ evt_088185	0	monitor
 evt_088186	0	monitor
 evt_088187	0	monitor
 evt_088188	0	monitor
-evt_088189	1	quarantine
+evt_088189	0	monitor
 evt_088190	0	monitor
 evt_088191	0	monitor
 evt_088192	0	monitor
@@ -88268,7 +88268,7 @@ evt_088265	0	monitor
 evt_088266	0	monitor
 evt_088267	0	monitor
 evt_088268	0	monitor
-evt_088269	1	quarantine
+evt_088269	0	monitor
 evt_088270	0	monitor
 evt_088271	0	monitor
 evt_088272	0	monitor
@@ -88397,7 +88397,7 @@ evt_088394	0	monitor
 evt_088395	0	monitor
 evt_088396	0	monitor
 evt_088397	0	monitor
-evt_088398	0	monitor
+evt_088398	1	quarantine
 evt_088399	0	monitor
 evt_088400	0	monitor
 evt_088401	0	monitor
@@ -88556,7 +88556,7 @@ evt_088553	0	monitor
 evt_088554	0	monitor
 evt_088555	0	monitor
 evt_088556	0	monitor
-evt_088557	1	quarantine
+evt_088557	0	monitor
 evt_088558	0	monitor
 evt_088559	0	monitor
 evt_088560	0	monitor
@@ -88587,7 +88587,7 @@ evt_088584	0	monitor
 evt_088585	0	monitor
 evt_088586	0	monitor
 evt_088587	0	monitor
-evt_088588	1	quarantine
+evt_088588	0	monitor
 evt_088589	0	monitor
 evt_088590	0	monitor
 evt_088591	0	monitor
@@ -88758,7 +88758,7 @@ evt_088755	0	monitor
 evt_088756	0	monitor
 evt_088757	0	monitor
 evt_088758	0	monitor
-evt_088759	0	monitor
+evt_088759	1	quarantine
 evt_088760	0	monitor
 evt_088761	0	monitor
 evt_088762	0	monitor
@@ -88934,7 +88934,7 @@ evt_088931	0	monitor
 evt_088932	0	monitor
 evt_088933	0	monitor
 evt_088934	0	monitor
-evt_088935	1	quarantine
+evt_088935	0	monitor
 evt_088936	0	monitor
 evt_088937	0	monitor
 evt_088938	0	monitor
@@ -89053,7 +89053,7 @@ evt_089050	0	monitor
 evt_089051	0	monitor
 evt_089052	0	monitor
 evt_089053	0	monitor
-evt_089054	1	quarantine
+evt_089054	0	monitor
 evt_089055	0	monitor
 evt_089056	0	monitor
 evt_089057	0	monitor
@@ -89518,7 +89518,7 @@ evt_089515	0	monitor
 evt_089516	0	monitor
 evt_089517	0	monitor
 evt_089518	0	monitor
-evt_089519	1	quarantine
+evt_089519	0	monitor
 evt_089520	0	monitor
 evt_089521	0	monitor
 evt_089522	0	monitor
@@ -89534,7 +89534,7 @@ evt_089531	0	monitor
 evt_089532	0	monitor
 evt_089533	0	monitor
 evt_089534	0	monitor
-evt_089535	0	monitor
+evt_089535	1	quarantine
 evt_089536	0	monitor
 evt_089537	0	monitor
 evt_089538	0	monitor
@@ -89572,7 +89572,7 @@ evt_089569	0	monitor
 evt_089570	0	monitor
 evt_089571	0	monitor
 evt_089572	0	monitor
-evt_089573	1	quarantine
+evt_089573	0	monitor
 evt_089574	0	monitor
 evt_089575	0	monitor
 evt_089576	0	monitor
@@ -89585,7 +89585,7 @@ evt_089582	0	monitor
 evt_089583	0	monitor
 evt_089584	0	monitor
 evt_089585	0	monitor
-evt_089586	0	monitor
+evt_089586	1	quarantine
 evt_089587	0	monitor
 evt_089588	0	monitor
 evt_089589	0	monitor
@@ -90020,7 +90020,7 @@ evt_090017	0	monitor
 evt_090018	0	monitor
 evt_090019	0	monitor
 evt_090020	0	monitor
-evt_090021	1	quarantine
+evt_090021	0	monitor
 evt_090022	0	monitor
 evt_090023	0	monitor
 evt_090024	1	quarantine
@@ -90865,7 +90865,7 @@ evt_090862	0	monitor
 evt_090863	0	monitor
 evt_090864	0	monitor
 evt_090865	0	monitor
-evt_090866	1	quarantine
+evt_090866	0	monitor
 evt_090867	0	monitor
 evt_090868	0	monitor
 evt_090869	0	monitor
@@ -90959,7 +90959,7 @@ evt_090956	0	monitor
 evt_090957	0	monitor
 evt_090958	0	monitor
 evt_090959	0	monitor
-evt_090960	0	monitor
+evt_090960	1	quarantine
 evt_090961	0	monitor
 evt_090962	0	monitor
 evt_090963	0	monitor
@@ -90988,7 +90988,7 @@ evt_090985	0	monitor
 evt_090986	0	monitor
 evt_090987	0	monitor
 evt_090988	0	monitor
-evt_090989	1	quarantine
+evt_090989	0	monitor
 evt_090990	0	monitor
 evt_090991	0	monitor
 evt_090992	0	monitor
@@ -91034,7 +91034,7 @@ evt_091031	0	monitor
 evt_091032	0	monitor
 evt_091033	0	monitor
 evt_091034	1	suppress
-evt_091035	1	quarantine
+evt_091035	0	monitor
 evt_091036	0	monitor
 evt_091037	0	monitor
 evt_091038	0	monitor
@@ -91044,7 +91044,7 @@ evt_091041	0	monitor
 evt_091042	0	monitor
 evt_091043	0	monitor
 evt_091044	0	monitor
-evt_091045	1	quarantine
+evt_091045	0	monitor
 evt_091046	0	monitor
 evt_091047	0	monitor
 evt_091048	0	monitor
@@ -91208,7 +91208,7 @@ evt_091205	0	monitor
 evt_091206	1	quarantine
 evt_091207	0	monitor
 evt_091208	0	monitor
-evt_091209	0	monitor
+evt_091209	1	quarantine
 evt_091210	0	monitor
 evt_091211	0	monitor
 evt_091212	0	monitor
@@ -91280,7 +91280,7 @@ evt_091277	0	monitor
 evt_091278	0	monitor
 evt_091279	0	monitor
 evt_091280	0	monitor
-evt_091281	0	monitor
+evt_091281	1	quarantine
 evt_091282	0	monitor
 evt_091283	0	monitor
 evt_091284	0	monitor
@@ -91359,7 +91359,7 @@ evt_091356	0	monitor
 evt_091357	0	monitor
 evt_091358	0	monitor
 evt_091359	0	monitor
-evt_091360	0	monitor
+evt_091360	1	quarantine
 evt_091361	0	monitor
 evt_091362	0	monitor
 evt_091363	0	monitor
@@ -91875,7 +91875,7 @@ evt_091872	0	monitor
 evt_091873	0	monitor
 evt_091874	0	monitor
 evt_091875	0	monitor
-evt_091876	1	quarantine
+evt_091876	0	monitor
 evt_091877	0	monitor
 evt_091878	0	monitor
 evt_091879	0	monitor
@@ -91888,7 +91888,7 @@ evt_091885	0	monitor
 evt_091886	0	monitor
 evt_091887	0	monitor
 evt_091888	0	monitor
-evt_091889	1	quarantine
+evt_091889	0	monitor
 evt_091890	0	monitor
 evt_091891	0	monitor
 evt_091892	1	quarantine
@@ -92170,7 +92170,7 @@ evt_092167	0	monitor
 evt_092168	0	monitor
 evt_092169	0	monitor
 evt_092170	0	monitor
-evt_092171	0	monitor
+evt_092171	1	quarantine
 evt_092172	0	monitor
 evt_092173	0	monitor
 evt_092174	0	monitor
@@ -92215,7 +92215,7 @@ evt_092212	0	monitor
 evt_092213	0	monitor
 evt_092214	0	monitor
 evt_092215	0	monitor
-evt_092216	0	monitor
+evt_092216	1	quarantine
 evt_092217	0	monitor
 evt_092218	0	monitor
 evt_092219	0	monitor
@@ -92240,7 +92240,7 @@ evt_092237	0	monitor
 evt_092238	0	monitor
 evt_092239	0	monitor
 evt_092240	0	monitor
-evt_092241	0	monitor
+evt_092241	1	quarantine
 evt_092242	0	monitor
 evt_092243	0	monitor
 evt_092244	0	monitor
@@ -92637,7 +92637,7 @@ evt_092634	0	monitor
 evt_092635	0	monitor
 evt_092636	0	monitor
 evt_092637	0	monitor
-evt_092638	0	monitor
+evt_092638	1	quarantine
 evt_092639	0	monitor
 evt_092640	0	monitor
 evt_092641	0	monitor
@@ -92909,7 +92909,7 @@ evt_092906	0	monitor
 evt_092907	0	monitor
 evt_092908	0	monitor
 evt_092909	0	monitor
-evt_092910	1	quarantine
+evt_092910	0	monitor
 evt_092911	0	monitor
 evt_092912	0	monitor
 evt_092913	0	monitor
@@ -93437,7 +93437,7 @@ evt_093434	0	monitor
 evt_093435	0	monitor
 evt_093436	0	monitor
 evt_093437	0	monitor
-evt_093438	0	monitor
+evt_093438	1	quarantine
 evt_093439	0	monitor
 evt_093440	0	monitor
 evt_093441	0	monitor
@@ -93683,7 +93683,7 @@ evt_093680	0	monitor
 evt_093681	0	monitor
 evt_093682	0	monitor
 evt_093683	0	monitor
-evt_093684	1	quarantine
+evt_093684	0	monitor
 evt_093685	0	monitor
 evt_093686	0	monitor
 evt_093687	0	monitor
@@ -93856,7 +93856,7 @@ evt_093853	0	monitor
 evt_093854	0	monitor
 evt_093855	0	monitor
 evt_093856	0	monitor
-evt_093857	1	quarantine
+evt_093857	0	monitor
 evt_093858	0	monitor
 evt_093859	0	monitor
 evt_093860	0	monitor
@@ -94075,7 +94075,7 @@ evt_094072	0	monitor
 evt_094073	0	monitor
 evt_094074	0	monitor
 evt_094075	0	monitor
-evt_094076	0	monitor
+evt_094076	1	quarantine
 evt_094077	0	monitor
 evt_094078	0	monitor
 evt_094079	0	monitor
@@ -94297,7 +94297,7 @@ evt_094294	0	monitor
 evt_094295	0	monitor
 evt_094296	0	monitor
 evt_094297	0	monitor
-evt_094298	0	monitor
+evt_094298	1	quarantine
 evt_094299	0	monitor
 evt_094300	0	monitor
 evt_094301	0	monitor
@@ -94722,7 +94722,7 @@ evt_094719	0	monitor
 evt_094720	0	monitor
 evt_094721	0	monitor
 evt_094722	0	monitor
-evt_094723	1	quarantine
+evt_094723	0	monitor
 evt_094724	0	monitor
 evt_094725	0	monitor
 evt_094726	0	monitor
@@ -94764,7 +94764,7 @@ evt_094761	1	suppress
 evt_094762	0	monitor
 evt_094763	0	monitor
 evt_094764	0	monitor
-evt_094765	1	quarantine
+evt_094765	0	monitor
 evt_094766	0	monitor
 evt_094767	0	monitor
 evt_094768	0	monitor
@@ -95120,7 +95120,7 @@ evt_095117	0	monitor
 evt_095118	0	monitor
 evt_095119	0	monitor
 evt_095120	0	monitor
-evt_095121	0	monitor
+evt_095121	1	quarantine
 evt_095122	1	quarantine
 evt_095123	0	monitor
 evt_095124	0	monitor
@@ -95297,7 +95297,7 @@ evt_095294	0	monitor
 evt_095295	0	monitor
 evt_095296	0	monitor
 evt_095297	0	monitor
-evt_095298	0	monitor
+evt_095298	1	quarantine
 evt_095299	0	monitor
 evt_095300	0	monitor
 evt_095301	0	monitor
@@ -95396,7 +95396,7 @@ evt_095393	0	monitor
 evt_095394	0	monitor
 evt_095395	0	monitor
 evt_095396	0	monitor
-evt_095397	0	monitor
+evt_095397	1	quarantine
 evt_095398	0	monitor
 evt_095399	0	monitor
 evt_095400	0	monitor
@@ -95577,14 +95577,14 @@ evt_095574	0	monitor
 evt_095575	0	monitor
 evt_095576	0	monitor
 evt_095577	0	monitor
-evt_095578	0	monitor
+evt_095578	1	quarantine
 evt_095579	0	monitor
 evt_095580	0	monitor
 evt_095581	0	monitor
 evt_095582	0	monitor
 evt_095583	0	monitor
 evt_095584	0	monitor
-evt_095585	1	quarantine
+evt_095585	0	monitor
 evt_095586	0	monitor
 evt_095587	0	monitor
 evt_095588	0	monitor
@@ -95768,7 +95768,7 @@ evt_095765	0	monitor
 evt_095766	0	monitor
 evt_095767	0	monitor
 evt_095768	0	monitor
-evt_095769	1	quarantine
+evt_095769	0	monitor
 evt_095770	0	monitor
 evt_095771	0	monitor
 evt_095772	0	monitor
@@ -95826,7 +95826,7 @@ evt_095823	0	monitor
 evt_095824	0	monitor
 evt_095825	0	monitor
 evt_095826	0	monitor
-evt_095827	0	monitor
+evt_095827	1	quarantine
 evt_095828	0	monitor
 evt_095829	0	monitor
 evt_095830	0	monitor
@@ -95900,7 +95900,7 @@ evt_095897	0	monitor
 evt_095898	0	monitor
 evt_095899	0	monitor
 evt_095900	0	monitor
-evt_095901	1	quarantine
+evt_095901	0	monitor
 evt_095902	0	monitor
 evt_095903	0	monitor
 evt_095904	0	monitor
@@ -96964,7 +96964,7 @@ evt_096961	0	monitor
 evt_096962	0	monitor
 evt_096963	0	monitor
 evt_096964	0	monitor
-evt_096965	0	monitor
+evt_096965	1	quarantine
 evt_096966	0	monitor
 evt_096967	0	monitor
 evt_096968	0	monitor
@@ -97154,7 +97154,7 @@ evt_097151	0	monitor
 evt_097152	0	monitor
 evt_097153	0	monitor
 evt_097154	0	monitor
-evt_097155	0	monitor
+evt_097155	1	quarantine
 evt_097156	0	monitor
 evt_097157	0	monitor
 evt_097158	0	monitor
@@ -97316,7 +97316,7 @@ evt_097313	0	monitor
 evt_097314	0	monitor
 evt_097315	0	monitor
 evt_097316	0	monitor
-evt_097317	0	monitor
+evt_097317	1	quarantine
 evt_097318	0	monitor
 evt_097319	0	monitor
 evt_097320	0	monitor
@@ -97382,7 +97382,7 @@ evt_097379	0	monitor
 evt_097381	0	monitor
 evt_097380	0	monitor
 evt_097382	0	monitor
-evt_097383	0	monitor
+evt_097383	1	quarantine
 evt_097384	0	monitor
 evt_097385	0	monitor
 evt_097386	0	monitor
@@ -97398,7 +97398,7 @@ evt_097395	0	monitor
 evt_097396	0	monitor
 evt_097397	0	monitor
 evt_097398	0	monitor
-evt_097399	1	quarantine
+evt_097399	0	monitor
 evt_097400	1	quarantine
 evt_097401	0	monitor
 evt_097402	0	monitor
@@ -98169,7 +98169,7 @@ evt_098166	0	monitor
 evt_098167	0	monitor
 evt_098168	0	monitor
 evt_098169	0	monitor
-evt_098170	1	quarantine
+evt_098170	0	monitor
 evt_098171	0	monitor
 evt_098173	0	monitor
 evt_098172	0	monitor
@@ -98952,7 +98952,7 @@ evt_098949	0	monitor
 evt_098950	0	monitor
 evt_098951	0	monitor
 evt_098952	0	monitor
-evt_098953	1	quarantine
+evt_098953	0	monitor
 evt_098954	0	monitor
 evt_098955	0	monitor
 evt_098956	0	monitor
@@ -99107,7 +99107,7 @@ evt_099104	0	monitor
 evt_099105	0	monitor
 evt_099106	0	monitor
 evt_099107	0	monitor
-evt_099108	0	monitor
+evt_099108	1	quarantine
 evt_099109	0	monitor
 evt_099110	0	monitor
 evt_099111	0	monitor
@@ -99318,7 +99318,7 @@ evt_099315	0	monitor
 evt_099316	0	monitor
 evt_099317	0	monitor
 evt_099318	0	monitor
-evt_099319	1	quarantine
+evt_099319	0	monitor
 evt_099320	0	monitor
 evt_099321	0	monitor
 evt_099322	0	monitor
@@ -99445,7 +99445,7 @@ evt_099442	0	monitor
 evt_099443	1	quarantine
 evt_099444	0	monitor
 evt_099445	0	monitor
-evt_099446	1	quarantine
+evt_099446	0	monitor
 evt_099447	0	monitor
 evt_099448	0	monitor
 evt_099449	0	monitor
@@ -99496,7 +99496,7 @@ evt_099493	0	monitor
 evt_099494	0	monitor
 evt_099495	0	monitor
 evt_099496	0	monitor
-evt_099497	0	monitor
+evt_099497	1	quarantine
 evt_099498	0	monitor
 evt_099499	0	monitor
 evt_099500	0	monitor
@@ -99539,7 +99539,7 @@ evt_099536	0	monitor
 evt_099537	0	monitor
 evt_099538	0	monitor
 evt_099539	0	monitor
-evt_099540	1	quarantine
+evt_099540	0	monitor
 evt_099541	0	monitor
 evt_099542	0	monitor
 evt_099543	0	monitor
@@ -99646,7 +99646,7 @@ evt_099643	0	monitor
 evt_099644	0	monitor
 evt_099645	0	monitor
 evt_099646	0	monitor
-evt_099647	1	quarantine
+evt_099647	0	monitor
 evt_099648	0	monitor
 evt_099649	0	monitor
 evt_099650	0	monitor
@@ -100017,7 +100017,7 @@ evt_100014	0	monitor
 evt_100015	0	monitor
 evt_100016	0	monitor
 evt_100017	0	monitor
-evt_100018	0	monitor
+evt_100018	1	quarantine
 evt_100019	0	monitor
 evt_100020	0	monitor
 evt_100021	0	monitor
@@ -100381,7 +100381,7 @@ evt_100378	0	monitor
 evt_100379	0	monitor
 evt_100380	0	monitor
 evt_100381	0	monitor
-evt_100382	0	monitor
+evt_100382	1	quarantine
 evt_100383	0	monitor
 evt_100384	0	monitor
 evt_100385	0	monitor
@@ -100576,7 +100576,7 @@ evt_100573	0	monitor
 evt_100574	1	suppress
 evt_100575	0	monitor
 evt_100576	0	monitor
-evt_100577	1	quarantine
+evt_100577	0	monitor
 evt_100578	0	monitor
 evt_100579	0	monitor
 evt_100580	0	monitor
@@ -100651,7 +100651,7 @@ evt_100648	0	monitor
 evt_100649	0	monitor
 evt_100650	0	monitor
 evt_100651	0	monitor
-evt_100652	0	monitor
+evt_100652	1	quarantine
 evt_100653	0	monitor
 evt_100654	0	monitor
 evt_100655	0	monitor
@@ -100769,9 +100769,9 @@ evt_100766	0	monitor
 evt_100767	0	monitor
 evt_100768	0	monitor
 evt_100769	0	monitor
-evt_100770	0	monitor
+evt_100770	1	quarantine
 evt_100771	0	monitor
-evt_100772	0	monitor
+evt_100772	1	quarantine
 evt_100773	0	monitor
 evt_100774	1	suppress
 evt_100775	0	monitor
@@ -100914,7 +100914,7 @@ evt_100911	0	monitor
 evt_100912	0	monitor
 evt_100913	0	monitor
 evt_100914	0	monitor
-evt_100915	0	monitor
+evt_100915	1	quarantine
 evt_100916	0	monitor
 evt_100917	0	monitor
 evt_100918	0	monitor
@@ -101258,7 +101258,7 @@ evt_101255	0	monitor
 evt_101256	0	monitor
 evt_101257	0	monitor
 evt_101258	0	monitor
-evt_101259	0	monitor
+evt_101259	1	quarantine
 evt_101260	0	monitor
 evt_101261	0	monitor
 evt_101262	0	monitor
@@ -101372,7 +101372,7 @@ evt_101369	0	monitor
 evt_101370	0	monitor
 evt_101371	1	suppress
 evt_101372	0	monitor
-evt_101373	1	quarantine
+evt_101373	0	monitor
 evt_101374	0	monitor
 evt_101375	0	monitor
 evt_101376	0	monitor
@@ -101687,7 +101687,7 @@ evt_101684	0	monitor
 evt_101685	0	monitor
 evt_101686	0	monitor
 evt_101687	0	monitor
-evt_101688	1	quarantine
+evt_101688	0	monitor
 evt_101689	0	monitor
 evt_101690	0	monitor
 evt_101691	0	monitor
@@ -101779,7 +101779,7 @@ evt_101776	0	monitor
 evt_101777	0	monitor
 evt_101778	0	monitor
 evt_101779	0	monitor
-evt_101780	1	quarantine
+evt_101780	0	monitor
 evt_101781	0	monitor
 evt_101782	0	monitor
 evt_101783	0	monitor
@@ -101932,7 +101932,7 @@ evt_101929	0	monitor
 evt_101930	0	monitor
 evt_101931	0	monitor
 evt_101932	0	monitor
-evt_101933	0	monitor
+evt_101933	1	quarantine
 evt_101934	0	monitor
 evt_101935	0	monitor
 evt_101936	0	monitor
@@ -101948,7 +101948,7 @@ evt_101945	0	monitor
 evt_101946	0	monitor
 evt_101947	0	monitor
 evt_101948	0	monitor
-evt_101949	0	monitor
+evt_101949	1	quarantine
 evt_101950	0	monitor
 evt_101951	0	monitor
 evt_101952	0	monitor
@@ -102077,7 +102077,7 @@ evt_102074	0	monitor
 evt_102075	0	monitor
 evt_102076	0	monitor
 evt_102077	0	monitor
-evt_102078	1	quarantine
+evt_102078	0	monitor
 evt_102079	0	monitor
 evt_102080	0	monitor
 evt_102081	0	monitor
@@ -102279,7 +102279,7 @@ evt_102276	0	monitor
 evt_102277	0	monitor
 evt_102278	0	monitor
 evt_102279	0	monitor
-evt_102280	0	monitor
+evt_102280	1	quarantine
 evt_102281	0	monitor
 evt_102282	0	monitor
 evt_102283	0	monitor
@@ -102296,7 +102296,7 @@ evt_102293	0	monitor
 evt_102294	0	monitor
 evt_102295	0	monitor
 evt_102296	0	monitor
-evt_102297	0	monitor
+evt_102297	1	quarantine
 evt_102298	0	monitor
 evt_102299	0	monitor
 evt_102300	1	suppress
@@ -102372,7 +102372,7 @@ evt_102369	0	monitor
 evt_102370	0	monitor
 evt_102371	0	monitor
 evt_102372	0	monitor
-evt_102373	1	quarantine
+evt_102373	0	monitor
 evt_102374	0	monitor
 evt_102375	0	monitor
 evt_102376	0	monitor
@@ -102586,7 +102586,7 @@ evt_102583	0	monitor
 evt_102584	0	monitor
 evt_102585	0	monitor
 evt_102586	0	monitor
-evt_102587	0	monitor
+evt_102587	1	quarantine
 evt_102588	0	monitor
 evt_102589	0	monitor
 evt_102590	0	monitor
@@ -102850,7 +102850,7 @@ evt_102847	0	monitor
 evt_102848	0	monitor
 evt_102849	0	monitor
 evt_102850	0	monitor
-evt_102851	1	quarantine
+evt_102851	0	monitor
 evt_102852	0	monitor
 evt_102853	0	monitor
 evt_102854	0	monitor
@@ -103029,7 +103029,7 @@ evt_103026	0	monitor
 evt_103027	0	monitor
 evt_103028	0	monitor
 evt_103029	0	monitor
-evt_103030	1	quarantine
+evt_103030	0	monitor
 evt_103031	0	monitor
 evt_103032	0	monitor
 evt_103033	0	monitor
@@ -103453,7 +103453,7 @@ evt_103450	0	monitor
 evt_103451	0	monitor
 evt_103452	0	monitor
 evt_103453	0	monitor
-evt_103454	0	monitor
+evt_103454	1	quarantine
 evt_103455	0	monitor
 evt_103456	0	monitor
 evt_103457	0	monitor
@@ -103463,7 +103463,7 @@ evt_103460	0	monitor
 evt_103461	0	monitor
 evt_103462	0	monitor
 evt_103463	0	monitor
-evt_103464	1	quarantine
+evt_103464	0	monitor
 evt_103465	0	monitor
 evt_103466	0	monitor
 evt_103467	0	monitor
@@ -103731,7 +103731,7 @@ evt_103728	0	monitor
 evt_103729	0	monitor
 evt_103730	0	monitor
 evt_103731	0	monitor
-evt_103732	0	monitor
+evt_103732	1	quarantine
 evt_103733	0	monitor
 evt_103734	0	monitor
 evt_103735	0	monitor
@@ -103898,7 +103898,7 @@ evt_103895	0	monitor
 evt_103896	0	monitor
 evt_103897	0	monitor
 evt_103898	0	monitor
-evt_103899	1	quarantine
+evt_103899	0	monitor
 evt_103900	0	monitor
 evt_103901	0	monitor
 evt_103902	0	monitor
@@ -104924,7 +104924,7 @@ evt_104921	0	monitor
 evt_104922	0	monitor
 evt_104923	0	monitor
 evt_104924	0	monitor
-evt_104925	0	monitor
+evt_104925	1	quarantine
 evt_104926	0	monitor
 evt_104927	0	monitor
 evt_104928	0	monitor
@@ -104932,7 +104932,7 @@ evt_104929	0	monitor
 evt_104930	0	monitor
 evt_104931	0	monitor
 evt_104932	0	monitor
-evt_104933	1	quarantine
+evt_104933	0	monitor
 evt_104934	0	monitor
 evt_104935	0	monitor
 evt_104936	0	monitor
@@ -104941,7 +104941,7 @@ evt_104938	0	monitor
 evt_104939	0	monitor
 evt_104940	0	monitor
 evt_104941	0	monitor
-evt_104942	1	quarantine
+evt_104942	0	monitor
 evt_104943	0	monitor
 evt_104944	0	monitor
 evt_104945	0	monitor
@@ -105020,7 +105020,7 @@ evt_105017	0	monitor
 evt_105018	0	monitor
 evt_105019	0	monitor
 evt_105020	0	monitor
-evt_105021	0	monitor
+evt_105021	1	quarantine
 evt_105022	0	monitor
 evt_105023	0	monitor
 evt_105024	0	monitor
@@ -105127,7 +105127,7 @@ evt_105124	0	monitor
 evt_105125	0	monitor
 evt_105126	1	quarantine
 evt_105127	0	monitor
-evt_105128	1	quarantine
+evt_105128	0	monitor
 evt_105129	0	monitor
 evt_105130	0	monitor
 evt_105131	0	monitor
@@ -105324,7 +105324,7 @@ evt_105321	0	monitor
 evt_105322	0	monitor
 evt_105323	0	monitor
 evt_105324	0	monitor
-evt_105325	1	quarantine
+evt_105325	0	monitor
 evt_105326	0	monitor
 evt_105327	0	monitor
 evt_105328	0	monitor
@@ -105424,7 +105424,7 @@ evt_105421	0	monitor
 evt_105422	0	monitor
 evt_105423	0	monitor
 evt_105424	0	monitor
-evt_105425	1	quarantine
+evt_105425	0	monitor
 evt_105426	0	monitor
 evt_105427	0	monitor
 evt_105428	0	monitor
@@ -105640,7 +105640,7 @@ evt_105637	0	monitor
 evt_105638	0	monitor
 evt_105639	1	quarantine
 evt_105640	0	monitor
-evt_105641	1	quarantine
+evt_105641	0	monitor
 evt_105642	0	monitor
 evt_105643	0	monitor
 evt_105644	0	monitor
@@ -105758,7 +105758,7 @@ evt_105755	0	monitor
 evt_105756	0	monitor
 evt_105757	0	monitor
 evt_105758	1	quarantine
-evt_105759	1	quarantine
+evt_105759	0	monitor
 evt_105760	0	monitor
 evt_105761	0	monitor
 evt_105762	0	monitor
@@ -105952,7 +105952,7 @@ evt_105949	0	monitor
 evt_105950	0	monitor
 evt_105951	0	monitor
 evt_105952	0	monitor
-evt_105954	1	quarantine
+evt_105954	0	monitor
 evt_105953	0	monitor
 evt_105955	0	monitor
 evt_105956	0	monitor
@@ -106064,7 +106064,7 @@ evt_106061	0	monitor
 evt_106062	0	monitor
 evt_106063	0	monitor
 evt_106064	0	monitor
-evt_106065	0	monitor
+evt_106065	1	quarantine
 evt_106066	0	monitor
 evt_106067	0	monitor
 evt_106068	0	monitor
@@ -106382,7 +106382,7 @@ evt_106379	0	monitor
 evt_106380	0	monitor
 evt_106381	1	suppress
 evt_106382	0	monitor
-evt_106383	0	monitor
+evt_106383	1	quarantine
 evt_106384	0	monitor
 evt_106385	0	monitor
 evt_106386	0	monitor
@@ -106470,9 +106470,9 @@ evt_106467	0	monitor
 evt_106468	0	monitor
 evt_106469	0	monitor
 evt_106470	0	monitor
-evt_106471	0	monitor
+evt_106471	1	quarantine
 evt_106472	0	monitor
-evt_106473	0	monitor
+evt_106473	1	quarantine
 evt_106474	0	monitor
 evt_106475	0	monitor
 evt_106476	0	monitor
@@ -106505,7 +106505,7 @@ evt_106502	0	monitor
 evt_106503	0	monitor
 evt_106504	0	monitor
 evt_106505	0	monitor
-evt_106506	1	quarantine
+evt_106506	0	monitor
 evt_106507	0	monitor
 evt_106508	0	monitor
 evt_106509	0	monitor
@@ -106750,7 +106750,7 @@ evt_106747	0	monitor
 evt_106748	0	monitor
 evt_106749	0	monitor
 evt_106750	0	monitor
-evt_106751	1	quarantine
+evt_106751	0	monitor
 evt_106752	0	monitor
 evt_106753	0	monitor
 evt_106754	0	monitor
@@ -107046,7 +107046,7 @@ evt_107043	0	monitor
 evt_107044	0	monitor
 evt_107045	0	monitor
 evt_107046	0	monitor
-evt_107047	0	monitor
+evt_107047	1	quarantine
 evt_107048	0	monitor
 evt_107049	0	monitor
 evt_107050	0	monitor
@@ -107147,7 +107147,7 @@ evt_107144	0	monitor
 evt_107145	0	monitor
 evt_107146	0	monitor
 evt_107147	0	monitor
-evt_107148	0	monitor
+evt_107148	1	quarantine
 evt_107149	0	monitor
 evt_107150	0	monitor
 evt_107151	0	monitor
@@ -107624,7 +107624,7 @@ evt_107621	0	monitor
 evt_107622	0	monitor
 evt_107623	0	monitor
 evt_107624	0	monitor
-evt_107625	1	quarantine
+evt_107625	0	monitor
 evt_107626	0	monitor
 evt_107627	0	monitor
 evt_107628	0	monitor
@@ -107676,7 +107676,7 @@ evt_107673	0	monitor
 evt_107674	0	monitor
 evt_107675	0	monitor
 evt_107676	0	monitor
-evt_107677	1	quarantine
+evt_107677	0	monitor
 evt_107678	0	monitor
 evt_107679	0	monitor
 evt_107680	0	monitor
@@ -107693,7 +107693,7 @@ evt_107690	0	monitor
 evt_107691	0	monitor
 evt_107692	0	monitor
 evt_107693	0	monitor
-evt_107694	1	quarantine
+evt_107694	0	monitor
 evt_107695	0	monitor
 evt_107696	0	monitor
 evt_107697	0	monitor
@@ -107837,7 +107837,7 @@ evt_107834	0	monitor
 evt_107835	0	monitor
 evt_107836	0	monitor
 evt_107837	0	monitor
-evt_107838	1	quarantine
+evt_107838	0	monitor
 evt_107839	0	monitor
 evt_107840	0	monitor
 evt_107841	0	monitor
@@ -107877,7 +107877,7 @@ evt_107874	0	monitor
 evt_107875	0	monitor
 evt_107876	0	monitor
 evt_107877	0	monitor
-evt_107878	1	quarantine
+evt_107878	0	monitor
 evt_107879	0	monitor
 evt_107880	0	monitor
 evt_107881	0	monitor
@@ -108086,7 +108086,7 @@ evt_108083	0	monitor
 evt_108084	0	monitor
 evt_108085	0	monitor
 evt_108086	0	monitor
-evt_108087	0	monitor
+evt_108087	1	quarantine
 evt_108088	0	monitor
 evt_108089	0	monitor
 evt_108090	0	monitor
@@ -108280,7 +108280,7 @@ evt_108277	0	monitor
 evt_108278	0	monitor
 evt_108279	0	monitor
 evt_108280	0	monitor
-evt_108281	1	quarantine
+evt_108281	0	monitor
 evt_108282	0	monitor
 evt_108283	1	suppress
 evt_108284	0	monitor
@@ -108314,7 +108314,7 @@ evt_108312	0	monitor
 evt_108311	0	monitor
 evt_108313	0	monitor
 evt_108314	0	monitor
-evt_108315	1	quarantine
+evt_108315	0	monitor
 evt_108316	0	monitor
 evt_108317	0	monitor
 evt_108318	0	monitor
@@ -108327,7 +108327,7 @@ evt_108324	0	monitor
 evt_108325	0	monitor
 evt_108326	0	monitor
 evt_108327	0	monitor
-evt_108328	1	quarantine
+evt_108328	0	monitor
 evt_108329	0	monitor
 evt_108330	0	monitor
 evt_108331	0	monitor
@@ -108954,7 +108954,7 @@ evt_108951	0	monitor
 evt_108952	0	monitor
 evt_108953	0	monitor
 evt_108954	0	monitor
-evt_108955	1	quarantine
+evt_108955	0	monitor
 evt_108956	0	monitor
 evt_108957	0	monitor
 evt_108958	0	monitor
@@ -109116,7 +109116,7 @@ evt_109113	0	monitor
 evt_109114	0	monitor
 evt_109115	0	monitor
 evt_109116	0	monitor
-evt_109117	1	quarantine
+evt_109117	0	monitor
 evt_109118	0	monitor
 evt_109119	0	monitor
 evt_109120	0	monitor
@@ -109451,7 +109451,7 @@ evt_109448	0	monitor
 evt_109449	0	monitor
 evt_109450	0	monitor
 evt_109451	0	monitor
-evt_109452	0	monitor
+evt_109452	1	quarantine
 evt_109453	0	monitor
 evt_109454	0	monitor
 evt_109455	0	monitor
@@ -109509,7 +109509,7 @@ evt_109506	0	monitor
 evt_109507	0	monitor
 evt_109508	0	monitor
 evt_109509	0	monitor
-evt_109510	1	quarantine
+evt_109510	0	monitor
 evt_109511	0	monitor
 evt_109512	0	monitor
 evt_109513	0	monitor
@@ -109765,7 +109765,7 @@ evt_109762	0	monitor
 evt_109763	0	monitor
 evt_109764	0	monitor
 evt_109765	0	monitor
-evt_109766	1	quarantine
+evt_109766	0	monitor
 evt_109767	0	monitor
 evt_109768	0	monitor
 evt_109769	0	monitor
@@ -110559,7 +110559,7 @@ evt_110556	0	monitor
 evt_110557	0	monitor
 evt_110558	0	monitor
 evt_110559	0	monitor
-evt_110560	1	quarantine
+evt_110560	0	monitor
 evt_110561	0	monitor
 evt_110562	0	monitor
 evt_110563	0	monitor
@@ -110614,7 +110614,7 @@ evt_110611	0	monitor
 evt_110612	0	monitor
 evt_110613	0	monitor
 evt_110614	0	monitor
-evt_110615	0	monitor
+evt_110615	1	quarantine
 evt_110616	0	monitor
 evt_110617	0	monitor
 evt_110618	0	monitor
@@ -110716,14 +110716,14 @@ evt_110713	0	monitor
 evt_110714	1	quarantine
 evt_110715	0	monitor
 evt_110716	0	monitor
-evt_110717	0	monitor
+evt_110717	1	quarantine
 evt_110718	0	monitor
 evt_110719	0	monitor
 evt_110720	0	monitor
 evt_110721	0	monitor
 evt_110722	0	monitor
 evt_110723	0	monitor
-evt_110724	0	monitor
+evt_110724	1	quarantine
 evt_110725	0	monitor
 evt_110726	0	monitor
 evt_110727	0	monitor
@@ -110920,7 +110920,7 @@ evt_110917	0	monitor
 evt_110918	0	monitor
 evt_110919	0	monitor
 evt_110920	0	monitor
-evt_110921	0	monitor
+evt_110921	1	quarantine
 evt_110922	0	monitor
 evt_110923	0	monitor
 evt_110924	0	monitor
@@ -111005,7 +111005,7 @@ evt_111002	0	monitor
 evt_111003	0	monitor
 evt_111004	0	monitor
 evt_111005	0	monitor
-evt_111006	1	quarantine
+evt_111006	0	monitor
 evt_111007	0	monitor
 evt_111008	0	monitor
 evt_111009	0	monitor
@@ -111255,7 +111255,7 @@ evt_111252	0	monitor
 evt_111253	0	monitor
 evt_111254	0	monitor
 evt_111255	0	monitor
-evt_111256	1	quarantine
+evt_111256	0	monitor
 evt_111257	0	monitor
 evt_111258	0	monitor
 evt_111259	0	monitor
@@ -111322,7 +111322,7 @@ evt_111319	1	quarantine
 evt_111320	1	quarantine
 evt_111321	0	monitor
 evt_111322	0	monitor
-evt_111323	0	monitor
+evt_111323	1	quarantine
 evt_111324	0	monitor
 evt_111325	0	monitor
 evt_111326	0	monitor
@@ -111504,12 +111504,12 @@ evt_111501	0	monitor
 evt_111502	0	monitor
 evt_111503	0	monitor
 evt_111504	0	monitor
-evt_111505	1	quarantine
+evt_111505	0	monitor
 evt_111506	0	monitor
 evt_111507	0	monitor
 evt_111508	0	monitor
 evt_111509	0	monitor
-evt_111510	1	quarantine
+evt_111510	0	monitor
 evt_111511	0	monitor
 evt_111512	0	monitor
 evt_111513	0	monitor
@@ -111722,7 +111722,7 @@ evt_111719	0	monitor
 evt_111720	0	monitor
 evt_111721	0	monitor
 evt_111722	0	monitor
-evt_111723	1	quarantine
+evt_111723	0	monitor
 evt_111724	0	monitor
 evt_111725	0	monitor
 evt_111726	0	monitor
@@ -111790,7 +111790,7 @@ evt_111787	0	monitor
 evt_111788	0	monitor
 evt_111789	0	monitor
 evt_111790	0	monitor
-evt_111791	1	quarantine
+evt_111791	0	monitor
 evt_111792	0	monitor
 evt_111793	0	monitor
 evt_111794	0	monitor
@@ -112030,7 +112030,7 @@ evt_112027	0	monitor
 evt_112028	0	monitor
 evt_112029	0	monitor
 evt_112030	0	monitor
-evt_112031	1	quarantine
+evt_112031	0	monitor
 evt_112032	0	monitor
 evt_112033	0	monitor
 evt_112034	0	monitor
@@ -112183,7 +112183,7 @@ evt_112180	0	monitor
 evt_112181	0	monitor
 evt_112182	0	monitor
 evt_112183	0	monitor
-evt_112184	1	quarantine
+evt_112184	0	monitor
 evt_112185	0	monitor
 evt_112186	0	monitor
 evt_112187	0	monitor
@@ -112420,7 +112420,7 @@ evt_112417	0	monitor
 evt_112418	0	monitor
 evt_112419	0	monitor
 evt_112420	0	monitor
-evt_112421	1	quarantine
+evt_112421	0	monitor
 evt_112422	0	monitor
 evt_112423	0	monitor
 evt_112424	0	monitor
@@ -112492,7 +112492,7 @@ evt_112489	0	monitor
 evt_112490	0	monitor
 evt_112491	0	monitor
 evt_112492	0	monitor
-evt_112493	1	quarantine
+evt_112493	0	monitor
 evt_112494	0	monitor
 evt_112495	0	monitor
 evt_112496	0	monitor
@@ -112513,7 +112513,7 @@ evt_112510	0	monitor
 evt_112511	0	monitor
 evt_112512	0	monitor
 evt_112513	0	monitor
-evt_112514	0	monitor
+evt_112514	1	quarantine
 evt_112515	0	monitor
 evt_112516	0	monitor
 evt_112517	0	monitor
@@ -112732,7 +112732,7 @@ evt_112729	0	monitor
 evt_112730	0	monitor
 evt_112731	0	monitor
 evt_112732	0	monitor
-evt_112733	0	monitor
+evt_112733	1	quarantine
 evt_112734	0	monitor
 evt_112735	0	monitor
 evt_112736	0	monitor
@@ -113101,7 +113101,7 @@ evt_113098	0	monitor
 evt_113099	0	monitor
 evt_113100	0	monitor
 evt_113101	0	monitor
-evt_113102	0	monitor
+evt_113102	1	quarantine
 evt_113103	0	monitor
 evt_113104	0	monitor
 evt_113105	0	monitor
@@ -113340,7 +113340,7 @@ evt_113337	0	monitor
 evt_113338	0	monitor
 evt_113339	0	monitor
 evt_113340	0	monitor
-evt_113341	1	quarantine
+evt_113341	0	monitor
 evt_113342	0	monitor
 evt_113343	0	monitor
 evt_113344	0	monitor
@@ -113365,7 +113365,7 @@ evt_113362	0	monitor
 evt_113363	0	monitor
 evt_113364	0	monitor
 evt_113366	0	monitor
-evt_113365	0	monitor
+evt_113365	1	quarantine
 evt_113367	0	monitor
 evt_113368	0	monitor
 evt_113369	0	monitor
@@ -113375,7 +113375,7 @@ evt_113372	0	monitor
 evt_113373	0	monitor
 evt_113374	0	monitor
 evt_113375	0	monitor
-evt_113376	0	monitor
+evt_113376	1	quarantine
 evt_113377	0	monitor
 evt_113378	0	monitor
 evt_113379	0	monitor
@@ -113683,7 +113683,7 @@ evt_113680	0	monitor
 evt_113681	0	monitor
 evt_113682	0	monitor
 evt_113683	0	monitor
-evt_113684	1	quarantine
+evt_113684	0	monitor
 evt_113685	0	monitor
 evt_113686	0	monitor
 evt_113687	0	monitor
@@ -113816,7 +113816,7 @@ evt_113813	0	monitor
 evt_113814	0	monitor
 evt_113815	0	monitor
 evt_113816	0	monitor
-evt_113817	1	quarantine
+evt_113817	0	monitor
 evt_113818	0	monitor
 evt_113819	0	monitor
 evt_113820	0	monitor
@@ -113910,7 +113910,7 @@ evt_113907	0	monitor
 evt_113908	0	monitor
 evt_113909	0	monitor
 evt_113910	0	monitor
-evt_113911	0	monitor
+evt_113911	1	quarantine
 evt_113912	0	monitor
 evt_113913	0	monitor
 evt_113914	0	monitor
@@ -114122,7 +114122,7 @@ evt_114119	0	monitor
 evt_114120	0	monitor
 evt_114121	0	monitor
 evt_114122	0	monitor
-evt_114123	0	monitor
+evt_114123	1	quarantine
 evt_114124	0	monitor
 evt_114125	0	monitor
 evt_114126	0	monitor
@@ -114156,7 +114156,7 @@ evt_114153	0	monitor
 evt_114154	0	monitor
 evt_114155	0	monitor
 evt_114156	0	monitor
-evt_114157	0	monitor
+evt_114157	1	quarantine
 evt_114158	0	monitor
 evt_114159	1	quarantine
 evt_114160	0	monitor
@@ -114276,7 +114276,7 @@ evt_114273	0	monitor
 evt_114274	0	monitor
 evt_114275	0	monitor
 evt_114276	0	monitor
-evt_114277	1	quarantine
+evt_114277	0	monitor
 evt_114278	0	monitor
 evt_114279	0	monitor
 evt_114280	0	monitor
@@ -114750,7 +114750,7 @@ evt_114747	0	monitor
 evt_114748	0	monitor
 evt_114749	0	monitor
 evt_114750	0	monitor
-evt_114751	0	monitor
+evt_114751	1	quarantine
 evt_114752	0	monitor
 evt_114753	0	monitor
 evt_114754	0	monitor
@@ -114823,7 +114823,7 @@ evt_114820	0	monitor
 evt_114821	0	monitor
 evt_114822	0	monitor
 evt_114823	0	monitor
-evt_114824	0	monitor
+evt_114824	1	quarantine
 evt_114825	0	monitor
 evt_114826	0	monitor
 evt_114827	0	monitor
@@ -115115,7 +115115,7 @@ evt_115112	0	monitor
 evt_115113	0	monitor
 evt_115114	0	monitor
 evt_115115	0	monitor
-evt_115116	1	quarantine
+evt_115116	0	monitor
 evt_115117	0	monitor
 evt_115118	0	monitor
 evt_115119	0	monitor
@@ -115160,7 +115160,7 @@ evt_115157	0	monitor
 evt_115158	0	monitor
 evt_115159	0	monitor
 evt_115160	0	monitor
-evt_115161	0	monitor
+evt_115161	1	quarantine
 evt_115162	0	monitor
 evt_115163	0	monitor
 evt_115164	0	monitor
@@ -115824,7 +115824,7 @@ evt_115821	0	monitor
 evt_115822	0	monitor
 evt_115823	0	monitor
 evt_115824	0	monitor
-evt_115825	1	quarantine
+evt_115825	0	monitor
 evt_115826	0	monitor
 evt_115827	0	monitor
 evt_115828	0	monitor
@@ -116238,7 +116238,7 @@ evt_116235	0	monitor
 evt_116236	0	monitor
 evt_116237	0	monitor
 evt_116238	0	monitor
-evt_116239	1	quarantine
+evt_116239	0	monitor
 evt_116240	0	monitor
 evt_116241	0	monitor
 evt_116242	0	monitor
@@ -116372,7 +116372,7 @@ evt_116369	0	monitor
 evt_116370	0	monitor
 evt_116371	0	monitor
 evt_116372	0	monitor
-evt_116373	0	monitor
+evt_116373	1	quarantine
 evt_116374	0	monitor
 evt_116375	0	monitor
 evt_116376	0	monitor
@@ -116728,7 +116728,7 @@ evt_116725	0	monitor
 evt_116726	0	monitor
 evt_116727	0	monitor
 evt_116728	0	monitor
-evt_116729	1	quarantine
+evt_116729	0	monitor
 evt_116730	0	monitor
 evt_116731	0	monitor
 evt_116732	0	monitor
@@ -117045,7 +117045,7 @@ evt_117042	0	monitor
 evt_117043	0	monitor
 evt_117044	0	monitor
 evt_117045	0	monitor
-evt_117046	1	quarantine
+evt_117046	0	monitor
 evt_117047	0	monitor
 evt_117048	0	monitor
 evt_117049	0	monitor
@@ -117130,7 +117130,7 @@ evt_117127	0	monitor
 evt_117128	0	monitor
 evt_117129	0	monitor
 evt_117130	0	monitor
-evt_117131	1	quarantine
+evt_117131	0	monitor
 evt_117132	1	quarantine
 evt_117133	0	monitor
 evt_117134	0	monitor
@@ -117493,7 +117493,7 @@ evt_117490	0	monitor
 evt_117491	1	quarantine
 evt_117492	0	monitor
 evt_117493	0	monitor
-evt_117494	1	quarantine
+evt_117494	0	monitor
 evt_117495	0	monitor
 evt_117496	0	monitor
 evt_117497	0	monitor
@@ -117513,7 +117513,7 @@ evt_117510	0	monitor
 evt_117511	0	monitor
 evt_117512	0	monitor
 evt_117513	0	monitor
-evt_117514	1	quarantine
+evt_117514	0	monitor
 evt_117515	0	monitor
 evt_117516	0	monitor
 evt_117517	0	monitor
@@ -117577,7 +117577,7 @@ evt_117574	0	monitor
 evt_117575	0	monitor
 evt_117576	0	monitor
 evt_117577	0	monitor
-evt_117578	1	quarantine
+evt_117578	0	monitor
 evt_117579	0	monitor
 evt_117580	0	monitor
 evt_117581	0	monitor
@@ -117816,7 +117816,7 @@ evt_117813	0	monitor
 evt_117814	0	monitor
 evt_117815	0	monitor
 evt_117816	0	monitor
-evt_117817	0	monitor
+evt_117817	1	quarantine
 evt_117818	0	monitor
 evt_117819	0	monitor
 evt_117820	0	monitor
@@ -118000,7 +118000,7 @@ evt_117997	0	monitor
 evt_117998	0	monitor
 evt_117999	0	monitor
 evt_118000	0	monitor
-evt_118001	0	monitor
+evt_118001	1	quarantine
 evt_118002	0	monitor
 evt_118003	0	monitor
 evt_118004	0	monitor
@@ -118497,7 +118497,7 @@ evt_118494	0	monitor
 evt_118495	0	monitor
 evt_118496	0	monitor
 evt_118497	0	monitor
-evt_118498	0	monitor
+evt_118498	1	quarantine
 evt_118499	0	monitor
 evt_118500	0	monitor
 evt_118501	0	monitor
@@ -118553,7 +118553,7 @@ evt_118550	0	monitor
 evt_118551	0	monitor
 evt_118552	0	monitor
 evt_118553	0	monitor
-evt_118554	1	quarantine
+evt_118554	0	monitor
 evt_118555	0	monitor
 evt_118556	0	monitor
 evt_118557	0	monitor
@@ -119376,7 +119376,7 @@ evt_119373	0	monitor
 evt_119374	0	monitor
 evt_119375	0	monitor
 evt_119376	0	monitor
-evt_119377	0	monitor
+evt_119377	1	quarantine
 evt_119378	0	monitor
 evt_119379	0	monitor
 evt_119380	0	monitor
@@ -119668,7 +119668,7 @@ evt_119665	0	monitor
 evt_119666	0	monitor
 evt_119667	0	monitor
 evt_119668	0	monitor
-evt_119669	1	quarantine
+evt_119669	0	monitor
 evt_119670	0	monitor
 evt_119671	0	monitor
 evt_119672	0	monitor
@@ -119898,7 +119898,7 @@ evt_119895	0	monitor
 evt_119896	0	monitor
 evt_119897	0	monitor
 evt_119898	0	monitor
-evt_119899	0	monitor
+evt_119899	1	quarantine
 evt_119900	0	monitor
 evt_119901	0	monitor
 evt_119902	0	monitor
@@ -120220,7 +120220,7 @@ evt_120217	0	monitor
 evt_120218	0	monitor
 evt_120219	0	monitor
 evt_120220	0	monitor
-evt_120221	0	monitor
+evt_120221	1	quarantine
 evt_120222	0	monitor
 evt_120223	0	monitor
 evt_120224	0	monitor
@@ -120458,7 +120458,7 @@ evt_120455	0	monitor
 evt_120456	0	monitor
 evt_120457	0	monitor
 evt_120458	0	monitor
-evt_120459	0	monitor
+evt_120459	1	quarantine
 evt_120460	0	monitor
 evt_120461	0	monitor
 evt_120462	0	monitor
@@ -121453,7 +121453,7 @@ evt_121450	0	monitor
 evt_121451	0	monitor
 evt_121452	0	monitor
 evt_121453	0	monitor
-evt_121454	0	monitor
+evt_121454	1	quarantine
 evt_121455	0	monitor
 evt_121456	0	monitor
 evt_121457	0	monitor
@@ -121576,7 +121576,7 @@ evt_121573	0	monitor
 evt_121574	0	monitor
 evt_121575	0	monitor
 evt_121576	0	monitor
-evt_121577	1	quarantine
+evt_121577	0	monitor
 evt_121578	0	monitor
 evt_121579	0	monitor
 evt_121580	0	monitor
@@ -121806,7 +121806,7 @@ evt_121803	1	quarantine
 evt_121804	0	monitor
 evt_121805	0	monitor
 evt_121806	0	monitor
-evt_121807	0	monitor
+evt_121807	1	quarantine
 evt_121808	0	monitor
 evt_121809	0	monitor
 evt_121810	0	monitor
@@ -122402,7 +122402,7 @@ evt_122399	0	monitor
 evt_122400	0	monitor
 evt_122401	0	monitor
 evt_122402	0	monitor
-evt_122403	0	monitor
+evt_122403	1	quarantine
 evt_122404	0	monitor
 evt_122405	0	monitor
 evt_122406	0	monitor
@@ -122411,7 +122411,7 @@ evt_122408	0	monitor
 evt_122409	0	monitor
 evt_122410	0	monitor
 evt_122411	0	monitor
-evt_122412	1	quarantine
+evt_122412	0	monitor
 evt_122413	0	monitor
 evt_122414	0	monitor
 evt_122415	0	monitor
@@ -123018,7 +123018,7 @@ evt_123015	0	monitor
 evt_123016	0	monitor
 evt_123017	0	monitor
 evt_123018	0	monitor
-evt_123019	1	quarantine
+evt_123019	0	monitor
 evt_123020	0	monitor
 evt_123021	0	monitor
 evt_123022	0	monitor
@@ -123842,7 +123842,7 @@ evt_123839	0	monitor
 evt_123840	0	monitor
 evt_123841	0	monitor
 evt_123842	0	monitor
-evt_123843	1	quarantine
+evt_123843	0	monitor
 evt_123844	1	quarantine
 evt_123845	0	monitor
 evt_123846	0	monitor
@@ -124146,7 +124146,7 @@ evt_124143	0	monitor
 evt_124144	0	monitor
 evt_124145	0	monitor
 evt_124146	0	monitor
-evt_124147	1	quarantine
+evt_124147	0	monitor
 evt_124148	0	monitor
 evt_124149	0	monitor
 evt_124150	0	monitor
@@ -124280,7 +124280,7 @@ evt_124277	0	monitor
 evt_124279	0	monitor
 evt_124278	0	monitor
 evt_124280	0	monitor
-evt_124281	0	monitor
+evt_124281	1	quarantine
 evt_124282	0	monitor
 evt_124283	0	monitor
 evt_124284	0	monitor
@@ -124643,7 +124643,7 @@ evt_124640	0	monitor
 evt_124641	0	monitor
 evt_124642	0	monitor
 evt_124643	0	monitor
-evt_124644	0	monitor
+evt_124644	1	quarantine
 evt_124645	0	monitor
 evt_124646	0	monitor
 evt_124647	0	monitor
@@ -125218,7 +125218,7 @@ evt_125215	0	monitor
 evt_125216	0	monitor
 evt_125217	0	monitor
 evt_125218	0	monitor
-evt_125219	1	quarantine
+evt_125219	0	monitor
 evt_125220	0	monitor
 evt_125221	0	monitor
 evt_125222	0	monitor
@@ -125480,7 +125480,7 @@ evt_125477	0	monitor
 evt_125478	0	monitor
 evt_125479	0	monitor
 evt_125480	0	monitor
-evt_125481	0	monitor
+evt_125481	1	quarantine
 evt_125482	0	monitor
 evt_125483	0	monitor
 evt_125484	0	monitor
@@ -126249,7 +126249,7 @@ evt_126246	0	monitor
 evt_126247	0	monitor
 evt_126248	0	monitor
 evt_126249	0	monitor
-evt_126250	0	monitor
+evt_126250	1	quarantine
 evt_126251	0	monitor
 evt_126252	0	monitor
 evt_126253	0	monitor
@@ -126491,7 +126491,7 @@ evt_126488	0	monitor
 evt_126489	0	monitor
 evt_126490	0	monitor
 evt_126491	0	monitor
-evt_126492	0	monitor
+evt_126492	1	quarantine
 evt_126493	0	monitor
 evt_126494	0	monitor
 evt_126495	0	monitor
@@ -127196,7 +127196,7 @@ evt_127193	0	monitor
 evt_127194	0	monitor
 evt_127195	0	monitor
 evt_127196	0	monitor
-evt_127197	0	monitor
+evt_127197	1	quarantine
 evt_127198	0	monitor
 evt_127199	0	monitor
 evt_127200	0	monitor
@@ -127369,7 +127369,7 @@ evt_127366	1	quarantine
 evt_127367	0	monitor
 evt_127368	0	monitor
 evt_127369	0	monitor
-evt_127370	1	quarantine
+evt_127370	0	monitor
 evt_127371	0	monitor
 evt_127372	0	monitor
 evt_127373	0	monitor
@@ -127425,7 +127425,7 @@ evt_127422	0	monitor
 evt_127423	0	monitor
 evt_127424	0	monitor
 evt_127425	0	monitor
-evt_127426	1	quarantine
+evt_127426	0	monitor
 evt_127427	0	monitor
 evt_127428	0	monitor
 evt_127429	0	monitor
@@ -127560,7 +127560,7 @@ evt_127557	0	monitor
 evt_127558	0	monitor
 evt_127559	1	quarantine
 evt_127560	0	monitor
-evt_127561	1	quarantine
+evt_127561	0	monitor
 evt_127562	0	monitor
 evt_127563	0	monitor
 evt_127564	0	monitor
@@ -127575,7 +127575,7 @@ evt_127572	0	monitor
 evt_127573	0	monitor
 evt_127574	0	monitor
 evt_127575	0	monitor
-evt_127576	1	quarantine
+evt_127576	0	monitor
 evt_127577	0	monitor
 evt_127578	0	monitor
 evt_127579	0	monitor
@@ -127789,7 +127789,7 @@ evt_127786	0	monitor
 evt_127787	0	monitor
 evt_127788	0	monitor
 evt_127789	0	monitor
-evt_127790	0	monitor
+evt_127790	1	quarantine
 evt_127791	0	monitor
 evt_127792	0	monitor
 evt_127793	0	monitor
@@ -127960,7 +127960,7 @@ evt_127957	0	monitor
 evt_127958	0	monitor
 evt_127959	0	monitor
 evt_127960	0	monitor
-evt_127961	1	quarantine
+evt_127961	0	monitor
 evt_127962	0	monitor
 evt_127963	0	monitor
 evt_127964	0	monitor
@@ -128019,12 +128019,12 @@ evt_128016	0	monitor
 evt_128017	0	monitor
 evt_128018	0	monitor
 evt_128019	0	monitor
-evt_128020	1	quarantine
+evt_128020	0	monitor
 evt_128021	0	monitor
 evt_128022	0	monitor
 evt_128023	0	monitor
 evt_128024	0	monitor
-evt_128025	1	quarantine
+evt_128025	0	monitor
 evt_128026	0	monitor
 evt_128027	0	monitor
 evt_128028	0	monitor
@@ -128428,7 +128428,7 @@ evt_128425	0	monitor
 evt_128426	0	monitor
 evt_128427	0	monitor
 evt_128428	1	suppress
-evt_128429	0	monitor
+evt_128429	1	quarantine
 evt_128430	0	monitor
 evt_128431	0	monitor
 evt_128432	0	monitor
@@ -128642,7 +128642,7 @@ evt_128639	0	monitor
 evt_128640	0	monitor
 evt_128641	0	monitor
 evt_128642	0	monitor
-evt_128643	1	quarantine
+evt_128643	0	monitor
 evt_128644	0	monitor
 evt_128645	0	monitor
 evt_128646	0	monitor
@@ -128657,7 +128657,7 @@ evt_128654	0	monitor
 evt_128655	0	monitor
 evt_128656	1	suppress
 evt_128657	0	monitor
-evt_128658	1	quarantine
+evt_128658	0	monitor
 evt_128659	0	monitor
 evt_128660	0	monitor
 evt_128661	0	monitor
@@ -128702,7 +128702,7 @@ evt_128699	1	suppress
 evt_128700	0	monitor
 evt_128701	0	monitor
 evt_128702	0	monitor
-evt_128703	0	monitor
+evt_128703	1	quarantine
 evt_128704	0	monitor
 evt_128705	0	monitor
 evt_128706	1	suppress
@@ -128783,7 +128783,7 @@ evt_128780	0	monitor
 evt_128781	0	monitor
 evt_128782	0	monitor
 evt_128783	0	monitor
-evt_128784	1	quarantine
+evt_128784	0	monitor
 evt_128785	0	monitor
 evt_128786	0	monitor
 evt_128787	0	monitor
@@ -129272,7 +129272,7 @@ evt_129269	1	quarantine
 evt_129270	0	monitor
 evt_129271	0	monitor
 evt_129272	1	quarantine
-evt_129273	0	monitor
+evt_129273	1	quarantine
 evt_129274	0	monitor
 evt_129275	0	monitor
 evt_129276	0	monitor
@@ -129440,7 +129440,7 @@ evt_129437	0	monitor
 evt_129438	0	monitor
 evt_129439	0	monitor
 evt_129440	0	monitor
-evt_129441	0	monitor
+evt_129441	1	quarantine
 evt_129442	0	monitor
 evt_129443	0	monitor
 evt_129444	0	monitor
@@ -129832,7 +129832,7 @@ evt_129829	0	monitor
 evt_129830	0	monitor
 evt_129831	0	monitor
 evt_129832	0	monitor
-evt_129833	0	monitor
+evt_129833	1	quarantine
 evt_129834	0	monitor
 evt_129835	0	monitor
 evt_129836	1	suppress
@@ -130025,7 +130025,7 @@ evt_130022	0	monitor
 evt_130023	0	monitor
 evt_130024	0	monitor
 evt_130025	0	monitor
-evt_130026	1	quarantine
+evt_130026	0	monitor
 evt_130027	0	monitor
 evt_130028	0	monitor
 evt_130029	0	monitor
@@ -130323,7 +130323,7 @@ evt_130320	0	monitor
 evt_130321	1	suppress
 evt_130322	0	monitor
 evt_130323	0	monitor
-evt_130324	1	quarantine
+evt_130324	0	monitor
 evt_130325	0	monitor
 evt_130326	0	monitor
 evt_130327	0	monitor
@@ -130353,7 +130353,7 @@ evt_130350	0	monitor
 evt_130351	0	monitor
 evt_130352	0	monitor
 evt_130353	1	quarantine
-evt_130354	0	monitor
+evt_130354	1	quarantine
 evt_130355	1	suppress
 evt_130356	0	monitor
 evt_130357	0	monitor
@@ -130757,7 +130757,7 @@ evt_130754	0	monitor
 evt_130755	0	monitor
 evt_130756	0	monitor
 evt_130757	0	monitor
-evt_130758	0	monitor
+evt_130758	1	quarantine
 evt_130759	0	monitor
 evt_130760	0	monitor
 evt_130761	0	monitor
@@ -130825,7 +130825,7 @@ evt_130822	0	monitor
 evt_130823	1	quarantine
 evt_130824	0	monitor
 evt_130825	0	monitor
-evt_130826	0	monitor
+evt_130826	1	quarantine
 evt_130827	0	monitor
 evt_130828	0	monitor
 evt_130829	0	monitor
@@ -131831,7 +131831,7 @@ evt_131828	1	quarantine
 evt_131829	0	monitor
 evt_131830	0	monitor
 evt_131831	0	monitor
-evt_131832	1	quarantine
+evt_131832	0	monitor
 evt_131833	1	quarantine
 evt_131834	0	monitor
 evt_131835	0	monitor
@@ -132054,7 +132054,7 @@ evt_132051	0	monitor
 evt_132052	0	monitor
 evt_132053	0	monitor
 evt_132054	0	monitor
-evt_132055	0	monitor
+evt_132055	1	quarantine
 evt_132056	0	monitor
 evt_132057	0	monitor
 evt_132058	0	monitor
@@ -132198,7 +132198,7 @@ evt_132195	0	monitor
 evt_132196	0	monitor
 evt_132197	0	monitor
 evt_132198	0	monitor
-evt_132199	1	quarantine
+evt_132199	0	monitor
 evt_132200	0	monitor
 evt_132201	0	monitor
 evt_132202	0	monitor
@@ -132493,7 +132493,7 @@ evt_132490	0	monitor
 evt_132491	0	monitor
 evt_132492	0	monitor
 evt_132493	0	monitor
-evt_132494	0	monitor
+evt_132494	1	quarantine
 evt_132495	0	monitor
 evt_132496	0	monitor
 evt_132497	0	monitor
@@ -132617,7 +132617,7 @@ evt_132614	0	monitor
 evt_132615	0	monitor
 evt_132616	0	monitor
 evt_132617	0	monitor
-evt_132618	0	monitor
+evt_132618	1	quarantine
 evt_132619	0	monitor
 evt_132620	0	monitor
 evt_132621	0	monitor
@@ -132751,7 +132751,7 @@ evt_132748	1	quarantine
 evt_132749	0	monitor
 evt_132750	0	monitor
 evt_132751	0	monitor
-evt_132752	0	monitor
+evt_132752	1	quarantine
 evt_132753	0	monitor
 evt_132754	0	monitor
 evt_132755	0	monitor
@@ -132815,7 +132815,7 @@ evt_132812	0	monitor
 evt_132813	0	monitor
 evt_132814	0	monitor
 evt_132815	0	monitor
-evt_132816	1	quarantine
+evt_132816	0	monitor
 evt_132817	0	monitor
 evt_132818	0	monitor
 evt_132819	1	suppress
@@ -133080,7 +133080,7 @@ evt_133077	0	monitor
 evt_133078	0	monitor
 evt_133079	0	monitor
 evt_133080	0	monitor
-evt_133081	1	quarantine
+evt_133081	0	monitor
 evt_133082	0	monitor
 evt_133083	0	monitor
 evt_133084	0	monitor
@@ -133136,7 +133136,7 @@ evt_133133	1	quarantine
 evt_133134	0	monitor
 evt_133135	1	quarantine
 evt_133136	0	monitor
-evt_133137	0	monitor
+evt_133137	1	quarantine
 evt_133138	0	monitor
 evt_133139	0	monitor
 evt_133140	0	monitor
@@ -133979,7 +133979,7 @@ evt_133976	0	monitor
 evt_133977	0	monitor
 evt_133978	0	monitor
 evt_133979	0	monitor
-evt_133980	1	quarantine
+evt_133980	0	monitor
 evt_133981	0	monitor
 evt_133982	0	monitor
 evt_133983	0	monitor
@@ -134025,7 +134025,7 @@ evt_134022	0	monitor
 evt_134023	0	monitor
 evt_134024	0	monitor
 evt_134025	0	monitor
-evt_134026	1	quarantine
+evt_134026	0	monitor
 evt_134027	0	monitor
 evt_134028	0	monitor
 evt_134029	0	monitor
@@ -134083,7 +134083,7 @@ evt_134080	0	monitor
 evt_134081	0	monitor
 evt_134082	0	monitor
 evt_134083	0	monitor
-evt_134084	1	quarantine
+evt_134084	0	monitor
 evt_134085	0	monitor
 evt_134086	0	monitor
 evt_134087	0	monitor
@@ -134749,7 +134749,7 @@ evt_134746	0	monitor
 evt_134747	0	monitor
 evt_134748	0	monitor
 evt_134749	0	monitor
-evt_134750	1	quarantine
+evt_134750	0	monitor
 evt_134751	0	monitor
 evt_134752	0	monitor
 evt_134753	0	monitor
@@ -134819,7 +134819,7 @@ evt_134816	0	monitor
 evt_134817	0	monitor
 evt_134818	0	monitor
 evt_134819	0	monitor
-evt_134820	1	suppress
+evt_134820	1	quarantine
 evt_134821	0	monitor
 evt_134822	0	monitor
 evt_134823	0	monitor
@@ -135089,7 +135089,7 @@ evt_135086	0	monitor
 evt_135087	0	monitor
 evt_135088	0	monitor
 evt_135089	0	monitor
-evt_135090	1	quarantine
+evt_135090	0	monitor
 evt_135091	0	monitor
 evt_135092	0	monitor
 evt_135093	0	monitor
@@ -135150,7 +135150,7 @@ evt_135147	0	monitor
 evt_135148	0	monitor
 evt_135149	0	monitor
 evt_135150	0	monitor
-evt_135151	1	quarantine
+evt_135151	0	monitor
 evt_135152	0	monitor
 evt_135153	0	monitor
 evt_135154	0	monitor
@@ -135401,7 +135401,7 @@ evt_135398	0	monitor
 evt_135399	0	monitor
 evt_135400	0	monitor
 evt_135401	0	monitor
-evt_135402	0	monitor
+evt_135402	1	quarantine
 evt_135403	0	monitor
 evt_135404	0	monitor
 evt_135405	0	monitor
@@ -135777,7 +135777,7 @@ evt_135774	0	monitor
 evt_135775	0	monitor
 evt_135776	0	monitor
 evt_135777	0	monitor
-evt_135778	1	quarantine
+evt_135778	0	monitor
 evt_135779	0	monitor
 evt_135780	0	monitor
 evt_135781	0	monitor
@@ -137038,7 +137038,7 @@ evt_137035	0	monitor
 evt_137036	0	monitor
 evt_137037	0	monitor
 evt_137038	0	monitor
-evt_137039	0	monitor
+evt_137039	1	quarantine
 evt_137040	0	monitor
 evt_137041	0	monitor
 evt_137042	0	monitor
@@ -137661,7 +137661,7 @@ evt_137658	0	monitor
 evt_137659	0	monitor
 evt_137660	0	monitor
 evt_137661	0	monitor
-evt_137662	0	monitor
+evt_137662	1	quarantine
 evt_137663	0	monitor
 evt_137664	0	monitor
 evt_137665	0	monitor
@@ -138019,7 +138019,7 @@ evt_138016	0	monitor
 evt_138017	0	monitor
 evt_138018	0	monitor
 evt_138019	0	monitor
-evt_138020	0	monitor
+evt_138020	1	quarantine
 evt_138021	0	monitor
 evt_138022	0	monitor
 evt_138023	0	monitor
@@ -138603,7 +138603,7 @@ evt_138600	1	suppress
 evt_138601	0	monitor
 evt_138602	0	monitor
 evt_138603	0	monitor
-evt_138604	1	quarantine
+evt_138604	0	monitor
 evt_138605	0	monitor
 evt_138606	0	monitor
 evt_138607	0	monitor
@@ -138879,7 +138879,7 @@ evt_138876	0	monitor
 evt_138877	0	monitor
 evt_138878	0	monitor
 evt_138879	0	monitor
-evt_138880	1	quarantine
+evt_138880	0	monitor
 evt_138881	0	monitor
 evt_138882	0	monitor
 evt_138883	0	monitor
@@ -139061,7 +139061,7 @@ evt_139058	0	monitor
 evt_139059	0	monitor
 evt_139060	0	monitor
 evt_139061	0	monitor
-evt_139062	0	monitor
+evt_139062	1	quarantine
 evt_139063	0	monitor
 evt_139064	0	monitor
 evt_139065	0	monitor
@@ -140354,7 +140354,7 @@ evt_140351	0	monitor
 evt_140352	0	monitor
 evt_140353	0	monitor
 evt_140354	0	monitor
-evt_140355	1	quarantine
+evt_140355	0	monitor
 evt_140356	1	quarantine
 evt_140357	0	monitor
 evt_140358	0	monitor
@@ -141346,7 +141346,7 @@ evt_141343	0	monitor
 evt_141344	0	monitor
 evt_141345	0	monitor
 evt_141346	0	monitor
-evt_141347	1	quarantine
+evt_141347	0	monitor
 evt_141348	0	monitor
 evt_141349	1	suppress
 evt_141350	0	monitor
@@ -142518,7 +142518,7 @@ evt_142515	0	monitor
 evt_142516	0	monitor
 evt_142517	0	monitor
 evt_142518	0	monitor
-evt_142519	1	quarantine
+evt_142519	0	monitor
 evt_142520	0	monitor
 evt_142521	0	monitor
 evt_142522	0	monitor
@@ -142604,7 +142604,7 @@ evt_142601	0	monitor
 evt_142602	0	monitor
 evt_142603	0	monitor
 evt_142604	0	monitor
-evt_142605	0	monitor
+evt_142605	1	quarantine
 evt_142606	0	monitor
 evt_142607	0	monitor
 evt_142608	0	monitor
@@ -142617,7 +142617,7 @@ evt_142614	0	monitor
 evt_142615	0	monitor
 evt_142616	0	monitor
 evt_142617	0	monitor
-evt_142618	0	monitor
+evt_142618	1	quarantine
 evt_142619	0	monitor
 evt_142620	0	monitor
 evt_142621	0	monitor
@@ -142685,7 +142685,7 @@ evt_142682	0	monitor
 evt_142683	0	monitor
 evt_142684	0	monitor
 evt_142685	0	monitor
-evt_142686	0	monitor
+evt_142686	1	quarantine
 evt_142687	0	monitor
 evt_142688	0	monitor
 evt_142689	0	monitor
@@ -142973,7 +142973,7 @@ evt_142970	0	monitor
 evt_142971	0	monitor
 evt_142972	0	monitor
 evt_142973	0	monitor
-evt_142974	1	quarantine
+evt_142974	0	monitor
 evt_142975	0	monitor
 evt_142976	0	monitor
 evt_142977	0	monitor
@@ -143260,7 +143260,7 @@ evt_143257	0	monitor
 evt_143258	0	monitor
 evt_143259	0	monitor
 evt_143260	0	monitor
-evt_143261	1	quarantine
+evt_143261	0	monitor
 evt_143262	0	monitor
 evt_143263	0	monitor
 evt_143264	0	monitor
@@ -144212,7 +144212,7 @@ evt_144209	0	monitor
 evt_144210	0	monitor
 evt_144211	0	monitor
 evt_144212	0	monitor
-evt_144213	1	quarantine
+evt_144213	0	monitor
 evt_144214	0	monitor
 evt_144215	0	monitor
 evt_144216	0	monitor
@@ -145110,7 +145110,7 @@ evt_145107	0	monitor
 evt_145108	0	monitor
 evt_145109	0	monitor
 evt_145110	0	monitor
-evt_145111	0	monitor
+evt_145111	1	quarantine
 evt_145112	0	monitor
 evt_145113	0	monitor
 evt_145114	0	monitor
@@ -145599,7 +145599,7 @@ evt_145596	0	monitor
 evt_145597	0	monitor
 evt_145598	0	monitor
 evt_145599	0	monitor
-evt_145600	1	quarantine
+evt_145600	0	monitor
 evt_145601	0	monitor
 evt_145602	0	monitor
 evt_145603	0	monitor
@@ -146347,7 +146347,7 @@ evt_146344	0	monitor
 evt_146345	0	monitor
 evt_146346	0	monitor
 evt_146347	0	monitor
-evt_146348	0	monitor
+evt_146348	1	quarantine
 evt_146349	0	monitor
 evt_146350	0	monitor
 evt_146351	0	monitor
@@ -146364,7 +146364,7 @@ evt_146361	0	monitor
 evt_146362	0	monitor
 evt_146363	0	monitor
 evt_146364	0	monitor
-evt_146365	1	quarantine
+evt_146365	0	monitor
 evt_146366	0	monitor
 evt_146367	0	monitor
 evt_146368	0	monitor
@@ -146713,7 +146713,7 @@ evt_146710	0	monitor
 evt_146711	0	monitor
 evt_146712	0	monitor
 evt_146713	0	monitor
-evt_146714	0	monitor
+evt_146714	1	quarantine
 evt_146715	0	monitor
 evt_146716	0	monitor
 evt_146717	0	monitor
@@ -148098,7 +148098,7 @@ evt_148095	0	monitor
 evt_148096	0	monitor
 evt_148097	0	monitor
 evt_148098	0	monitor
-evt_148099	1	quarantine
+evt_148099	0	monitor
 evt_148100	0	monitor
 evt_148101	0	monitor
 evt_148102	0	monitor
@@ -148393,7 +148393,7 @@ evt_148390	0	monitor
 evt_148391	0	monitor
 evt_148392	0	monitor
 evt_148393	0	monitor
-evt_148394	1	quarantine
+evt_148394	0	monitor
 evt_148395	0	monitor
 evt_148396	0	monitor
 evt_148397	0	monitor
@@ -148545,7 +148545,7 @@ evt_148542	0	monitor
 evt_148543	0	monitor
 evt_148544	0	monitor
 evt_148545	0	monitor
-evt_148546	0	monitor
+evt_148546	1	quarantine
 evt_148547	0	monitor
 evt_148548	0	monitor
 evt_148549	0	monitor
@@ -148859,7 +148859,7 @@ evt_148856	0	monitor
 evt_148857	0	monitor
 evt_148858	0	monitor
 evt_148859	0	monitor
-evt_148860	1	quarantine
+evt_148860	0	monitor
 evt_148861	0	monitor
 evt_148862	0	monitor
 evt_148863	0	monitor
@@ -148972,7 +148972,7 @@ evt_148969	0	monitor
 evt_148970	1	quarantine
 evt_148971	1	quarantine
 evt_148972	0	monitor
-evt_148973	0	monitor
+evt_148973	1	quarantine
 evt_148974	0	monitor
 evt_148975	0	monitor
 evt_148976	0	monitor

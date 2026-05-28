@@ -21,6 +21,7 @@ def _markdown(summary: dict[str, object]) -> str:
     ml_backend = str(summary.get("ml_backend", "auto"))
     model_name, model_detail, backend_label = _model_copy(ml_backend)
     top_reasons = summary.get("top_reasons", [])
+    feature_count = len(summary.get("feature_names", []))
     reason_lines = "\n".join(f"- {reason}: {count:,} events" for reason, count in top_reasons)
     if not reason_lines:
         reason_lines = "- No dominant heuristic reason was found."
@@ -47,7 +48,7 @@ Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer re
 
 ## 2. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. The second classifier is {model_name} over standardized behavioral features. {model_detail}
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. The second classifier is {model_name} over {feature_count} standardized behavioral features, including explicit mechanical features for sub-200ms clicks, local burst density, and query entropy. {model_detail}
 
 ## 3. Methods evaluated but not included
 
@@ -103,12 +104,7 @@ Assuming false positives and false negatives are roughly equal in cost, the subm
 
 ## 12. Future work
 
-With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory, calibrated probabilities, and a feedback loop from manual review decisions.
-
-- TODO: Add a binary sub-200ms feature.
-- TODO: Add click velocity / burst density.
-- TODO: Add query entropy.
-- TODO: Tune Isolation Forest `max_samples` and `max_features` after the new mechanical features land.
+With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory beyond the current pseudo-session burst feature, calibrated probabilities, and a feedback loop from manual review decisions.
 
 ## 13. Submission and decision summary
 
@@ -122,7 +118,8 @@ def _model_copy(ml_backend: str) -> tuple[str, str, str]:
     if ml_backend == "sklearn":
         return (
             "an Isolation Forest anomaly model",
-            "Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.",
+            "Events that isolate unusually quickly in the fitted forest receive higher anomaly scores. "
+            "The forest uses explicit sampling settings tuned for the expanded mechanical feature set.",
             "Isolation Forest model",
         )
     if ml_backend == "kmeans":
@@ -224,8 +221,8 @@ def _write_simple_pdf(path: Path, text: str) -> None:
         pdf.extend(obj)
         pdf.extend(b"\nendobj\n")
     xref_at = len(pdf)
-    pdf.extend(f"xref\n0 {len(objects)}\n0000000000 65535 f \n".encode())
+    pdf.extend(f"xref\n0 {len(objects)}\n0000000000 65535 f\n".encode())
     for offset in offsets[1:]:
-        pdf.extend(f"{offset:010d} 00000 n \n".encode())
+        pdf.extend(f"{offset:010d} 00000 n\n".encode())
     pdf.extend(f"trailer << /Size {len(objects)} /Root 1 0 R >>\nstartxref\n{xref_at}\n%%EOF\n".encode())
     path.write_bytes(bytes(pdf))

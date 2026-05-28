@@ -7,6 +7,8 @@ from math import sqrt
 from .data import ClickEvent
 
 MLBackend = str
+ISOLATION_FOREST_MAX_SAMPLES = 4096
+ISOLATION_FOREST_MAX_FEATURES = 0.85
 
 
 def _standardize(matrix: list[list[float]]) -> tuple[list[list[float]], list[float], list[float]]:
@@ -110,7 +112,12 @@ def score_with_isolation_forest(events: list[ClickEvent], seed: int = 7) -> None
 
     matrix = [event.features for event in events]
     scaled, means, stds = _standardize(matrix)
-    model = IsolationForest(random_state=seed, contamination="auto")
+    model = IsolationForest(
+        random_state=seed,
+        contamination="auto",
+        max_samples=min(ISOLATION_FOREST_MAX_SAMPLES, len(scaled)),
+        max_features=ISOLATION_FOREST_MAX_FEATURES,
+    )
     model.fit(scaled)
     normality_scores = model.decision_function(scaled)
     anomaly_scores = [-float(score) for score in normality_scores]

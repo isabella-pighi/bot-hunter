@@ -9,7 +9,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 2512 >>
+<< /Length 2623 >>
 stream
 BT
 /F1 10 Tf
@@ -53,11 +53,15 @@ T*
 T*
 (can adapt to timer reuse patterns without letting low-count coincidences fire. The) Tj
 T*
-(second classifier is an Isolation Forest anomaly model over standardized behavioral) Tj
+(second classifier is an Isolation Forest anomaly model over 18 standardized behavioral) Tj
 T*
-(features. Events that isolate unusually quickly in the fitted forest receive higher) Tj
+(features, including explicit mechanical features for sub-200ms clicks, local burst) Tj
 T*
-(anomaly scores.) Tj
+(density, and query entropy. Events that isolate unusually quickly in the fitted forest) Tj
+T*
+(receive higher anomaly scores. The forest uses explicit sampling settings tuned for the) Tj
+T*
+(expanded mechanical feature set.) Tj
 T*
 () Tj
 T*
@@ -91,13 +95,9 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,328 events) Tj
+(- repeated query: 3,278 events) Tj
 T*
-(- repeated query/domain pair: 2,094 events) Tj
-T*
-(- same-second click burst: 1,928 events) Tj
-T*
-(- high-volume clicked domain: 1,906 events) Tj
+(- repeated query/domain pair: 2,097 events) Tj
 T*
 ET
 endstream
@@ -106,23 +106,27 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2109 >>
+<< /Length 2106 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(- very short query: 1,822 events) Tj
+(- same-second click burst: 1,936 events) Tj
 T*
-(- heavy region/browser/os cluster: 1,716 events) Tj
+(- high-volume clicked domain: 1,884 events) Tj
 T*
-(- moderately long time-to-click: 546 events) Tj
+(- very short query: 1,800 events) Tj
 T*
-(- extreme time-to-click: 276 events) Tj
+(- heavy region/browser/os cluster: 1,730 events) Tj
 T*
-(- implausibly fast click: 40 events) Tj
+(- moderately long time-to-click: 492 events) Tj
 T*
-(- regular inter-arrival timing: 14 events) Tj
+(- extreme time-to-click: 211 events) Tj
+T*
+(- implausibly fast click: 155 events) Tj
+T*
+(- regular inter-arrival timing: 13 events) Tj
 T*
 () Tj
 T*
@@ -146,9 +150,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,073 events) Tj
+(- suppress: 1,069 events) Tj
 T*
-(- quarantine: 2,659 events) Tj
+(- quarantine: 2,663 events) Tj
 T*
 (- monitor: 145,507 events) Tj
 T*
@@ -180,21 +184,17 @@ T*
 T*
 () Tj
 T*
-(- Heuristic + ML: 1,073 events) Tj
+(- Heuristic + ML: 1,065 events) Tj
 T*
-(- Heuristic only: 3 events) Tj
+(- Heuristic only: 11 events) Tj
 T*
-(- ML only: 13,851 events) Tj
+(- ML only: 13,859 events) Tj
 T*
-(- Neither strong: 134,312 events) Tj
+(- Neither strong: 134,304 events) Tj
 T*
 () Tj
 T*
 ( 7. Threshold rationale) Tj
-T*
-() Tj
-T*
-(The binary decision uses the stronger of two conservative gates: the event is selected) Tj
 T*
 ET
 endstream
@@ -203,15 +203,19 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 3437 >>
+<< /Length 3356 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+() Tj
+T*
+(The binary decision uses the stronger of two conservative gates: the event is selected) Tj
+T*
 (when its combined score is at or above the run-specific 97.5th-percentile cutoff) Tj
 T*
-(\(0.586199 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
+(\(0.590243 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
 T*
 (The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset) Tj
 T*
@@ -289,10 +293,6 @@ T*
 T*
 (signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
 T*
-(score are more likely to be fraudulent than events flagged by only one weak signal. The) Tj
-T*
-(report therefore treats probability as an operational confidence estimate, not a) Tj
-T*
 ET
 endstream
 endobj
@@ -300,12 +300,16 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 2426 >>
+<< /Length 2656 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(score are more likely to be fraudulent than events flagged by only one weak signal. The) Tj
+T*
+(report therefore treats probability as an operational confidence estimate, not a) Tj
+T*
 (measured ground truth metric.) Tj
 T*
 () Tj
@@ -366,21 +370,11 @@ T*
 T*
 (With more time, I would add labeled validation data, campaign-level normalization,) Tj
 T*
-(browser/user-agent fingerprinting if available, time-series burst detection by) Tj
+(browser/user-agent fingerprinting if available, time-series burst detection by inventory) Tj
 T*
-(inventory, calibrated probabilities, and a feedback loop from manual review decisions.) Tj
+(beyond the current pseudo-session burst feature, calibrated probabilities, and a) Tj
 T*
-() Tj
-T*
-(- TODO: Add a binary sub-200ms feature.) Tj
-T*
-(- TODO: Add click velocity / burst density.) Tj
-T*
-(- TODO: Add query entropy.) Tj
-T*
-(- TODO: Tune Isolation Forest max_samples and max_features after the new mechanical) Tj
-T*
-(features land.) Tj
+(feedback loop from manual review decisions.) Tj
 T*
 () Tj
 T*
@@ -390,6 +384,12 @@ T*
 T*
 (The repository includes submission.tsv with event_id, is_bot, and operational_tier,) Tj
 T*
+(preserving the final binary prediction while adding a workflow tier. This run selected) Tj
+T*
+(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,069 suppress,) Tj
+T*
+(2,663 quarantine, and 145,507 monitor events.) Tj
+T*
 ET
 endstream
 endobj
@@ -397,18 +397,12 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
 endobj
 12 0 obj
-<< /Length 763 >>
+<< /Length 515 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(preserving the final binary prediction while adding a workflow tier. This run selected) Tj
-T*
-(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,073 suppress,) Tj
-T*
-(2,659 quarantine, and 145,507 monitor events.) Tj
-T*
 () Tj
 T*
 (Use the binary is_bot field as the compatibility output for downstream systems. Use) Tj
@@ -431,21 +425,21 @@ endobj
 endobj
 xref
 0 14
-0000000000 65535 f 
-0000000009 00000 n 
-0000000058 00000 n 
-0000000141 00000 n 
-0000000211 00000 n 
-0000002775 00000 n 
-0000002901 00000 n 
-0000005062 00000 n 
-0000005188 00000 n 
-0000008677 00000 n 
-0000008803 00000 n 
-0000011282 00000 n 
-0000011410 00000 n 
-0000012225 00000 n 
+0000000000 65535 f
+0000000009 00000 n
+0000000058 00000 n
+0000000141 00000 n
+0000000211 00000 n
+0000002886 00000 n
+0000003012 00000 n
+0000005170 00000 n
+0000005296 00000 n
+0000008704 00000 n
+0000008830 00000 n
+0000011539 00000 n
+0000011667 00000 n
+0000012234 00000 n
 trailer << /Size 14 /Root 1 0 R >>
 startxref
-12353
+12362
 %%EOF

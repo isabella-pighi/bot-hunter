@@ -1,15 +1,16 @@
 from __future__ import annotations
 
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from math import log1p
+from math import log1p, log2
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import parse_qs, urlsplit
 
 EXPECTED_FIELD_COUNT = 6
 EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+EPOCH = datetime(1970, 1, 1)
 
 
 @dataclass
@@ -126,7 +127,11 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "sld",
         "hour",
         "log_ttc_seconds",
+        "is_sub_200ms_click",
+        "log_pseudo_session_10s_click_count",
+        "query_entropy",
     ]
+    burst_counts = _pseudo_session_burst_counts(events)
     for event in events:
         query_terms = len(event.query.split())
         try:
@@ -154,8 +159,40 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             sld,
             float(event.event_time.hour),
             log1p(ttc_seconds),
+            1.0 if 0 <= event.ttc < 200 else 0.0,
+            log1p(burst_counts[id(event)]),
+            _query_entropy(event.query),
         ]
     return names, counters
+
+
+def _pseudo_session_burst_counts(events: list[ClickEvent], window_seconds: int = 10) -> dict[int, int]:
+    groups: dict[tuple[str, str, str, str, str], list[ClickEvent]] = defaultdict(list)
+    for event in events:
+        groups[(event.region, event.browser, event.os, event.query, event.domain)].append(event)
+
+    counts: dict[int, int] = {}
+    half_window = window_seconds / 2.0
+    for group_events in groups.values():
+        ordered = sorted(group_events, key=lambda event: event.event_time)
+        timestamps = [(event.event_time - EPOCH).total_seconds() for event in ordered]
+        left = 0
+        right = 0
+        for idx, timestamp in enumerate(timestamps):
+            while timestamps[left] < timestamp - half_window:
+                left += 1
+            while right + 1 < len(timestamps) and timestamps[right + 1] <= timestamp + half_window:
+                right += 1
+            counts[id(ordered[idx])] = right - left + 1
+    return counts
+
+
+def _query_entropy(query: str) -> float:
+    if not query:
+        return 0.0
+    total = len(query)
+    counts = Counter(query)
+    return -sum((count / total) * log2(count / total) for count in counts.values())
 
 
 def iter_event_dicts(events: Iterable[ClickEvent]) -> Iterable[dict[str, object]]:

@@ -68,7 +68,7 @@ The sections below explain each step.
 
 ### 3.1 Feature Engineering
 
-Before either scoring method runs, Bot Hunter extracts 15 numeric features from each
+Before either scoring method runs, Bot Hunter extracts 18 numeric features from each
 event. These are the same features used by both the anomaly scorer and the rules engine,
 and they are also written to `artifacts/features.tsv` for inspection.
 
@@ -89,6 +89,9 @@ and they are also written to `artifacts/features.tsv` for inspection.
 | `sld` | Numeric value of the `sld` URL parameter |
 | `hour` | Hour of day extracted from the event timestamp |
 | `log_ttc_seconds` | Log-scaled time-to-click magnitude, `log1p(ttc_seconds)` |
+| `is_sub_200ms_click` | Whether time-to-click is below 200 ms |
+| `log_pseudo_session_10s_click_count` | Local burst density within a 10-second pseudo-session window |
+| `query_entropy` | Shannon entropy of the query text |
 
 Before anomaly scoring, each feature is standardised: `(value − mean) / std_deviation`.
 This puts all features on the same scale so no single large-magnitude feature dominates.
@@ -152,7 +155,7 @@ human review.
 
 ### 3.3 Anomaly Scorer
 
-The anomaly scorer in `bot_hunter/ml.py` uses the 15-feature standardised matrix
+The anomaly scorer in `bot_hunter/ml.py` uses the 18-feature standardised matrix
 described in section 3.1. Its job is to find events whose combination of features is
 statistically unusual compared to the rest of the dataset — without knowing in advance
 what "bot-like" looks like.
@@ -296,7 +299,7 @@ indicator. To obtain measured precision, the project would need one of the follo
 |---|---|
 | `submission.tsv` | Final binary predictions: `event_id` and `is_bot` |
 | `artifacts/summary.json` | Aggregate metrics, tier counts, backend used, signal agreement score |
-| `artifacts/features.tsv` | Raw 15-feature matrix for every event |
+| `artifacts/features.tsv` | Raw 18-feature matrix for every event |
 | `artifacts/sample_events.json` | Highest-risk events with scores, tiers, and rule contributions |
 | `docs/analysis_report.md` | Written analysis report (Markdown) |
 | `docs/analysis_report.html` | Browser-printable version of the report |
@@ -338,9 +341,9 @@ clusters in advance. It finds arbitrarily shaped clusters and explicitly labels 
 that do not belong to any cluster as noise. In a bot-detection context, those noise
 points are anomaly candidates.
 
-HDBSCAN was evaluated as a possible additional anomaly backend. The benchmark used the
-same 149,239-event dataset, the same 15-feature standardised matrix, and the same
-combined decision rule as the existing pipeline. HDBSCAN was configured with
+HDBSCAN was evaluated as a possible additional anomaly backend. The historical benchmark
+used the same 149,239-event dataset, the then-current 15-feature standardised matrix,
+and the same combined decision rule as the existing pipeline. HDBSCAN was configured with
 `min_cluster_size=80`, `min_samples=20`, and `n_jobs=-1`.
 
 **Results:**
@@ -384,8 +387,8 @@ were evaluated as optional anomaly backends.
   regularisation term (KL divergence — a measure of how far the learned internal
   distribution is from a standard baseline).
 
-The benchmark used the same 149,239 events, the same 15-feature matrix, the same
-heuristic scores, and the same flagging rule as the main pipeline:
+The historical benchmark used the same 149,239 events, the then-current 15-feature
+matrix, the same heuristic scores, and the same flagging rule as the main pipeline:
 
 ```
 combined_score = (0.58 × heuristic_score) + (0.42 × ml_score)

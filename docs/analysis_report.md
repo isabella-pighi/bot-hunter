@@ -6,7 +6,7 @@ Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer re
 
 ## 2. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. The second classifier is an Isolation Forest anomaly model over standardized behavioral features. Events that isolate unusually quickly in the fitted forest receive higher anomaly scores.
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. The second classifier is an Isolation Forest anomaly model over 18 standardized behavioral features, including explicit mechanical features for sub-200ms clicks, local burst density, and query entropy. Events that isolate unusually quickly in the fitted forest receive higher anomaly scores. The forest uses explicit sampling settings tuned for the expanded mechanical feature set.
 
 ## 3. Methods evaluated but not included
 
@@ -16,16 +16,16 @@ Bot Hunter also evaluated HDBSCAN, a shallow autoencoder, and a small VAE as opt
 
 The run analyzed 149,239 events and flagged 3,732 events as bots (2.50%). The strongest explainable patterns were:
 
-- repeated query: 3,328 events
-- repeated query/domain pair: 2,094 events
-- same-second click burst: 1,928 events
-- high-volume clicked domain: 1,906 events
-- very short query: 1,822 events
-- heavy region/browser/os cluster: 1,716 events
-- moderately long time-to-click: 546 events
-- extreme time-to-click: 276 events
-- implausibly fast click: 40 events
-- regular inter-arrival timing: 14 events
+- repeated query: 3,278 events
+- repeated query/domain pair: 2,097 events
+- same-second click burst: 1,936 events
+- high-volume clicked domain: 1,884 events
+- very short query: 1,800 events
+- heavy region/browser/os cluster: 1,730 events
+- moderately long time-to-click: 492 events
+- extreme time-to-click: 211 events
+- implausibly fast click: 155 events
+- regular inter-arrival timing: 13 events
 
 The dashboard exposes these same signals with sample events so a business user can inspect the likely automated behavior without reading model internals.
 
@@ -33,8 +33,8 @@ The dashboard exposes these same signals with sample events so a business user c
 
 Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. Bot Hunter assigns operational tiers without changing the binary `is_bot` prediction:
 
-- suppress: 1,073 events
-- quarantine: 2,659 events
+- suppress: 1,069 events
+- quarantine: 2,663 events
 - monitor: 145,507 events
 
 Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
@@ -43,14 +43,14 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.90 ML agreement thresholds used in suppression are also reported separately so blind spots are visible:
 
-- Heuristic + ML: 1,073 events
-- Heuristic only: 3 events
-- ML only: 13,851 events
-- Neither strong: 134,312 events
+- Heuristic + ML: 1,065 events
+- Heuristic only: 11 events
+- ML only: 13,859 events
+- Neither strong: 134,304 events
 
 ## 7. Threshold rationale
 
-The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.586199 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
+The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.590243 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
 
 The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 0.72%, while the ML upper-tail reference rate was 1.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
 
@@ -76,15 +76,10 @@ Assuming false positives and false negatives are roughly equal in cost, the subm
 
 ## 12. Future work
 
-With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory, calibrated probabilities, and a feedback loop from manual review decisions.
-
-- TODO: Add a binary sub-200ms feature.
-- TODO: Add click velocity / burst density.
-- TODO: Add query entropy.
-- TODO: Tune Isolation Forest `max_samples` and `max_features` after the new mechanical features land.
+With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory beyond the current pseudo-session burst feature, calibrated probabilities, and a feedback loop from manual review decisions.
 
 ## 13. Submission and decision summary
 
-The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,732 of 149,239 events as likely bots (2.50%). The operational split is 1,073 suppress, 2,659 quarantine, and 145,507 monitor events.
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,732 of 149,239 events as likely bots (2.50%). The operational split is 1,069 suppress, 2,663 quarantine, and 145,507 monitor events.
 
 Use the binary `is_bot` field as the compatibility output for downstream systems. Use `operational_tier` to decide handling: suppress high-confidence bot traffic after policy approval, quarantine lower-confidence bot traffic for review or delayed action, and monitor the remaining traffic for drift checks and future labels. The report and dashboard should be read as review aids, not as proof of fraud for every individual event.

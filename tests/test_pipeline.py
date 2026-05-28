@@ -11,9 +11,14 @@ from bot_hunter.pipeline import _assign_operational_tier, _method_disagreement, 
 
 
 class FakeIsolationForest:
-    def __init__(self, random_state: int, contamination: str) -> None:
+    last_instance: "FakeIsolationForest | None" = None
+
+    def __init__(self, random_state: int, contamination: str, max_samples: int, max_features: float) -> None:
         self.random_state = random_state
         self.contamination = contamination
+        self.max_samples = max_samples
+        self.max_features = max_features
+        FakeIsolationForest.last_instance = self
 
     def fit(self, rows) -> "FakeIsolationForest":
         return self
@@ -24,6 +29,7 @@ class FakeIsolationForest:
 
 
 def install_fake_sklearn(monkeypatch) -> None:
+    FakeIsolationForest.last_instance = None
     sklearn = ModuleType("sklearn")
     sklearn.__spec__ = ModuleSpec("sklearn", loader=None, is_package=True)
     ensemble = ModuleType("sklearn.ensemble")
@@ -73,6 +79,9 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
     assert features[0].split("\t") == ["event_id", *summary["feature_names"]]
     assert "is_mobile_search" not in summary["feature_names"]
     assert "log_ttc_seconds" in summary["feature_names"]
+    assert "is_sub_200ms_click" in summary["feature_names"]
+    assert "log_pseudo_session_10s_click_count" in summary["feature_names"]
+    assert "query_entropy" in summary["feature_names"]
     assert len(features) == 4
     first_feature_row = features[1].split("\t")
     assert first_feature_row == [
@@ -92,6 +101,9 @@ def test_pipeline_writes_submission(tmp_path: Path) -> None:
         "1.000000",
         "0.000000",
         "0.009950",
+        "1.000000",
+        "1.098612",
+        "2.521641",
     ]
 
 
@@ -128,6 +140,9 @@ def test_pipeline_can_select_sklearn_backend(monkeypatch, tmp_path: Path) -> Non
     summary = run_pipeline(raw, tmp_path, ml_backend="sklearn")
 
     assert summary["ml_backend"] == "sklearn"
+    assert FakeIsolationForest.last_instance is not None
+    assert FakeIsolationForest.last_instance.max_samples == 3
+    assert FakeIsolationForest.last_instance.max_features == 0.85
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Isolation Forest anomaly model" in report
 
