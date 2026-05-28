@@ -20,6 +20,7 @@ COMBINED_ML_WEIGHT = 0.42
 SUPPRESS_COMBINED_THRESHOLD = 0.80
 SUPPRESS_HEURISTIC_THRESHOLD = 0.80
 SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD = 0.62
+ML_SUPPORT_THRESHOLD = 0.975
 SUPPRESS_AGREEMENT_ML_THRESHOLD = 0.995
 
 
@@ -87,10 +88,13 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".") -> dict[s
             "monitor": "Traffic not selected for bot action; keep for trend monitoring and future labels.",
         },
         "method_disagreement": _method_disagreement(events),
+        "method_disagreement_extreme": _method_disagreement(events, SUPPRESS_AGREEMENT_ML_THRESHOLD),
+        "method_disagreement_support": _method_disagreement(events, ML_SUPPORT_THRESHOLD),
         "tier_thresholds": {
             "suppress_combined_score": SUPPRESS_COMBINED_THRESHOLD,
             "suppress_heuristic_score": SUPPRESS_HEURISTIC_THRESHOLD,
             "suppress_agreement_heuristic_score": SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD,
+            "ml_support_score": ML_SUPPORT_THRESHOLD,
             "suppress_agreement_ml_score": SUPPRESS_AGREEMENT_ML_THRESHOLD,
             "ml_only_tuning": (
                 "EIF agreement uses the extreme rank tail so the disagreement report does not "
@@ -136,11 +140,14 @@ def _assign_operational_tier(event) -> str:
     return "quarantine"
 
 
-def _method_disagreement(events) -> list[tuple[str, int]]:
+def _method_disagreement(
+    events,
+    ml_threshold: float = SUPPRESS_AGREEMENT_ML_THRESHOLD,
+) -> list[tuple[str, int]]:
     counts: Counter[str] = Counter()
     for event in events:
         heuristic_high = event.heuristic_score >= SUPPRESS_AGREEMENT_HEURISTIC_THRESHOLD
-        ml_high = event.ml_score >= SUPPRESS_AGREEMENT_ML_THRESHOLD
+        ml_high = event.ml_score >= ml_threshold
         if heuristic_high and ml_high:
             counts["Heuristic + ML"] += 1
         elif heuristic_high:

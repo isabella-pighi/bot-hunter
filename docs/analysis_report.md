@@ -37,7 +37,18 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 ## 5. Method disagreement
 
-The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. The same 0.62 heuristic and 0.995 EIF rank-tail agreement thresholds used in suppression are also reported separately so blind spots are visible. The EIF agreement threshold is intentionally narrow: this run reports 590 `ML only` events in the extreme anomaly tail, while broad top-decile anomaly ranks previously created too many standalone ML entries without enough explainable support. The method-disagreement table is diagnostic; it does not expose another production model path.
+The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. Bot Hunter now reports two EIF diagnostic buckets against the same rules threshold (`heuristic_score >= 0.62`). The broader support bucket (`ml_score >= 0.975`) shows where the anomaly model provides useful review evidence. The suppress-grade extreme bucket (`ml_score >= 0.995`) keeps the existing operational semantics used for high-confidence heuristic/ML agreement and suppression. Suppression and operational tiers still use the 0.995 extreme threshold, not the broader support threshold.
+
+At the broader support threshold, this run has 1,572 `Heuristic + ML` events and 2,159 `ML only` events. At the suppress-grade extreme threshold, it has 157 `Heuristic + ML` events and 590 `ML only` events. The comparison is diagnostic; it does not expose another production model path.
+
+ML support bucket (`ml_score >= 0.975`):
+
+- Heuristic + ML: 1,572 events
+- Heuristic only: 498 events
+- ML only: 2,159 events
+- Neither strong: 145,010 events
+
+Suppress-grade extreme bucket (`ml_score >= 0.995`):
 
 - Heuristic + ML: 157 events
 - Heuristic only: 1,913 events
@@ -48,7 +59,7 @@ The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer i
 
 The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.598913 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
 
-The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 1.39%, while the EIF agreement-tail reference rate was 0.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
+The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 1.39%, while the suppress-grade EIF extreme-tail reference rate was 0.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
 
 ## 7. Rationale and generalization
 

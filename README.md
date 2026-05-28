@@ -90,18 +90,21 @@ Operational tiers are separate from the binary output:
 
 ## Method Disagreement
 
-`artifacts/summary.json` reports four disagreement buckets:
+`artifacts/summary.json` reports the same four disagreement buckets at two EIF thresholds:
 
 - `Heuristic + ML`
 - `Heuristic only`
 - `ML only`
 - `Neither strong`
 
-The rules agreement threshold is `heuristic_score >= 0.62`. The EIF agreement threshold
-is `ml_score >= 0.995`, tuned to reserve standalone ML-only evidence for the extreme
-anomaly tail. The previous broad top-decile agreement threshold produced many `ML only`
-entries without enough explainable support. On `data/bot-hunter-dataset.tsv`, the EIF
-tail setting reports 590 `ML only` events; the obsolete 0.90 cutoff reported 12,855.
+The rules agreement threshold is `heuristic_score >= 0.62`. The broader EIF support
+bucket is `ml_score >= 0.975`; it is diagnostic evidence for review and does not affect
+suppression. The suppress-grade EIF extreme agreement bucket remains `ml_score >= 0.995`
+and preserves the current operational tier behavior.
+
+On `data/bot-hunter-dataset.tsv`, the support bucket reports 1,572 `Heuristic + ML`
+events and 2,159 `ML only` events. The extreme agreement bucket reports 157
+`Heuristic + ML` events and 590 `ML only` events.
 
 ## Dashboard
 

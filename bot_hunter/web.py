@@ -211,6 +211,8 @@ def _dashboard_html() -> str:
     .metric { font-size:30px; font-weight:700; margin-top:8px; }
     .label { color:var(--muted); font-size:13px; }
     .wide { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px; }
+    .comparison { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
+    .subhead { font-size:14px; font-weight:700; margin:0 0 10px; }
     h2 { font-size:18px; margin:0 0 14px; }
     .bar { height:24px; background:#e7edf0; border-radius:4px; overflow:hidden; margin:8px 0 13px; }
     .bar > span { display:block; height:100%; background:var(--accent); }
@@ -236,7 +238,7 @@ def _dashboard_html() -> str:
     .input-panel { display:block; }
     .input-panel.is-hidden { display:none; }
     .input-help { flex-basis:100%; color:var(--muted); font-size:12px; margin:3px 0 0; }
-    @media (max-width: 850px) { .grid, .wide { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } input { width:100%; } .actions, .dataset, .input-panel { width:100%; } .mode-group { width:100%; } .mode-group button { flex:1; } }
+    @media (max-width: 850px) { .grid, .wide, .comparison { grid-template-columns:1fr; } header { align-items:flex-start; flex-direction:column; } input { width:100%; } .actions, .dataset, .input-panel { width:100%; } .mode-group { width:100%; } .mode-group button { flex:1; } }
   </style>
 </head>
 <body>
@@ -271,7 +273,16 @@ def _dashboard_html() -> str:
     <section class="card" style="margin-bottom:20px;">
       <h2>Method Disagreement</h2>
       <div class="label" id="disagreementNote"></div>
-      <div id="disagreement"></div>
+      <div class="comparison">
+        <div>
+          <div class="subhead" id="supportHeading"></div>
+          <div id="disagreementSupport"></div>
+        </div>
+        <div>
+          <div class="subhead" id="extremeHeading"></div>
+          <div id="disagreementExtreme"></div>
+        </div>
+      </div>
     </section>
     <section class="card" style="margin-bottom:20px;">
       <h2>Operational Tiers</h2>
@@ -312,16 +323,20 @@ def _dashboard_html() -> str:
       document.getElementById('metrics').innerHTML = metrics.map(([k,v]) => `<div class="card"><div class="label">${k}</div><div class="metric">${v}</div></div>`).join('');
       renderBars('reasons', s.top_reasons || []);
       renderBars('regions', s.bot_regions || []);
-      renderBars('disagreement', s.method_disagreement || []);
       renderDisagreementNote(s);
+      renderBars('disagreementSupport', s.method_disagreement_support || []);
+      renderBars('disagreementExtreme', s.method_disagreement_extreme || s.method_disagreement || []);
       renderBars('tiers', Object.entries(s.tier_counts || {}));
     }
     function renderDisagreementNote(s) {
       const thresholds = s.tier_thresholds || {};
       const heuristic = Number(thresholds.suppress_agreement_heuristic_score ?? 0.62).toFixed(2);
-      const ml = Number(thresholds.suppress_agreement_ml_score ?? 0.995).toFixed(3);
+      const support = Number(thresholds.ml_support_score ?? 0.975).toFixed(3);
+      const extreme = Number(thresholds.suppress_agreement_ml_score ?? 0.995).toFixed(3);
+      document.getElementById('supportHeading').textContent = `ML support >= ${support}`;
+      document.getElementById('extremeHeading').textContent = `Extreme agreement >= ${extreme}`;
       document.getElementById('disagreementNote').textContent =
-        `Buckets use rules >= ${heuristic} and EIF tail >= ${ml}. ML only means extreme EIF evidence without a high rules score.`;
+        `Both buckets use rules >= ${heuristic}. ML support is diagnostic review evidence; extreme agreement keeps the suppress-grade threshold.`;
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);

@@ -83,10 +83,47 @@
       146579
     ]
   ],
+  "method_disagreement_extreme": [
+    [
+      "Heuristic + ML",
+      157
+    ],
+    [
+      "Heuristic only",
+      1913
+    ],
+    [
+      "ML only",
+      590
+    ],
+    [
+      "Neither strong",
+      146579
+    ]
+  ],
+  "method_disagreement_support": [
+    [
+      "Heuristic + ML",
+      1572
+    ],
+    [
+      "Heuristic only",
+      498
+    ],
+    [
+      "ML only",
+      2159
+    ],
+    [
+      "Neither strong",
+      145010
+    ]
+  ],
   "tier_thresholds": {
     "suppress_combined_score": 0.8,
     "suppress_heuristic_score": 0.8,
     "suppress_agreement_heuristic_score": 0.62,
+    "ml_support_score": 0.975,
     "suppress_agreement_ml_score": 0.995,
     "ml_only_tuning": "EIF agreement uses the extreme rank tail so the disagreement report does not treat broad unsupervised anomaly ranks as standalone bot evidence.",
     "quarantine": "is_bot == 1 and suppress conditions are not met",
