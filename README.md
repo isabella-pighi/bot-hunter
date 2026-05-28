@@ -35,6 +35,17 @@ python3 -m bot_hunter.cli run --input ~/Downloads/bot-hunter-dataset.tsv --ml-ba
 python3 -m bot_hunter.cli run --input ~/Downloads/bot-hunter-dataset.tsv --ml-backend sklearn
 ```
 
+To run the supervised scoring pilot without replacing the production method:
+
+```bash
+python3 -m bot_hunter.cli supervised-pilot --input ~/Downloads/bot-hunter-dataset.tsv --ml-backend sklearn
+```
+
+The pilot writes `artifacts/supervised_pilot.json` and
+`docs/supervised_pilot_report.md/html`. Its supervised score is a rank-calibrated
+seed-likeness score trained from strict deterministic rule positives only; it is not a
+fraud probability and does not alter `submission.tsv`.
+
 ---
 
 ## Input Format
@@ -202,6 +213,38 @@ heuristic_score ≥ 0.62
 The summary report also breaks down flags by agreement level — *Heuristic + ML*,
 *Heuristic only*, *ML only*, and *Neither strong* — so that disagreement between the
 two methods stays visible and can be investigated.
+
+### 3.5 Supervised Pilot
+
+The optional `supervised-pilot` command compares the current rules+unsupervised baseline
+with an experimental rules+supervised path. Positive labels come only from strict
+deterministic rule contributions: repeated query/domain pairs, reused exact
+time-to-click values, same-second bursts, and implausibly fast clicks. Regular
+inter-arrival timing remains a supporting rule/feature, but is excluded from positive
+labels because it is sensitive to pseudo-session construction. The pilot explicitly
+excludes heuristic score, ML score, combined score, and heuristic/ML agreement as label
+sources.
+
+```bash
+python3 -m bot_hunter.cli supervised-pilot --input ~/Downloads/bot-hunter-dataset.tsv --ml-backend sklearn
+```
+
+Unseeded events are treated as unlabeled background, not confirmed human traffic. For
+that reason, the supervised output is reported as a seed-likeness ranking and reviewed
+for seed capture, agreement/disagreement, and same-volume review efficiency before any
+future promotion decision.
+
+The pilot writes `artifacts/supervised_pilot.json` and
+`docs/supervised_pilot_report.md / .html`. It does not write `submission.tsv` or
+`artifacts/summary.json`, and it does not change the production `is_bot` decision path.
+
+In the current pilot run, the supervised path improved strict-seed capture at the same
+review volume: at 3,732 reviewed events, rules+unsupervised selected 3,369 strict-seed
+events while rules+supervised selected 3,726. The deterministic holdout showed the same
+direction: 674 strict-seed hits for rules+unsupervised versus 759 for rules+supervised at
+the same 761-event review volume. This is evidence of better seed recovery and review
+efficiency, not measured fraud precision, because the dataset still has no ground-truth
+human/bot labels.
 
 ---
 

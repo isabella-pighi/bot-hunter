@@ -300,7 +300,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 2611 >>
+<< /Length 2426 >>
 stream
 BT
 /F1 10 Tf
@@ -372,12 +372,37 @@ T*
 T*
 () Tj
 T*
+(- TODO: Add a binary sub-200ms feature.) Tj
+T*
+(- TODO: Add click velocity / burst density.) Tj
+T*
+(- TODO: Add query entropy.) Tj
+T*
+(- TODO: Tune Isolation Forest max_samples and max_features after the new mechanical) Tj
+T*
+(features land.) Tj
+T*
+() Tj
+T*
 ( 13. Submission and decision summary) Tj
 T*
 () Tj
 T*
 (The repository includes submission.tsv with event_id, is_bot, and operational_tier,) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 763 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (preserving the final binary prediction while adding a workflow tier. This run selected) Tj
 T*
 (3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,073 suppress,) Tj
@@ -390,19 +415,6 @@ T*
 T*
 (operational_tier to decide handling: suppress high-confidence bot traffic after policy) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 319 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (approval, quarantine lower-confidence bot traffic for review or delayed action, and) Tj
 T*
 (monitor the remaining traffic for drift checks and future labels. The report and) Tj
@@ -430,10 +442,10 @@ xref
 0000005188 00000 n 
 0000008677 00000 n 
 0000008803 00000 n 
-0000011467 00000 n 
-0000011595 00000 n 
-0000011966 00000 n 
+0000011282 00000 n 
+0000011410 00000 n 
+0000012225 00000 n 
 trailer << /Size 14 /Root 1 0 R >>
 startxref
-12094
+12353
 %%EOF

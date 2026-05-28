@@ -105,6 +105,11 @@ Assuming false positives and false negatives are roughly equal in cost, the subm
 
 With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory, calibrated probabilities, and a feedback loop from manual review decisions.
 
+- TODO: Add a binary sub-200ms feature.
+- TODO: Add click velocity / burst density.
+- TODO: Add query entropy.
+- TODO: Tune Isolation Forest `max_samples` and `max_features` after the new mechanical features land.
+
 ## 13. Submission and decision summary
 
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected {int(summary["bot_events"]):,} of {int(summary["total_events"]):,} events as likely bots ({bot_rate:.2%}). The operational split is {suppress_count:,} suppress, {quarantine_count:,} quarantine, and {monitor_count:,} monitor events.
