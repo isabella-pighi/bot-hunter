@@ -81,10 +81,11 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert '"rule_id": "fast_click"' in sample_events
     assert "method_disagreement" in summary
     assert sum(count for _, count in summary["method_disagreement"]) == 3
-    assert summary["method_disagreement"] == summary["method_disagreement_extreme"]
-    assert sum(count for _, count in summary["method_disagreement_support"]) == 3
-    assert summary["tier_thresholds"]["ml_support_score"] == 0.975
-    assert summary["tier_thresholds"]["suppress_agreement_ml_score"] == 0.995
+    assert "_".join(["method", "disagreement", "extreme"]) not in summary
+    assert "_".join(["method", "disagreement", "support"]) not in summary
+    assert summary["tier_thresholds"]["ml_agreement_score"] == 0.975
+    assert "_".join(["ml", "support", "score"]) not in summary["tier_thresholds"]
+    assert "_".join(["suppress", "agreement", "ml", "score"]) not in summary["tier_thresholds"]
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
     assert "alternate ML backends and supervised pilots have been removed" in report
@@ -217,7 +218,7 @@ def test_method_disagreement_buckets_partition_events_by_agreement_thresholds() 
         ClickEvent("evt_4", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
     ]
     events[0].heuristic_score = 0.62
-    events[0].ml_score = 0.995
+    events[0].ml_score = 0.975
     events[1].heuristic_score = 0.70
     events[1].ml_score = 0.10
     events[2].heuristic_score = 0.10
@@ -239,7 +240,7 @@ def test_method_disagreement_buckets_partition_events_by_agreement_thresholds() 
     ]
 
 
-def test_method_disagreement_can_report_broader_ml_support_bucket() -> None:
+def test_method_disagreement_uses_single_ml_agreement_threshold() -> None:
     events = [
         ClickEvent("evt_1", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
         ClickEvent("evt_2", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
@@ -255,13 +256,7 @@ def test_method_disagreement_can_report_broader_ml_support_bucket() -> None:
     events[3].heuristic_score = 0.10
     events[3].ml_score = 0.10
 
-    assert _method_disagreement(events, ml_threshold=0.995) == [
-        ("Heuristic + ML", 0),
-        ("Heuristic only", 2),
-        ("ML only", 0),
-        ("Neither strong", 2),
-    ]
-    assert _method_disagreement(events, ml_threshold=0.975) == [
+    assert _method_disagreement(events) == [
         ("Heuristic + ML", 2),
         ("Heuristic only", 0),
         ("ML only", 1),
@@ -292,5 +287,5 @@ def test_operational_tier_boundaries() -> None:
     assert _assign_operational_tier(event) == "suppress"
 
     event.heuristic_score = 0.62
-    event.ml_score = 0.995
+    event.ml_score = 0.975
     assert _assign_operational_tier(event) == "suppress"

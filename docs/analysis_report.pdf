@@ -106,7 +106,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2464 >>
+<< /Length 2289 >>
 stream
 BT
 /F1 10 Tf
@@ -152,9 +152,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,728 events) Tj
+(- suppress: 1,940 events) Tj
 T*
-(- quarantine: 2,004 events) Tj
+(- quarantine: 1,792 events) Tj
 T*
 (- monitor: 145,507 events) Tj
 T*
@@ -178,23 +178,23 @@ T*
 T*
 (weight to move borderline cases and catch multivariate oddities. The thresholds are) Tj
 T*
-(conservative guardrails, not learned cutoffs. Bot Hunter now reports two EIF diagnostic) Tj
+(conservative guardrails, not learned cutoffs. Bot Hunter reports one method disagreement) Tj
 T*
-(buckets against the same rules threshold \(heuristic_score >= 0.62\). The broader support) Tj
+(view using the rules threshold \(heuristic_score >= 0.62\) and the ML agreement threshold) Tj
 T*
-(bucket \(ml_score >= 0.975\) shows where the anomaly model provides useful review) Tj
+(\(ml_score >= 0.975\). This agreement view is review evidence for an unlabeled dataset; it) Tj
 T*
-(evidence. The suppress-grade extreme bucket \(ml_score >= 0.995\) keeps the existing) Tj
-T*
-(operational semantics used for high-confidence heuristic/ML agreement and suppression.) Tj
-T*
-(Suppression and operational tiers still use the 0.995 extreme threshold, not the broader) Tj
-T*
-(support threshold.) Tj
+(should not be read as measured accuracy.) Tj
 T*
 () Tj
 T*
-(At the broader support threshold, this run has 1,572 Heuristic + ML events and 2,159 ML) Tj
+(At the ML agreement threshold, this run has 1,572 Heuristic + ML events and 2,159 ML) Tj
+T*
+(only events.) Tj
+T*
+() Tj
+T*
+(Method disagreement \(ml_score >= 0.975\):) Tj
 T*
 ET
 endstream
@@ -203,22 +203,12 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 2428 >>
+<< /Length 3148 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(only events. At the suppress-grade extreme threshold, it has 157 Heuristic + ML events) Tj
-T*
-(and 590 ML only events. The comparison is diagnostic; it does not expose another) Tj
-T*
-(production model path.) Tj
-T*
-() Tj
-T*
-(ML support bucket \(ml_score >= 0.975\):) Tj
-T*
 () Tj
 T*
 (- Heuristic + ML: 1,572 events) Tj
@@ -228,20 +218,6 @@ T*
 (- ML only: 2,159 events) Tj
 T*
 (- Neither strong: 145,010 events) Tj
-T*
-() Tj
-T*
-(Suppress-grade extreme bucket \(ml_score >= 0.995\):) Tj
-T*
-() Tj
-T*
-(- Heuristic + ML: 157 events) Tj
-T*
-(- Heuristic only: 1,913 events) Tj
-T*
-(- ML only: 590 events) Tj
-T*
-(- Neither strong: 146,579 events) Tj
 T*
 () Tj
 T*
@@ -269,13 +245,11 @@ T*
 T*
 (review-first workflow where false positives and false negatives are treated as roughly) Tj
 T*
-(comparable. In this run, the heuristic-only flag rate was 1.39%, while the suppress-) Tj
+(comparable. In this run, the heuristic-only flag rate was 1.39%, while the ML agreement-) Tj
 T*
-(grade EIF extreme-tail reference rate was 0.50%; those rates are reported separately so) Tj
+(tail reference rate was 2.50%; those rates are reported separately so reviewers can see) Tj
 T*
-(reviewers can see how much each method contributes before the combined decision is) Tj
-T*
-(applied.) Tj
+(how much each method contributes before the combined decision is applied.) Tj
 T*
 () Tj
 T*
@@ -293,19 +267,6 @@ T*
 T*
 (smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they) Tj
 T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 3241 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (represent separate behavioral concepts. The confirmed query repetition rule reuses the) Tj
 T*
 (repeated query/domain and repeated query thresholds and adds weight only when both fire) Tj
@@ -332,6 +293,19 @@ T*
 T*
 (rule contributions include threshold_mode, with fixed rules reported as absolute and) Tj
 T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2946 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (adaptive exact-ttc reuse reported as adaptive_percentile when present. The Extended) Tj
 T*
 (Isolation Forest model catches multivariate oddities that a small rule set may miss.) Tj
@@ -350,17 +324,21 @@ T*
 T*
 () Tj
 T*
-(The estimated probability that a flagged event is fraudulent is 60%. This is not label-) Tj
+(The estimated probability that a flagged event is fraudulent is 73%. This is not label-) Tj
 T*
 (calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
 T*
 (signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
 T*
-(score are more likely to be fraudulent than events flagged by only one weak signal. The) Tj
+(score are more likely to be fraudulent than events flagged by only one weak signal. This) Tj
 T*
-(report therefore treats probability as an operational confidence estimate, not a) Tj
+(estimate uses the ml_score >= 0.975 agreement threshold; the value is higher than) Tj
 T*
-(measured ground truth metric.) Tj
+(estimates computed at 0.995 because the agreement definition broadened, not because) Tj
+T*
+(detection quality improved. The report therefore treats probability as an operational) Tj
+T*
+(confidence estimate, not a measured ground truth metric.) Tj
 T*
 () Tj
 T*
@@ -390,19 +368,6 @@ T*
 T*
 (- The anomaly score is relative to the current traffic mix. Material changes in) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 2021 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (geography, inventory, campaign volume, browser mix, or feature extraction should trigger) Tj
 T*
 (a fresh threshold and review calibration.) Tj
@@ -425,6 +390,19 @@ T*
 T*
 (while retaining it for drift checks and future labels.) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 1290 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 ( 11. Future work) Tj
@@ -449,9 +427,9 @@ T*
 T*
 (preserving the final binary prediction while adding a workflow tier. This run selected) Tj
 T*
-(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,728 suppress,) Tj
+(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,940 suppress,) Tj
 T*
-(2,004 quarantine, and 145,507 monitor events.) Tj
+(1,792 quarantine, and 145,507 monitor events.) Tj
 T*
 () Tj
 T*
@@ -482,14 +460,14 @@ xref
 0000000211 00000 n
 0000003206 00000 n
 0000003332 00000 n
-0000005848 00000 n
-0000005974 00000 n
-0000008454 00000 n
-0000008580 00000 n
-0000011874 00000 n
-0000012002 00000 n
-0000014076 00000 n
+0000005673 00000 n
+0000005799 00000 n
+0000008999 00000 n
+0000009125 00000 n
+0000012124 00000 n
+0000012252 00000 n
+0000013595 00000 n
 trailer << /Size 14 /Root 1 0 R >>
 startxref
-14204
+13723
 %%EOF

@@ -90,21 +90,22 @@ Operational tiers are separate from the binary output:
 
 ## Method Disagreement
 
-`artifacts/summary.json` reports the same four disagreement buckets at two EIF thresholds:
+`artifacts/summary.json` reports four disagreement buckets at one ML agreement threshold:
 
 - `Heuristic + ML`
 - `Heuristic only`
 - `ML only`
 - `Neither strong`
 
-The rules agreement threshold is `heuristic_score >= 0.62`. The broader EIF support
-bucket is `ml_score >= 0.975`; it is diagnostic evidence for review and does not affect
-suppression. The suppress-grade EIF extreme agreement bucket remains `ml_score >= 0.995`
-and preserves the current operational tier behavior.
+The rules agreement threshold is `heuristic_score >= 0.62`. The ML agreement threshold is
+`ml_score >= 0.975`. This agreement view is diagnostic evidence for review on unlabeled
+data, not a claim of higher measured accuracy.
 
-On `data/bot-hunter-dataset.tsv`, the support bucket reports 1,572 `Heuristic + ML`
-events and 2,159 `ML only` events. The extreme agreement bucket reports 157
-`Heuristic + ML` events and 590 `ML only` events.
+On `data/bot-hunter-dataset.tsv`, the method disagreement bucket reports 1,572
+`Heuristic + ML` events and 2,159 `ML only` events. The binary bot count remains
+3,732 events; using the single 0.975 agreement threshold moves the operational split
+to 1,940 `suppress`, 1,792 `quarantine`, and 145,507 `monitor` events. This is an
+operational threshold change on unlabeled data, not measured accuracy improvement.
 
 ## Dashboard
 

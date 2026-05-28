@@ -49,11 +49,10 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert 'id="mlBackend"' not in dashboard
         assert "Operational confidence" in dashboard
         assert "Method Disagreement" in dashboard
-        assert 'id="disagreementSupport"' in dashboard
-        assert 'id="disagreementExtreme"' in dashboard
-        assert "ML support >= ${support}" in dashboard
-        assert "Extreme agreement >= ${extreme}" in dashboard
-        assert "ML support is diagnostic review evidence" in dashboard
+        assert 'id="disagreement"' in dashboard
+        assert "method_disagreement || []" in dashboard
+        assert "ML >= ${ml}" in dashboard
+        assert "not measured accuracy" in dashboard
         assert "0.90 ML agreement" not in dashboard
 
         features_page = urlopen(base_url + "/features", timeout=5).read().decode("utf-8")

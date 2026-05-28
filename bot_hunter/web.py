@@ -273,16 +273,7 @@ def _dashboard_html() -> str:
     <section class="card" style="margin-bottom:20px;">
       <h2>Method Disagreement</h2>
       <div class="label" id="disagreementNote"></div>
-      <div class="comparison">
-        <div>
-          <div class="subhead" id="supportHeading"></div>
-          <div id="disagreementSupport"></div>
-        </div>
-        <div>
-          <div class="subhead" id="extremeHeading"></div>
-          <div id="disagreementExtreme"></div>
-        </div>
-      </div>
+      <div id="disagreement"></div>
     </section>
     <section class="card" style="margin-bottom:20px;">
       <h2>Operational Tiers</h2>
@@ -324,19 +315,15 @@ def _dashboard_html() -> str:
       renderBars('reasons', s.top_reasons || []);
       renderBars('regions', s.bot_regions || []);
       renderDisagreementNote(s);
-      renderBars('disagreementSupport', s.method_disagreement_support || []);
-      renderBars('disagreementExtreme', s.method_disagreement_extreme || s.method_disagreement || []);
+      renderBars('disagreement', s.method_disagreement || []);
       renderBars('tiers', Object.entries(s.tier_counts || {}));
     }
     function renderDisagreementNote(s) {
       const thresholds = s.tier_thresholds || {};
       const heuristic = Number(thresholds.suppress_agreement_heuristic_score ?? 0.62).toFixed(2);
-      const support = Number(thresholds.ml_support_score ?? 0.975).toFixed(3);
-      const extreme = Number(thresholds.suppress_agreement_ml_score ?? 0.995).toFixed(3);
-      document.getElementById('supportHeading').textContent = `ML support >= ${support}`;
-      document.getElementById('extremeHeading').textContent = `Extreme agreement >= ${extreme}`;
+      const ml = Number(thresholds.ml_agreement_score ?? 0.975).toFixed(3);
       document.getElementById('disagreementNote').textContent =
-        `Both buckets use rules >= ${heuristic}. ML support is diagnostic review evidence; extreme agreement keeps the suppress-grade threshold.`;
+        `Uses rules >= ${heuristic} and ML >= ${ml}. Agreement is review evidence for unlabeled data, not measured accuracy.`;
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);

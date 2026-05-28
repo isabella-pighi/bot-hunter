@@ -37,20 +37,13 @@ def _markdown(summary: dict[str, object]) -> str:
     monitor_count = int(tier_counts.get("monitor", 0))
     thresholds = summary.get("tier_thresholds", {})
     heuristic_agreement = float(thresholds.get("suppress_agreement_heuristic_score", 0.62))
-    ml_support_score = float(thresholds.get("ml_support_score", 0.975))
-    ml_extreme_score = float(thresholds.get("suppress_agreement_ml_score", 0.995))
-    extreme_rows = summary.get("method_disagreement_extreme", summary.get("method_disagreement", []))
-    support_rows = summary.get("method_disagreement_support", [])
-    support_lines = _disagreement_lines(support_rows)
-    if not support_lines:
-        support_lines = "- No ML support bucket data was reported."
-    extreme_lines = _disagreement_lines(extreme_rows)
-    if not extreme_lines:
-        extreme_lines = "- No suppress-grade agreement data was reported."
-    support_both_count = _disagreement_count(support_rows, "Heuristic + ML")
-    extreme_both_count = _disagreement_count(extreme_rows, "Heuristic + ML")
-    support_ml_only_count = _disagreement_count(support_rows, "ML only")
-    extreme_ml_only_count = _disagreement_count(extreme_rows, "ML only")
+    ml_agreement_score = float(thresholds.get("ml_agreement_score", 0.975))
+    disagreement_rows = summary.get("method_disagreement", [])
+    disagreement_lines = _disagreement_lines(disagreement_rows)
+    if not disagreement_lines:
+        disagreement_lines = "- No method disagreement data was reported."
+    agreement_both_count = _disagreement_count(disagreement_rows, "Heuristic + ML")
+    ml_only_count = _disagreement_count(disagreement_rows, "ML only")
     threshold = float(summary.get("threshold", 0.0))
     heuristic_flag_rate = float(summary.get("heuristic_flag_rate", 0.0))
     ml_tail_rate = float(summary.get("ml_tail_rate", 0.0))
@@ -83,23 +76,19 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 ## 5. Method disagreement
 
-The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. Bot Hunter now reports two EIF diagnostic buckets against the same rules threshold (`heuristic_score >= {heuristic_agreement:.2f}`). The broader support bucket (`ml_score >= {ml_support_score:.3f}`) shows where the anomaly model provides useful review evidence. The suppress-grade extreme bucket (`ml_score >= {ml_extreme_score:.3f}`) keeps the existing operational semantics used for high-confidence heuristic/ML agreement and suppression. Suppression and operational tiers still use the {ml_extreme_score:.3f} extreme threshold, not the broader support threshold.
+The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. Bot Hunter reports one method disagreement view using the rules threshold (`heuristic_score >= {heuristic_agreement:.2f}`) and the ML agreement threshold (`ml_score >= {ml_agreement_score:.3f}`). This agreement view is review evidence for an unlabeled dataset; it should not be read as measured accuracy.
 
-At the broader support threshold, this run has {support_both_count:,} `Heuristic + ML` events and {support_ml_only_count:,} `ML only` events. At the suppress-grade extreme threshold, it has {extreme_both_count:,} `Heuristic + ML` events and {extreme_ml_only_count:,} `ML only` events. The comparison is diagnostic; it does not expose another production model path.
+At the ML agreement threshold, this run has {agreement_both_count:,} `Heuristic + ML` events and {ml_only_count:,} `ML only` events.
 
-ML support bucket (`ml_score >= {ml_support_score:.3f}`):
+Method disagreement (`ml_score >= {ml_agreement_score:.3f}`):
 
-{support_lines}
-
-Suppress-grade extreme bucket (`ml_score >= {ml_extreme_score:.3f}`):
-
-{extreme_lines}
+{disagreement_lines}
 
 ## 6. Threshold rationale
 
 The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff ({threshold:.6f} in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
 
-The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was {heuristic_flag_rate:.2%}, while the suppress-grade EIF extreme-tail reference rate was {ml_tail_rate:.2%}; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
+The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was {heuristic_flag_rate:.2%}, while the ML agreement-tail reference rate was {ml_tail_rate:.2%}; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
 
 ## 7. Rationale and generalization
 
@@ -107,7 +96,7 @@ The heuristic model is transparent and easy to convert into policy. Only exact t
 
 ## 8. Probability assessment
 
-The estimated probability that a flagged event is fraudulent is {precision:.0%}. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
+The estimated probability that a flagged event is fraudulent is {precision:.0%}. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. This estimate uses the `ml_score >= 0.975` agreement threshold; the value is higher than estimates computed at 0.995 because the agreement definition broadened, not because detection quality improved. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
 
 ## 9. Known limitations
 
