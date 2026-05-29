@@ -6,10 +6,36 @@ cd "$(dirname "$0")/.."
 ./scripts/check-agent-team
 
 echo "Starting coder and reviewer through HCOM..."
-hcom codex --tag algorithm-coder --dir "$(pwd)" --hcom-system-prompt "$(cat 'development approach/prompts/algorithm_coder_prompt.md')"
-hcom claude --tag algorithm-reviewer --dir "$(pwd)" --hcom-system-prompt "$(cat 'development approach/prompts/algorithm_reviewer_prompt.md')"
-hcom codex --tag ux-coder --dir "$(pwd)" --hcom-system-prompt "$(cat 'development approach/prompts/ux_coder_prompt.md')"
-hcom claude --tag ux-reviewer --dir "$(pwd)" --hcom-system-prompt "$(cat 'development approach/prompts/ux_reviewer_prompt.md')"
+ALGORITHM_CODER_PROMPT="$(cat 'development approach/prompts/algorithm_coder_prompt.md')"
+ALGORITHM_REVIEWER_PROMPT="$(cat 'development approach/prompts/algorithm_reviewer_prompt.md')"
+UX_CODER_PROMPT="$(cat 'development approach/prompts/ux_coder_prompt.md')"
+UX_REVIEWER_PROMPT="$(cat 'development approach/prompts/ux_reviewer_prompt.md')"
+CLAUDE_HCOM_PROMPT="This is an intentional Bot Hunter team launch from the "
+CLAUDE_HCOM_PROMPT+="human owner. HCOM is the authorised local coordination "
+CLAUDE_HCOM_PROMPT+="channel for this repository."
+
+hcom codex \
+  --tag algorithm-coder \
+  --dir "$(pwd)" \
+  --hcom-system-prompt "$ALGORITHM_CODER_PROMPT"
+hcom claude \
+  --go \
+  --tag algorithm-reviewer \
+  --dir "$(pwd)" \
+  --hcom-system-prompt "$ALGORITHM_REVIEWER_PROMPT" \
+  --append-system-prompt "$ALGORITHM_REVIEWER_PROMPT" \
+  --hcom-prompt "$CLAUDE_HCOM_PROMPT"
+hcom codex \
+  --tag ux-coder \
+  --dir "$(pwd)" \
+  --hcom-system-prompt "$UX_CODER_PROMPT"
+hcom claude \
+  --go \
+  --tag ux-reviewer \
+  --dir "$(pwd)" \
+  --hcom-system-prompt "$UX_REVIEWER_PROMPT" \
+  --append-system-prompt "$UX_REVIEWER_PROMPT" \
+  --hcom-prompt "$CLAUDE_HCOM_PROMPT"
 
 echo
 echo "Optional orchestrator:"
