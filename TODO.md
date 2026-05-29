@@ -286,6 +286,7 @@ pipeline looks the way it does.
 | Anomaly classifier | Added query entropy | Helps distinguish natural-looking query text from synthetic or random strings. |
 | Anomaly classifier | Consolidated production scoring on Extended Isolation Forest | Removes alternate backend drift and keeps output semantics consistent. |
 | Explainability | Added structured rule contributions | Gives stable rule IDs, labels, weights, observed values, and thresholds for audits. |
+| Rules classifier | Added concentrated `ct` context as supporting evidence | Lets the rules layer use country-like concentration only when paired with repeated query behaviour and clustering. |
 | Decision logic | Added `suppress`, `quarantine`, and `monitor` tiers | Turns scores into practical actions without pretending unlabelled data has measured precision. |
 | Decision logic | Added method disagreement buckets | Makes rules/ML agreement and disagreement visible for review. |
 

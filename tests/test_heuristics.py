@@ -168,6 +168,76 @@ def test_dense_burst_repetition_cluster_does_not_fire_without_dense_burst() -> N
     }
 
 
+def test_concentrated_ct_context_is_supporting_evidence_only() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search&ct=US",
+        params={"d": "a.com", "ttc": "3000", "q": "human search", "ct": "US"},
+    )
+    counters = {
+        "query_domain": Counter({("human search", "a.com"): 1}),
+        "query": Counter({"human search": 12}),
+        "domain": Counter({"a.com": 1}),
+        "device": Counter({("Mars", "Chrome", "Android"): 600}),
+        "ttc": Counter({3000: 1}),
+        "second": Counter({event.event_time: 1}),
+        "country": Counter({"US": 1_000}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert event.reasons == [
+        "query repeated 12 times",
+        "heavy region/browser/os cluster (600)",
+        "concentrated ct context (US 1000, device 600, query 12)",
+    ]
+    assert event.heuristic_score == 0.32
+    contribution = event.rule_contributions[-1]
+    assert contribution.rule_id == "concentrated_ct_context"
+    assert contribution.label == "Concentrated ct context"
+    assert contribution.weight == 0.06
+    assert contribution.observed == "ct=US; ct_count=1000; device 600; query=12"
+    assert contribution.threshold == (
+        "ct_count>=1000; repeated_query_pattern; device_or_same_second_cluster"
+    )
+    assert contribution.condition == (
+        "ct count >= total-rate threshold and "
+        "(query_count >= threshold or query_domain_count >= threshold) "
+        "and (device_count >= threshold or same_second_count >= 5)"
+    )
+
+
+def test_concentrated_ct_context_does_not_fire_without_repetition() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search&ct=US",
+        params={"d": "a.com", "ttc": "3000", "q": "human search", "ct": "US"},
+    )
+    counters = {
+        "query_domain": Counter({("human search", "a.com"): 1}),
+        "query": Counter({"human search": 1}),
+        "domain": Counter({"a.com": 1}),
+        "device": Counter({("Mars", "Chrome", "Android"): 600}),
+        "ttc": Counter({3000: 1}),
+        "second": Counter({event.event_time: 1}),
+        "country": Counter({"US": 1_000}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert "concentrated_ct_context" not in {
+        contribution.rule_id for contribution in event.rule_contributions
+    }
+
+
 def test_confirmed_query_repetition_requires_query_and_query_domain_repetition() -> None:
     event = ClickEvent(
         event_id="evt",

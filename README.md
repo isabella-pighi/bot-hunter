@@ -224,6 +224,7 @@ The rules layer captures patterns that are easy to explain:
 | many events in the same second | Automation can create dense timing bursts |
 | exact time-to-click reuse | Programmatic systems often reuse deterministic delays |
 | heavy region/browser/OS cluster | Bots often share an environment footprint |
+| concentrated `ct` with repetition and clustering | Country-like concentration can support a bot finding when paired with stronger mechanical signals |
 
 The anomaly layer captures combinations. A single feature value may look
 ordinary, but the combination can still be suspicious. For example, a click may

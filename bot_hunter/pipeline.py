@@ -191,6 +191,11 @@ def _normalize_reason(reason: str) -> str:
         reason,
     )
     reason = re.sub(
+        r"concentrated ct context \([^)]+\)",
+        "concentrated ct context",
+        reason,
+    )
+    reason = re.sub(
         r"regular inter-arrival timing \(\d+ clicks, mean [\d.]+s, cv [\d.]+\)",
         "regular inter-arrival timing",
         reason,

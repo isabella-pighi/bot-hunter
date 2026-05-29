@@ -1,12 +1,12 @@
 {
   "input_path": "data/bot-hunter-dataset.tsv",
   "total_events": 149239,
-  "bot_events": 3732,
-  "bot_rate": 0.025006868177889156,
-  "threshold": 0.597400892534073,
-  "heuristic_flag_rate": 0.013870369005420834,
+  "bot_events": 3731,
+  "bot_rate": 0.025000167516533882,
+  "threshold": 0.6068462027097655,
+  "heuristic_flag_rate": 0.01400438223252635,
   "ml_tail_rate": 0.025000167516533882,
-  "estimated_precision": 0.7244265809217577,
+  "estimated_precision": 0.7253095684803001,
   "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
@@ -65,19 +65,19 @@
   "method_disagreement": [
     [
       "Heuristic + ML",
-      1475
+      1478
     ],
     [
       "Heuristic only",
-      595
+      612
     ],
     [
       "ML only",
-      2256
+      2253
     ],
     [
       "Neither strong",
-      144913
+      144896
     ]
   ],
   "tier_thresholds": {
@@ -89,18 +89,18 @@
     "monitor": "is_bot == 0"
   },
   "tier_counts": {
-    "suppress": 1954,
-    "quarantine": 1778,
-    "monitor": 145507
+    "suppress": 1966,
+    "quarantine": 1765,
+    "monitor": 145508
   },
   "top_reasons": [
     [
       "repeated query",
-      3421
+      3476
     ],
     [
       "repeated query/domain pair",
-      2095
+      2091
     ],
     [
       "confirmed query repetition",
@@ -108,31 +108,31 @@
     ],
     [
       "same-second click burst",
-      1974
-    ],
-    [
-      "very short query",
-      1805
+      1876
     ],
     [
       "heavy region/browser/os cluster",
-      1794
+      1868
+    ],
+    [
+      "very short query",
+      1835
     ],
     [
       "high-volume clicked domain",
-      1787
+      1726
+    ],
+    [
+      "concentrated ct context",
+      1154
     ],
     [
       "dense burst repetition cluster",
-      524
+      526
     ],
     [
       "moderately long time-to-click",
-      502
-    ],
-    [
-      "extreme time-to-click",
-      173
+      472
     ]
   ],
   "top_domains": [
@@ -238,27 +238,27 @@
   "bot_regions": [
     [
       "Earth",
-      1845
+      1824
     ],
     [
       "Mars",
-      1736
+      1782
     ],
     [
       "Mercury",
-      55
+      45
     ],
     [
       "Saturn",
-      36
+      31
     ],
     [
       "Venus",
-      32
+      29
     ],
     [
       "Jupiter",
-      28
+      20
     ]
   ]
 }

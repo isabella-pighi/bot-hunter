@@ -263,6 +263,13 @@ def test_normalize_reason_handles_confirmed_query_repetition() -> None:
     )
 
 
+def test_normalize_reason_handles_concentrated_ct_context() -> None:
+    assert (
+        _normalize_reason("concentrated ct context (US 1000, device 600, query 12)")
+        == "concentrated ct context"
+    )
+
+
 def test_method_disagreement_buckets_partition_events_by_agreement_thresholds() -> None:
     events = [
         ClickEvent("evt_1", datetime(2019, 12, 2), "Mars", "Chrome", "Android", ""),
