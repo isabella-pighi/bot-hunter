@@ -92,6 +92,12 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "_".join(["method", "disagreement", "extreme"]) not in summary
     assert "_".join(["method", "disagreement", "support"]) not in summary
     assert summary["tier_thresholds"]["ml_agreement_score"] == 0.975
+    assert summary["heuristic_thresholds"]["repeat_query_domain"]["threshold"] == 4
+    assert (
+        summary["heuristic_thresholds"]["repeat_query_domain"]["threshold_mode"]
+        == "adaptive_percentile"
+    )
+    assert summary["heuristic_thresholds"]["repeat_query_domain"]["absolute_floor"] == 4
     assert "_".join(["ml", "support", "score"]) not in summary["tier_thresholds"]
     assert (
         "_".join(["suppress", "agreement", "ml", "score"])
@@ -99,8 +105,19 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     )
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
+    assert "Adaptive heuristic thresholds used in this run" in report
+    assert "Repeated query/domain pair (`repeat_query_domain`)" in report
+    assert "99th-percentile threshold" in report
+    assert "% percentile" not in report
     assert "alternate ML backends and supervised pilots have been removed" in report
     assert "Methods evaluated but not included" not in report
+    html_report = (tmp_path / "docs" / "analysis_report.html").read_text(
+        encoding="utf-8"
+    )
+    assert "<table><thead><tr>" in html_report
+    assert "</thead><tbody>" in html_report
+    assert "<th>Rule</th>" in html_report
+    assert "Repeated query/domain pair" in html_report
     features = (
         (tmp_path / "artifacts" / "features.tsv")
         .read_text(encoding="utf-8")

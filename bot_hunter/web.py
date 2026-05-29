@@ -10,7 +10,6 @@ from urllib.parse import parse_qs, urlparse
 
 from .pipeline import run_pipeline
 
-
 ROOT = Path(__file__).resolve().parents[1]
 MAX_UPLOAD_BYTES = 50 * 1024 * 1024
 PIPELINE_LOCK = Lock()
@@ -29,11 +28,17 @@ class Handler(BaseHTTPRequestHandler):
             params = parse_qs(parsed.query)
             offset = _parse_int(params.get("offset", ["0"])[0], default=0)
             limit = min(_parse_int(params.get("limit", ["200"])[0], default=200), 1000)
-            self._send_json(_read_features(ROOT / "artifacts" / "features.tsv", offset=offset, limit=limit))
+            self._send_json(
+                _read_features(
+                    ROOT / "artifacts" / "features.tsv", offset=offset, limit=limit
+                )
+            )
         elif parsed.path == "/features":
             self._send_html(_features_html())
         elif parsed.path == "/report":
-            self._send_html((ROOT / "docs" / "analysis_report.html").read_text(encoding="utf-8"))
+            self._send_html(
+                (ROOT / "docs" / "analysis_report.html").read_text(encoding="utf-8")
+            )
         elif parsed.path == "/run":
             params = parse_qs(parsed.query)
             input_path = params.get("input", [""])[0]
@@ -60,7 +65,9 @@ class Handler(BaseHTTPRequestHandler):
         content_type = self.headers.get("Content-Type", "")
         content_length = _parse_int(self.headers.get("Content-Length", "0"), default=0)
         if content_length <= 0:
-            self._send_json({"error": "Upload a TSV file before running the pipeline"}, status=400)
+            self._send_json(
+                {"error": "Upload a TSV file before running the pipeline"}, status=400
+            )
             return
         if content_length > MAX_UPLOAD_BYTES:
             self._send_json(
@@ -78,13 +85,17 @@ class Handler(BaseHTTPRequestHandler):
 
         upload = files.get("file")
         if not upload or not upload.get("filename"):
-            self._send_json({"error": "Upload a TSV file before running the pipeline"}, status=400)
+            self._send_json(
+                {"error": "Upload a TSV file before running the pipeline"}, status=400
+            )
             return
 
         suffix = Path(upload.get("filename") or "upload.tsv").suffix or ".tsv"
         tmp_path: Path | None = None
         try:
-            with tempfile.NamedTemporaryFile("wb", suffix=suffix, delete=False) as handle:
+            with tempfile.NamedTemporaryFile(
+                "wb", suffix=suffix, delete=False
+            ) as handle:
                 handle.write(upload["content"])
                 tmp_path = Path(handle.name)
             with PIPELINE_LOCK:
@@ -136,13 +147,13 @@ def _validate_server_input_path(input_path: str) -> Path:
     try:
         path.relative_to(root)
     except ValueError as exc:
-        raise ValueError(
-            f"Server-side input path must be under {root}"
-        ) from exc
+        raise ValueError(f"Server-side input path must be under {root}") from exc
     return path
 
 
-def _parse_multipart_form(content_type: str, body: bytes) -> tuple[dict[str, str], dict[str, dict[str, object]]]:
+def _parse_multipart_form(
+    content_type: str, body: bytes
+) -> tuple[dict[str, str], dict[str, dict[str, object]]]:
     marker = "boundary="
     if "multipart/form-data" not in content_type or marker not in content_type:
         raise ValueError("Upload request must use multipart/form-data")
@@ -168,7 +179,14 @@ def _parse_multipart_form(content_type: str, body: bytes) -> tuple[dict[str, str
             continue
         raw_headers, content = part.split(b"\r\n\r\n", 1)
         headers = raw_headers.decode("utf-8", errors="replace").split("\r\n")
-        disposition = next((line for line in headers if line.lower().startswith("content-disposition:")), "")
+        disposition = next(
+            (
+                line
+                for line in headers
+                if line.lower().startswith("content-disposition:")
+            ),
+            "",
+        )
         params = _parse_content_disposition(disposition)
         name = params.get("name")
         if not name:
@@ -206,7 +224,12 @@ def _read_features(path: Path, offset: int = 0, limit: int = 200) -> object:
             parts = line.rstrip("\n").split("\t")
             if len(parts) != len(header):
                 continue
-            rows.append({"event_id": parts[0], "features": [float(value) for value in parts[1:]]})
+            rows.append(
+                {
+                    "event_id": parts[0],
+                    "features": [float(value) for value in parts[1:]],
+                }
+            )
     return {
         "feature_names": feature_names,
         "offset": offset,
@@ -235,6 +258,7 @@ def _dashboard_html() -> str:
     .metric { font-size:30px; font-weight:700; margin-top:8px; }
     .label { color:var(--muted); font-size:13px; }
     .wide { display:grid; grid-template-columns: 1fr 1fr; gap:16px; margin-bottom:20px; }
+    .block { margin-bottom:20px; }
     .comparison { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:14px; }
     .subhead { font-size:14px; font-weight:700; margin:0 0 10px; }
     h2 { font-size:18px; margin:0 0 14px; }
@@ -294,19 +318,26 @@ def _dashboard_html() -> str:
       <div class="card"><h2>Top Bot Signals</h2><div id="reasons"></div></div>
       <div class="card"><h2>Flagged Regions</h2><div id="regions"></div></div>
     </section>
-    <section class="card" style="margin-bottom:20px;">
+    <section class="card block">
       <h2>Method Disagreement</h2>
       <div class="label" id="disagreementNote"></div>
       <div id="disagreement"></div>
     </section>
-    <section class="card" style="margin-bottom:20px;">
+    <section class="card block">
       <h2>Operational Tiers</h2>
       <div id="tiers"></div>
+    </section>
+    <section class="card block">
+      <h2>Adaptive Rule Thresholds</h2>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Rule</th><th>Threshold</th><th>Basis</th></tr></thead>
+        <tbody id="heuristicThresholds"></tbody>
+      </table></div>
     </section>
     <section class="card">
       <h2>Highest Risk Events</h2>
       <div class="table-wrap"><table>
-        <thead><tr><th>Event</th><th>Time</th><th>Device</th><th>Domain</th><th>Query</th><th>Scores</th><th>Tier</th><th>Reasons</th></tr></thead>
+        <thead><tr><th>Event</th><th>Time</th><th>Device</th><th>Domain</th><th>Query</th><th>Scores</th><th>Tier</th><th>Rule evidence</th></tr></thead>
         <tbody id="events"></tbody>
       </table></div>
     </section>
@@ -341,6 +372,7 @@ def _dashboard_html() -> str:
       renderDisagreementNote(s);
       renderBars('disagreement', s.method_disagreement || []);
       renderBars('tiers', Object.entries(s.tier_counts || {}));
+      renderHeuristicThresholds(s.heuristic_thresholds || {});
     }
     function renderDisagreementNote(s) {
       const thresholds = s.tier_thresholds || {};
@@ -353,13 +385,29 @@ def _dashboard_html() -> str:
       const max = Math.max(...rows.map(r => r[1]), 1);
       document.getElementById(id).innerHTML = rows.map(r => `<div class="label">${escapeHtml(r[0])} (${r[1].toLocaleString()})</div><div class="bar"><span style="width:${100*r[1]/max}%"></span></div>`).join('');
     }
+    function renderHeuristicThresholds(thresholds) {
+      const rows = Object.values(thresholds).sort((a, b) => String(a.label).localeCompare(String(b.label)));
+      document.getElementById('heuristicThresholds').innerHTML = rows.map(item => {
+        const rate = item.rate_floor === null || item.rate_floor === undefined ? '' : `, rate guardrail ${escapeHtml(item.rate_floor)}`;
+        const percentile = `${Math.round(Number(item.percentile || 0) * 100)}th-percentile`;
+        const basis = `${percentile} threshold, floor ${escapeHtml(item.absolute_floor)}${rate}`;
+        return `<tr><td>${escapeHtml(item.label)}<br><span class="label">${escapeHtml(item.rule_id)}</span></td><td class="score">${escapeHtml(item.threshold)}</td><td>${basis}</td></tr>`;
+      }).join('');
+    }
+    function renderRuleEvidence(event) {
+      const contributions = event.rule_contributions || [];
+      if (!contributions.length) {
+        return (event.reasons || []).map(escapeHtml).join('<br>');
+      }
+      return contributions.map(item => `${escapeHtml(item.label || item.rule_id)}: ${escapeHtml(item.observed)} vs threshold ${escapeHtml(item.threshold)}`).join('<br>');
+    }
     function renderEvents(events) {
       document.getElementById('events').innerHTML = events.slice(0, 80).map(e => `<tr>
         <td>${escapeHtml(e.event_id)}</td><td>${escapeHtml(e.event_time)}</td><td>${escapeHtml(e.region)}<br>${escapeHtml(e.browser)} / ${escapeHtml(e.os)}</td>
         <td class="wrap">${escapeHtml(e.domain)}</td><td class="wrap">${escapeHtml(e.query)}</td>
         <td class="score bot">combined ${escapeHtml(e.combined_score)}<br>rules ${escapeHtml(e.heuristic_score)}<br>ml ${escapeHtml(e.ml_score)}</td>
         <td>${escapeHtml(e.operational_tier)}</td>
-        <td class="wrap">${(e.reasons || []).map(escapeHtml).join('<br>')}</td>
+        <td class="wrap">${renderRuleEvidence(e)}</td>
       </tr>`).join('');
     }
     let inputMode = 'upload';

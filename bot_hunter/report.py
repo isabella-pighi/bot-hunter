@@ -39,6 +39,13 @@ def _markdown(summary: dict[str, object]) -> str:
     quarantine_count = int(tier_counts.get("quarantine", 0))
     monitor_count = int(tier_counts.get("monitor", 0))
     thresholds = summary.get("tier_thresholds", {})
+    heuristic_threshold_lines = _heuristic_threshold_lines(
+        summary.get("heuristic_thresholds", {})
+    )
+    if not heuristic_threshold_lines:
+        heuristic_threshold_lines = (
+            "| Rule | Computed threshold | Basis |\n|---|---:|---|"
+        )
     heuristic_agreement = float(
         thresholds.get("suppress_agreement_heuristic_score", 0.62)
     )
@@ -52,6 +59,8 @@ def _markdown(summary: dict[str, object]) -> str:
     threshold = float(summary.get("threshold", 0.0))
     heuristic_flag_rate = float(summary.get("heuristic_flag_rate", 0.0))
     ml_tail_rate = float(summary.get("ml_tail_rate", 0.0))
+    total_events = f'{int(summary["total_events"]):,}'
+    bot_events = f'{int(summary["bot_events"]):,}'
     domain_weight = float(ml_feature_weights.get("log_domain_count", 1.0))
     country_weight = float(ml_feature_weights.get("log_country_count", 1.0))
     kp_weight = float(ml_feature_weights.get("log_kp_count", 1.0))
@@ -61,7 +70,8 @@ def _markdown(summary: dict[str, object]) -> str:
 
 ## 1. Executive Summary
 
-Bot Hunter analysed {int(summary["total_events"]):,} click events and selected {int(summary["bot_events"]):,} as likely bot traffic. That is {bot_rate:.2%} of the run.
+Bot Hunter analysed {total_events} click events.
+It selected {bot_events} as likely bot traffic, which is {bot_rate:.2%} of the run.
 
 This report should be read as evidence for review, not as proof of fraud for
 every individual event. The dataset does not include ground-truth labels, so the
@@ -125,8 +135,10 @@ The rules layer currently scores:
 - regular pseudo-session inter-arrival timing
 
 The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold
-with an absolute floor. This lets the rule adapt to the observed timer reuse in
-the batch while avoiding weak duplicate counts.
+with an absolute floor. The main repetition and concentration rules also use
+99th-percentile batch thresholds with the previous fixed count and total-rate
+cutoffs kept as guardrails. This lets the rules adapt to the observed
+population while avoiding weak duplicate counts in small runs.
 
 The `ct` rule, confirmed query repetition, and dense burst repetition rules are
 conjunctive. In practical terms, they require multiple signals to be present
@@ -157,15 +169,10 @@ continuous measurements because their observed cardinality is very low. Raw
 model uses `log_kp_count` and `log_sld_count` instead of raw numeric distances.
 The raw values are excluded from `ml_feature_names`.
 
-Feature-change validation used the regenerated `submission.tsv`,
+Threshold-change validation used the regenerated `submission.tsv`,
 `artifacts/summary.json`, `artifacts/features.tsv`,
-`artifacts/sample_events.json`, and report files under `docs/`. The targeted
-data and pipeline tests passed (`uv run pytest tests/test_data.py
-tests/test_pipeline.py`, 20 passed), the full test suite passed (`uv run
-pytest`, 44 passed), and Black passed for the touched Python files with the
-existing Python 3.12 target-version warning. Each generated report reflects the
-current run's artefacts; fixed before/after comparison metrics are kept in the
-static README task history rather than repeated in this template.
+`artifacts/sample_events.json`, and report files under `docs`. Targeted
+heuristic and pipeline tests passed (`uv run pytest tests/test_heuristics.py tests/test_pipeline.py`, 33 passed), the full test suite passed (`uv run pytest`, 46 passed), and Black passed for the touched Python files with the existing Python 3.12 target-version warning. Each generated report reflects the current run's artefacts; fixed before/after comparison metrics are kept in the static README task history rather than repeated in this template.
 
 ## 5. Thresholds And Decision Logic
 
@@ -183,6 +190,10 @@ model influence borderline cases.
 The heuristic override protects high-confidence, explainable rule hits. For
 example, a strongly repeated query/domain pattern with mechanical timing should
 not be missed only because the anomaly ranking moved after a feature change.
+
+Adaptive heuristic thresholds used in this run:
+
+{heuristic_threshold_lines}
 
 In this run:
 
@@ -286,7 +297,8 @@ The next useful improvements are:
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and
 `operational_tier`.
 
-This run selected {int(summary["bot_events"]):,} of {int(summary["total_events"]):,} events as likely bots ({bot_rate:.2%}).
+This run selected {bot_events} of {total_events} events as likely bots.
+That is {bot_rate:.2%} of the run.
 
 Operational split:
 
@@ -304,8 +316,9 @@ def _model_copy(ml_backend: str) -> tuple[str, str, str]:
     if ml_backend == "eif":
         return (
             "an Extended Isolation Forest anomaly model",
-            "Events isolated quickly by random hyperplane splits receive higher anomaly scores. "
-            "EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.",
+            "Events isolated quickly by random hyperplane splits receive higher "
+            "anomaly scores. EIF is the only production anomaly model; alternate "
+            "ML backends and supervised pilots have been removed.",
             "Extended Isolation Forest model",
         )
     return (
@@ -325,6 +338,27 @@ def _disagreement_lines(rows: object) -> str:
     )
 
 
+def _heuristic_threshold_lines(thresholds: object) -> str:
+    if not isinstance(thresholds, dict) or not thresholds:
+        return ""
+    rows = ["| Rule | Computed threshold | Basis |", "|---|---:|---|"]
+    for rule_id in sorted(thresholds):
+        details = thresholds[rule_id]
+        if not isinstance(details, dict):
+            continue
+        label = str(details.get("label", rule_id))
+        threshold = details.get("threshold", "")
+        percentile = float(details.get("percentile", 0.0))
+        absolute_floor = details.get("absolute_floor", "")
+        rate_floor = details.get("rate_floor")
+        percentile_label = f"{round(percentile * 100)}th-percentile"
+        basis = f"{percentile_label} threshold, floor {absolute_floor}"
+        if rate_floor is not None:
+            basis = f"{basis}, rate guardrail {rate_floor}"
+        rows.append(f"| {label} (`{rule_id}`) | {threshold} | {basis} |")
+    return "\n".join(rows)
+
+
 def _disagreement_count(rows: object, label: str) -> int:
     if not isinstance(rows, list):
         return 0
@@ -338,44 +372,85 @@ def _html(markdown: str) -> str:
     body = []
     in_list = False
     in_code = False
+    in_table = False
     for line in markdown.splitlines():
         if line.startswith("```"):
+            if in_table:
+                body.append("</tbody></table>")
+                in_table = False
             body.append("</pre>" if in_code else "<pre>")
             in_code = not in_code
             continue
         if in_code:
-            body.append(html.escape(line))
+            body.append(f"{html.escape(line)}\n")
             continue
         if line.startswith("# "):
+            if in_table:
+                body.append("</tbody></table>")
+                in_table = False
             body.append(f"<h1>{html.escape(line[2:])}</h1>")
         elif line.startswith("## "):
             if in_list:
                 body.append("</ul>")
                 in_list = False
+            if in_table:
+                body.append("</tbody></table>")
+                in_table = False
             body.append(f"<h2>{html.escape(line[3:])}</h2>")
         elif line.startswith("- "):
+            if in_table:
+                body.append("</tbody></table>")
+                in_table = False
             if not in_list:
                 body.append("<ul>")
                 in_list = True
             body.append(f"<li>{html.escape(line[2:])}</li>")
+        elif line.startswith("|") and line.endswith("|"):
+            if in_list:
+                body.append("</ul>")
+                in_list = False
+            cells = [cell.strip() for cell in line.strip("|").split("|")]
+            if all(cell.replace("-", "").replace(":", "") == "" for cell in cells):
+                continue
+            if not in_table:
+                rendered_cells = "".join(
+                    f"<th>{html.escape(cell)}</th>" for cell in cells
+                )
+                body.append(f"<table><thead><tr>{rendered_cells}</tr></thead><tbody>")
+                in_table = True
+            else:
+                rendered_cells = "".join(
+                    f"<td>{html.escape(cell)}</td>" for cell in cells
+                )
+                body.append(f"<tr>{rendered_cells}</tr>")
         elif line.strip():
             if in_list:
                 body.append("</ul>")
                 in_list = False
+            if in_table:
+                body.append("</tbody></table>")
+                in_table = False
             body.append(f"<p>{html.escape(line)}</p>")
     if in_list:
         body.append("</ul>")
+    if in_table:
+        body.append("</tbody></table>")
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <title>Bot Hunter Analysis Report</title>
   <style>
-    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.5; margin: 48px auto; max-width: 920px; color: #172026; }}
+    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5; margin: 48px auto; max-width: 920px; color: #172026; }}
     h1, h2 {{ line-height: 1.2; }}
     h1 {{ font-size: 34px; }}
     h2 {{ margin-top: 32px; border-top: 1px solid #d8dee4; padding-top: 20px; }}
     pre {{ background: #f6f8fa; padding: 16px; overflow: auto; border-radius: 6px; }}
+    table {{ width: 100%; border-collapse: collapse; margin: 14px 0 22px; }}
+    th, td {{ border-bottom: 1px solid #d8dee4; padding: 8px; text-align: left;
+      vertical-align: top; }}
+    th {{ color: #5f6b74; }}
   </style>
 </head>
 <body>{''.join(body)}</body>
@@ -416,9 +491,11 @@ def _write_simple_pdf(path: Path, text: str) -> None:
         )
         page_id = len(objects)
         page_ids.append(page_id)
-        objects.append(
-            f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents {content_id} 0 R >>".encode()
+        page_payload = (
+            f"<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] "
+            f"/Resources << /Font << /F1 3 0 R >> >> /Contents {content_id} 0 R >>"
         )
+        objects.append(page_payload.encode())
 
     kids = " ".join(f"{page_id} 0 R" for page_id in page_ids)
     objects[2] = f"<< /Type /Pages /Kids [{kids}] /Count {len(page_ids)} >>".encode()

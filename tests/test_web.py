@@ -39,23 +39,46 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert 'id="uploadInputPanel" class="input-panel"' in dashboard
         assert 'id="pathInputPanel" class="input-panel is-hidden"' in dashboard
         assert ".input-panel.is-hidden { display:none; }" in dashboard
-        assert 'id="inputPath" class="dataset-field" placeholder="/path/to/bot-hunter-dataset.tsv"' in dashboard
+        assert (
+            'id="inputPath" class="dataset-field" placeholder="/path/to/bot-hunter-dataset.tsv"'
+            in dashboard
+        )
         assert "Choose a local .tsv file to upload and analyze." in dashboard
-        assert "Use only when the TSV already exists on the machine running this dashboard." in dashboard
-        assert "Only the active mode is submitted; the other input is ignored regardless of its state." in dashboard
-        assert "inputMode === 'upload' ? await uploadAndRun(file) : await runPath(inputPath)" in dashboard
+        assert (
+            "Use only when the TSV already exists on the machine running this dashboard."
+            in dashboard
+        )
+        assert (
+            "Only the active mode is submitted; the other input is ignored regardless of its state."
+            in dashboard
+        )
+        assert (
+            "inputMode === 'upload' ? await uploadAndRun(file) : await runPath(inputPath)"
+            in dashboard
+        )
         assert "Choose a TSV file before running the pipeline." in dashboard
         assert "Enter a file path before running the pipeline." in dashboard
         assert 'id="mlBackend"' not in dashboard
         assert "Operational confidence" in dashboard
         assert "Method Disagreement" in dashboard
         assert 'id="disagreement"' in dashboard
+        assert "Adaptive Rule Thresholds" in dashboard
+        assert 'id="heuristicThresholds"' in dashboard
+        assert '<section class="card block">' in dashboard
+        assert 'style="margin-bottom' not in dashboard
+        assert "renderHeuristicThresholds(s.heuristic_thresholds || {})" in dashboard
+        assert "th-percentile" in dashboard
+        assert "threshold, floor" in dashboard
+        assert "% percentile" not in dashboard
+        assert "Rule evidence" in dashboard
         assert "method_disagreement || []" in dashboard
         assert "ML >= ${ml}" in dashboard
         assert "not measured accuracy" in dashboard
         assert "0.90 ML agreement" not in dashboard
 
-        features_page = urlopen(base_url + "/features", timeout=5).read().decode("utf-8")
+        features_page = (
+            urlopen(base_url + "/features", timeout=5).read().decode("utf-8")
+        )
         assert "Bot Hunter Features" in features_page
         assert "escapeHtml" in features_page
         assert 'id="nextButton"' in features_page
@@ -64,9 +87,13 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         report = urlopen(base_url + "/report", timeout=5).read().decode("utf-8")
         assert "<h1>Report</h1>" in report
 
-        payload = json.loads(urlopen(base_url + "/api/features?limit=1", timeout=5).read())
+        payload = json.loads(
+            urlopen(base_url + "/api/features?limit=1", timeout=5).read()
+        )
         assert payload["feature_names"] == ["log_domain_count", "log_ttc_seconds"]
-        assert payload["rows"] == [{"event_id": "evt_<script>", "features": [1.386294, 0.01]}]
+        assert payload["rows"] == [
+            {"event_id": "evt_<script>", "features": [1.386294, 0.01]}
+        ]
         assert payload["next_offset"] == 1
     finally:
         server.shutdown()
@@ -74,13 +101,18 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         thread.join(timeout=5)
 
 
-def test_web_upload_runs_pipeline_and_cleans_temp_file(monkeypatch, tmp_path: Path) -> None:
+def test_web_upload_runs_pipeline_and_cleans_temp_file(
+    monkeypatch, tmp_path: Path
+) -> None:
     calls = []
 
     def fake_run_pipeline(input_path, output_dir):
         path = Path(input_path)
         assert path.exists()
-        assert path.read_text(encoding="utf-8") == "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com\n"
+        assert (
+            path.read_text(encoding="utf-8")
+            == "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com\n"
+        )
         calls.append((path, output_dir))
         return {"total_events": 1, "ml_backend": "eif"}
 
@@ -94,9 +126,19 @@ def test_web_upload_runs_pipeline_and_cleans_temp_file(monkeypatch, tmp_path: Pa
     try:
         body, content_type = _multipart(
             {},
-            {"file": ("clicks.tsv", b"evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com\n")},
+            {
+                "file": (
+                    "clicks.tsv",
+                    b"evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t/ad_click?d=a.com\n",
+                )
+            },
         )
-        request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
+        request = Request(
+            base_url + "/upload",
+            data=body,
+            headers={"Content-Type": content_type},
+            method="POST",
+        )
         payload = json.loads(urlopen(request, timeout=5).read())
         assert payload == {"total_events": 1, "ml_backend": "eif"}
         assert len(calls) == 1
@@ -116,7 +158,12 @@ def test_web_upload_reports_missing_file(monkeypatch, tmp_path: Path) -> None:
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
         body, content_type = _multipart({}, {})
-        request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
+        request = Request(
+            base_url + "/upload",
+            data=body,
+            headers={"Content-Type": content_type},
+            method="POST",
+        )
         try:
             urlopen(request, timeout=5)
         except HTTPError as exc:
@@ -140,7 +187,12 @@ def test_web_upload_rejects_oversized_body(monkeypatch, tmp_path: Path) -> None:
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
         body, content_type = _multipart({}, {"file": ("clicks.tsv", b"too large")})
-        request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
+        request = Request(
+            base_url + "/upload",
+            data=body,
+            headers={"Content-Type": content_type},
+            method="POST",
+        )
         try:
             urlopen(request, timeout=5)
         except HTTPError as exc:
@@ -155,7 +207,9 @@ def test_web_upload_rejects_oversized_body(monkeypatch, tmp_path: Path) -> None:
         thread.join(timeout=5)
 
 
-def test_web_upload_reports_invalid_upload_and_cleans_temp_file(monkeypatch, tmp_path: Path) -> None:
+def test_web_upload_reports_invalid_upload_and_cleans_temp_file(
+    monkeypatch, tmp_path: Path
+) -> None:
     temp_paths = []
 
     def fake_run_pipeline(input_path, output_dir):
@@ -173,7 +227,12 @@ def test_web_upload_reports_invalid_upload_and_cleans_temp_file(monkeypatch, tmp
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
         body, content_type = _multipart({}, {"file": ("bad.tsv", b"bad row\n")})
-        request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
+        request = Request(
+            base_url + "/upload",
+            data=body,
+            headers={"Content-Type": content_type},
+            method="POST",
+        )
         try:
             urlopen(request, timeout=5)
         except HTTPError as exc:
@@ -237,7 +296,9 @@ def test_web_run_rejects_server_path_outside_root(monkeypatch, tmp_path: Path) -
         thread.join(timeout=5)
 
 
-def _multipart(fields: dict[str, str], files: dict[str, tuple[str, bytes]]) -> tuple[bytes, str]:
+def _multipart(
+    fields: dict[str, str], files: dict[str, tuple[str, bytes]]
+) -> tuple[bytes, str]:
     boundary = "----bot-hunter-test-boundary"
     chunks: list[bytes] = []
     for name, value in fields.items():
@@ -253,7 +314,10 @@ def _multipart(fields: dict[str, str], files: dict[str, tuple[str, bytes]]) -> t
         chunks.extend(
             [
                 f"--{boundary}\r\n".encode(),
-                f'Content-Disposition: form-data; name="{name}"; filename="{filename}"\r\n'.encode(),
+                (
+                    "Content-Disposition: form-data; "
+                    f'name="{name}"; filename="{filename}"\r\n'
+                ).encode(),
                 b"Content-Type: text/tab-separated-values\r\n\r\n",
                 content,
                 b"\r\n",

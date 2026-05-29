@@ -2,7 +2,8 @@
 
 ## 1. Executive Summary
 
-Bot Hunter analysed 149,239 click events and selected 3,731 as likely bot traffic. That is 2.50% of the run.
+Bot Hunter analysed 149,239 click events.
+It selected 3,731 as likely bot traffic, which is 2.50% of the run.
 
 This report should be read as evidence for review, not as proof of fraud for
 every individual event. The dataset does not include ground-truth labels, so the
@@ -35,16 +36,16 @@ combinations that a small rule set may not capture.
 
 The strongest explainable patterns in this run were:
 
-- repeated query: 3,467 events
-- repeated query/domain pair: 2,093 events
+- repeated query: 3,392 events
+- repeated query/domain pair: 2,086 events
 - confirmed query repetition: 2,023 events
-- same-second click burst: 1,904 events
-- heavy region/browser/OS cluster: 1,866 events
-- very short query: 1,816 events
-- high-volume clicked domain: 1,742 events
-- concentrated ct context: 1,142 events
-- dense burst repetition cluster: 549 events
-- moderately long time-to-click: 458 events
+- very short query: 1,802 events
+- high-volume clicked domain: 1,737 events
+- heavy region/browser/OS cluster: 1,181 events
+- concentrated ct context: 903 events
+- same-second click burst: 674 events
+- moderately long time-to-click: 429 events
+- dense burst repetition cluster: 236 events
 
 Example interpretation: a single repeated query is not enough to prove bot
 traffic. It becomes more concerning when it appears with a repeated clicked
@@ -75,8 +76,10 @@ The rules layer currently scores:
 - regular pseudo-session inter-arrival timing
 
 The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold
-with an absolute floor. This lets the rule adapt to the observed timer reuse in
-the batch while avoiding weak duplicate counts.
+with an absolute floor. The main repetition and concentration rules also use
+99th-percentile batch thresholds with the previous fixed count and total-rate
+cutoffs kept as guardrails. This lets the rules adapt to the observed
+population while avoiding weak duplicate counts in small runs.
 
 The `ct` rule, confirmed query repetition, and dense burst repetition rules are
 conjunctive. In practical terms, they require multiple signals to be present
@@ -107,22 +110,17 @@ continuous measurements because their observed cardinality is very low. Raw
 model uses `log_kp_count` and `log_sld_count` instead of raw numeric distances.
 The raw values are excluded from `ml_feature_names`.
 
-Feature-change validation used the regenerated `submission.tsv`,
+Threshold-change validation used the regenerated `submission.tsv`,
 `artifacts/summary.json`, `artifacts/features.tsv`,
-`artifacts/sample_events.json`, and report files under `docs/`. The targeted
-data and pipeline tests passed (`uv run pytest tests/test_data.py
-tests/test_pipeline.py`, 20 passed), the full test suite passed (`uv run
-pytest`, 44 passed), and Black passed for the touched Python files with the
-existing Python 3.12 target-version warning. Each generated report reflects the
-current run's artefacts; fixed before/after comparison metrics are kept in the
-static README task history rather than repeated in this template.
+`artifacts/sample_events.json`, and report files under `docs`. Targeted
+heuristic and pipeline tests passed (`uv run pytest tests/test_heuristics.py tests/test_pipeline.py`, 33 passed), the full test suite passed (`uv run pytest`, 46 passed), and Black passed for the touched Python files with the existing Python 3.12 target-version warning. Each generated report reflects the current run's artefacts; fixed before/after comparison metrics are kept in the static README task history rather than repeated in this template.
 
 ## 5. Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
 ```text
-combined_score > 0.610499
+combined_score > 0.568533
 or heuristic_score >= 0.62
 ```
 
@@ -134,9 +132,21 @@ The heuristic override protects high-confidence, explainable rule hits. For
 example, a strongly repeated query/domain pattern with mechanical timing should
 not be missed only because the anomaly ranking moved after a feature change.
 
+Adaptive heuristic thresholds used in this run:
+
+| Rule | Computed threshold | Basis |
+|---|---:|---|
+| Concentrated ct context (`concentrated_ct_context`) | 29013 | 99th-percentile threshold, floor 1000, rate guardrail 14923 |
+| Heavy region/browser/OS cluster (`heavy_device_cluster`) | 43674 | 99th-percentile threshold, floor 600, rate guardrail 5223 |
+| High-volume clicked domain (`high_volume_domain`) | 2238 | 99th-percentile threshold, floor 200, rate guardrail 2238 |
+| Repeated query (`repeat_query`) | 149 | 99th-percentile threshold, floor 12, rate guardrail 149 |
+| Repeated query/domain pair (`repeat_query_domain`) | 37 | 99th-percentile threshold, floor 4, rate guardrail 37 |
+| Reused exact time-to-click (`reused_ttc`) | 40 | 99th-percentile threshold, floor 40 |
+| Same-second click burst (`same_second_burst`) | 6 | 99th-percentile threshold, floor 4 |
+
 In this run:
 
-- heuristic-only flag rate: 1.40%
+- heuristic-only flag rate: 1.36%
 - ML agreement-tail reference rate: 2.50%
 - operational confidence estimate: 75%
 
@@ -145,14 +155,14 @@ In this run:
 Agreement between the rules layer and the anomaly model is useful review
 evidence. It is not statistical validation, because there are no labels.
 
-At the ML agreement threshold, this run has 1,738 `Heuristic + ML` events and 1,993 `ML only` events.
+At the ML agreement threshold, this run has 1,726 `Heuristic + ML` events and 2,005 `ML only` events.
 
 Method disagreement (`ml_score >= 0.975`):
 
-- Heuristic + ML: 1,738 events
-- Heuristic only: 352 events
-- ML only: 1,993 events
-- Neither strong: 145,156 events
+- Heuristic + ML: 1,726 events
+- Heuristic only: 311 events
+- ML only: 2,005 events
+- Neither strong: 145,197 events
 
 Example interpretation:
 
@@ -166,8 +176,8 @@ Example interpretation:
 
 Bot Hunter separates prediction from action by assigning operational tiers:
 
-- suppress: 1,951 events
-- quarantine: 1,780 events
+- suppress: 1,866 events
+- quarantine: 1,865 events
 - monitor: 145,508 events
 
 Recommended use:
@@ -241,12 +251,13 @@ The next useful improvements are:
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and
 `operational_tier`.
 
-This run selected 3,731 of 149,239 events as likely bots (2.50%).
+This run selected 3,731 of 149,239 events as likely bots.
+That is 2.50% of the run.
 
 Operational split:
 
-- suppress: 1,951
-- quarantine: 1,780
+- suppress: 1,866
+- quarantine: 1,865
 - monitor: 145,508
 
 Use the report and dashboard as review aids. They explain why traffic was

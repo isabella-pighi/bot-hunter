@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+from dataclasses import asdict, dataclass
 from math import ceil, sqrt
 
 from .data import ClickEvent, RuleContribution
@@ -20,16 +21,40 @@ CONFIRMED_QUERY_REPETITION_WEIGHT = 0.12
 COUNTRY_CONTEXT_MIN_COUNT = 1_000
 COUNTRY_CONTEXT_MIN_RATE = 0.10
 COUNTRY_CONTEXT_WEIGHT = 0.06
+ADAPTIVE_COUNT_PERCENTILE = 0.99
+SAME_SECOND_COUNT_FLOOR = 4
 
 
-def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> None:
+@dataclass(frozen=True)
+class AdaptiveThreshold:
+    """Threshold selected from the current batch with fixed guardrails."""
+
+    rule_id: str
+    label: str
+    threshold: int
+    threshold_mode: str
+    percentile: float
+    absolute_floor: int
+    rate_floor: int | None
+    selected_from: str
+
+    def to_dict(self) -> dict[str, int | float | str | None]:
+        return asdict(self)
+
+
+def apply_heuristics(
+    events: list[ClickEvent],
+    counters: dict[str, Counter],
+) -> dict[str, dict[str, int | float | str | None]]:
     total = max(len(events), 1)
-    domain_hi = max(200, int(total * 0.015))
-    query_hi = max(12, int(total * 0.001))
-    query_domain_hi = max(4, int(total * 0.00025))
-    device_hi = max(600, int(total * 0.035))
-    country_hi = max(COUNTRY_CONTEXT_MIN_COUNT, int(total * COUNTRY_CONTEXT_MIN_RATE))
-    ttc_hi = _adaptive_ttc_reuse_threshold(counters["ttc"])
+    threshold_summary = _adaptive_thresholds(counters, total)
+    domain_hi = int(threshold_summary["high_volume_domain"]["threshold"])
+    query_hi = int(threshold_summary["repeat_query"]["threshold"])
+    query_domain_hi = int(threshold_summary["repeat_query_domain"]["threshold"])
+    device_hi = int(threshold_summary["heavy_device_cluster"]["threshold"])
+    same_second_hi = int(threshold_summary["same_second_burst"]["threshold"])
+    country_hi = int(threshold_summary["concentrated_ct_context"]["threshold"])
+    ttc_hi = int(threshold_summary["reused_ttc"]["threshold"])
     regular_interarrival = _regular_interarrival_contributions(events)
     country_counts = counters.get("country", Counter())
 
@@ -51,7 +76,8 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     0.32,
                     qd_count,
                     query_domain_hi,
-                    "query_domain_count >= threshold",
+                    "query_domain_count >= adaptive percentile threshold",
+                    "adaptive_percentile",
                 )
             )
 
@@ -68,13 +94,16 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     0.18,
                     q_count,
                     query_hi,
-                    "query_count >= threshold",
+                    "query_count >= adaptive percentile threshold",
+                    "adaptive_percentile",
                 )
             )
 
         if qd_count >= query_domain_hi and q_count >= query_hi:
             score += CONFIRMED_QUERY_REPETITION_WEIGHT
-            reason = f"confirmed query repetition (query/domain {qd_count}, query {q_count})"
+            reason = (
+                f"confirmed query repetition (query/domain {qd_count}, query {q_count})"
+            )
             reasons.append(reason)
             contributions.append(
                 _contribution(
@@ -84,7 +113,11 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     CONFIRMED_QUERY_REPETITION_WEIGHT,
                     f"query_domain={qd_count}; query={q_count}",
                     f"query_domain>={query_domain_hi}; query>={query_hi}",
-                    "query_domain_count >= threshold and query_count >= threshold",
+                    (
+                        "query_domain_count >= adaptive percentile threshold "
+                        "and query_count >= adaptive percentile threshold"
+                    ),
+                    "adaptive_percentile",
                 )
             )
 
@@ -101,7 +134,8 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     0.10,
                     d_count,
                     domain_hi,
-                    "domain_count >= threshold",
+                    "domain_count >= adaptive percentile threshold",
+                    "adaptive_percentile",
                 )
             )
 
@@ -118,7 +152,8 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     0.08,
                     device_count,
                     device_hi,
-                    "device_count >= threshold",
+                    "device_count >= adaptive percentile threshold",
+                    "adaptive_percentile",
                 )
             )
 
@@ -144,7 +179,7 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
             )
 
         same_second = counters["second"][event.event_time]
-        if same_second >= 4:
+        if same_second >= same_second_hi:
             score += 0.12
             reason = f"{same_second} clicks in the same second"
             reasons.append(reason)
@@ -155,8 +190,9 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     reason,
                     0.12,
                     same_second,
-                    4,
-                    "same_second_count >= threshold",
+                    same_second_hi,
+                    "same_second_count >= adaptive percentile threshold",
+                    "adaptive_percentile",
                 )
             )
 
@@ -170,7 +206,8 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
             repeated_label = "query/domain" if qd_count >= query_domain_hi else "query"
             reason = (
                 "dense burst repetition cluster "
-                f"(device {device_count}, same-second {same_second}, {repeated_label} {repeated_observed})"
+                f"(device {device_count}, same-second {same_second}, "
+                f"{repeated_label} {repeated_observed})"
             )
             reasons.append(reason)
             contributions.append(
@@ -179,12 +216,22 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                     "Dense burst repetition cluster",
                     reason,
                     DENSE_BURST_REPETITION_WEIGHT,
-                    f"device={device_count}; same_second={same_second}; {repeated_label}={repeated_observed}",
-                    f"device>={device_hi}; same_second>={DENSE_BURST_REPETITION_MIN_SAME_SECOND}; repeated_query_pattern",
                     (
-                        "device_count >= total-rate threshold and same_second_count >= 5 "
-                        "and (query_count >= threshold or query_domain_count >= threshold)"
+                        f"device={device_count}; same_second={same_second}; "
+                        f"{repeated_label}={repeated_observed}"
                     ),
+                    (
+                        f"device>={device_hi}; "
+                        f"same_second>={DENSE_BURST_REPETITION_MIN_SAME_SECOND}; "
+                        "repeated_query_pattern"
+                    ),
+                    (
+                        "device_count >= adaptive percentile threshold "
+                        "and same_second_count >= 5 and "
+                        "(query_count >= adaptive percentile threshold or "
+                        "query_domain_count >= adaptive percentile threshold)"
+                    ),
+                    "adaptive_percentile",
                 )
             )
 
@@ -225,10 +272,13 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
                         "device_or_same_second_cluster"
                     ),
                     (
-                        "ct count >= total-rate threshold and "
-                        "(query_count >= threshold or query_domain_count >= threshold) "
-                        "and (device_count >= threshold or same_second_count >= 5)"
+                        "ct count >= adaptive percentile threshold and "
+                        "(query_count >= adaptive percentile threshold or "
+                        "query_domain_count >= adaptive percentile threshold) "
+                        "and (device_count >= adaptive percentile threshold "
+                        "or same_second_count >= 5)"
                     ),
+                    "adaptive_percentile",
                 )
             )
 
@@ -304,12 +354,123 @@ def apply_heuristics(events: list[ClickEvent], counters: dict[str, Counter]) -> 
         event.heuristic_score = min(score, 1.0)
         event.reasons = reasons
         event.rule_contributions = contributions
+    return threshold_summary
 
 
-def _regular_interarrival_contributions(events: list[ClickEvent]) -> dict[int, RuleContribution]:
+def _adaptive_thresholds(
+    counters: dict[str, Counter],
+    total: int,
+) -> dict[str, dict[str, int | float | str | None]]:
+    domain = _adaptive_count_threshold(
+        counters["domain"],
+        rule_id="high_volume_domain",
+        label="High-volume clicked domain",
+        absolute_floor=200,
+        rate_floor=int(total * 0.015),
+    )
+    query = _adaptive_count_threshold(
+        counters["query"],
+        rule_id="repeat_query",
+        label="Repeated query",
+        absolute_floor=12,
+        rate_floor=int(total * 0.001),
+    )
+    query_domain = _adaptive_count_threshold(
+        counters["query_domain"],
+        rule_id="repeat_query_domain",
+        label="Repeated query/domain pair",
+        absolute_floor=4,
+        rate_floor=int(total * 0.00025),
+    )
+    device = _adaptive_count_threshold(
+        counters["device"],
+        rule_id="heavy_device_cluster",
+        label="Heavy region/browser/OS cluster",
+        absolute_floor=600,
+        rate_floor=int(total * 0.035),
+    )
+    same_second = _adaptive_count_threshold(
+        counters.get("second", Counter()),
+        rule_id="same_second_burst",
+        label="Same-second click burst",
+        absolute_floor=SAME_SECOND_COUNT_FLOOR,
+        rate_floor=None,
+    )
+    country = _adaptive_count_threshold(
+        Counter(
+            {
+                country: count
+                for country, count in counters.get("country", Counter()).items()
+                if country
+            }
+        ),
+        rule_id="concentrated_ct_context",
+        label="Concentrated ct context",
+        absolute_floor=COUNTRY_CONTEXT_MIN_COUNT,
+        rate_floor=int(total * COUNTRY_CONTEXT_MIN_RATE),
+    )
+    ttc = _adaptive_count_threshold(
+        Counter(
+            {
+                ttc: count
+                for ttc, count in counters["ttc"].items()
+                if isinstance(ttc, int) and ttc >= 0
+            }
+        ),
+        rule_id="reused_ttc",
+        label="Reused exact time-to-click",
+        absolute_floor=TTC_REUSE_COUNT_FLOOR,
+        rate_floor=None,
+        percentile=TTC_REUSE_COUNT_PERCENTILE,
+    )
+    return {
+        item.rule_id: item.to_dict()
+        for item in (query_domain, query, domain, device, same_second, country, ttc)
+    }
+
+
+def _adaptive_count_threshold(
+    counts: Counter,
+    *,
+    rule_id: str,
+    label: str,
+    absolute_floor: int,
+    rate_floor: int | None,
+    percentile: float = ADAPTIVE_COUNT_PERCENTILE,
+) -> AdaptiveThreshold:
+    percentile_threshold = _counter_percentile(counts, percentile)
+    guardrails = [absolute_floor, percentile_threshold]
+    if rate_floor is not None:
+        guardrails.append(rate_floor)
+    threshold = max(guardrails)
+    return AdaptiveThreshold(
+        rule_id=rule_id,
+        label=label,
+        threshold=threshold,
+        threshold_mode="adaptive_percentile",
+        percentile=percentile,
+        absolute_floor=absolute_floor,
+        rate_floor=rate_floor,
+        selected_from="current batch counts with fixed guardrails",
+    )
+
+
+def _counter_percentile(counts: Counter, percentile: float) -> int:
+    values = sorted(count for count in counts.values() if count > 0)
+    if not values:
+        return 0
+    percentile_idx = max(0, ceil(len(values) * percentile) - 1)
+    return int(values[percentile_idx])
+
+
+def _regular_interarrival_contributions(
+    events: list[ClickEvent],
+) -> dict[int, RuleContribution]:
     groups: dict[tuple[str, str, str, str, str], list[ClickEvent]] = defaultdict(list)
     for event in events:
-        groups[(event.region, event.browser, event.os, event.query, event.domain)].append(event)
+        groups[
+            (event.region, event.browser, event.os, event.query, event.domain)
+        ].append(event)
 
     contributions: dict[int, RuleContribution] = {}
     for group_events in groups.values():
@@ -346,14 +507,6 @@ def _regular_interarrival_contributions(events: list[ClickEvent]) -> dict[int, R
         for event in group_events:
             contributions[id(event)] = contribution
     return contributions
-
-
-def _adaptive_ttc_reuse_threshold(ttc_counts: Counter) -> int:
-    counts = sorted(count for ttc, count in ttc_counts.items() if ttc >= 0 and count > 0)
-    if not counts:
-        return TTC_REUSE_COUNT_FLOOR
-    percentile_idx = max(0, ceil(len(counts) * TTC_REUSE_COUNT_PERCENTILE) - 1)
-    return max(TTC_REUSE_COUNT_FLOOR, counts[percentile_idx])
 
 
 def _contribution(

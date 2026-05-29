@@ -196,7 +196,7 @@ combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
 An event is flagged when either:
 
 ```text
-combined_score >= run-specific 97.5th-percentile cutoff
+combined_score > run-specific 97.5th-percentile cutoff
 or heuristic_score >= 0.62
 ```
 
@@ -225,6 +225,16 @@ The rules layer captures patterns that are easy to explain:
 | exact time-to-click reuse | Programmatic systems often reuse deterministic delays |
 | heavy region/browser/OS cluster | Bots often share an environment footprint |
 | concentrated `ct` with repetition and clustering | Country-like concentration can support a bot finding when paired with stronger mechanical signals |
+
+Count-based rules use adaptive thresholds for each run. Bot Hunter computes the
+99th percentile over counts per unique value, such as counts per query/domain
+pair or per clicked domain, then keeps the larger of that percentile and the
+existing fixed guardrails. For the high-volume rules, the previous total-rate
+cutoff is also retained as a guardrail. This keeps small files stable while
+reducing the chance that a larger batch is over-flagged only because the raw
+traffic volume increased. The computed rule thresholds are stored in
+`artifacts/summary.json` under `heuristic_thresholds` and are shown in the
+report and dashboard.
 
 The anomaly layer captures combinations. A single feature value may look
 ordinary, but the combination can still be suspicious. For example, a click may
@@ -274,28 +284,30 @@ are `log_domain_count`, `log_query_count`, `log_query_domain_count`,
 `log_country_count`, `log_ttc_seconds`, `is_sub_200ms_click`, and
 `query_entropy`, all at `0.50`; unlisted ML features use `1.00`.
 
-The implementation was checked with the same commands used for the feature
-change:
+The current implementation was checked with the following commands:
 
 | Check | Result |
 |---|---|
-| `uv run pytest tests/test_data.py tests/test_pipeline.py` | 20 passed |
-| `uv run pytest` | 44 passed |
-| `uv run black --check bot_hunter/data.py bot_hunter/report.py tests/test_data.py tests/test_pipeline.py` | passed with the existing Python 3.12 target-version warning |
+| `uv run pytest tests/test_heuristics.py tests/test_pipeline.py` | 33 passed |
+| `uv run pytest` | 46 passed |
+| `uv run black --check bot_hunter/heuristics.py bot_hunter/pipeline.py bot_hunter/report.py bot_hunter/web.py tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py` | passed with the existing Python 3.12 target-version warning |
 
 The full EIF run regenerated `submission.tsv`, `artifacts/summary.json`,
 `artifacts/features.tsv`, `artifacts/sample_events.json`, and the Markdown,
-HTML, and PDF reports under `docs/`. Compared with the previous raw `kp`/`sld`
-ML representation, the selected bot count stayed at `3,731`. The run-specific
-threshold moved from `0.6068` to `0.6105`, the operational precision estimate
-moved from `0.7253` to `0.7512`, and 206 `is_bot` decisions plus 261 operational tiers
-changed. These figures are comparison notes for this unlabelled batch, not
-measured fraud accuracy.
+HTML, and PDF reports under `docs/`. In the current run it selected `3,731`
+of `149,239` events. The run-specific combined-score threshold is `0.5685`,
+and the operational precision estimate is `0.7454`. The operational split is
+`1,866` suppress, `1,865` quarantine, and `145,508` monitor. These figures
+describe this unlabelled batch; they are not measured fraud accuracy.
 
-| Comparison field | Before raw ML values | After aggregate counts |
-|---|---:|---:|
-| `suppress` / `quarantine` / `monitor` | 1,966 / 1,765 / 145,508 | 1,951 / 1,780 / 145,508 |
-| `Heuristic + ML` / `Heuristic only` / `ML only` / `Neither strong` | 1,478 / 612 / 2,253 / 144,896 | 1,738 / 352 / 1,993 / 145,156 |
+Example adaptive thresholds from the current run:
+
+| Rule | Computed threshold | Guardrail context |
+|---|---:|---|
+| Repeated query/domain pair | 37 | 99th percentile with floor 4 and rate guardrail 37 |
+| Heavy region/browser/OS cluster | 43,674 | 99th percentile with floor 600 and rate guardrail 5,223 |
+| Same-second click burst | 6 | 99th percentile with floor 4 |
+| Concentrated `ct` context | 29,013 | 99th percentile with floor 1,000 and rate guardrail 14,923 |
 
 ### Probability Perspective
 

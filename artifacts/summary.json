@@ -3,10 +3,10 @@
   "total_events": 149239,
   "bot_events": 3731,
   "bot_rate": 0.025000167516533882,
-  "threshold": 0.6104986290355003,
-  "heuristic_flag_rate": 0.01400438223252635,
+  "threshold": 0.5685334298235034,
+  "heuristic_flag_rate": 0.013649247180696735,
   "ml_tail_rate": 0.025000167516533882,
-  "estimated_precision": 0.7512007504690431,
+  "estimated_precision": 0.7453846153846153,
   "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
@@ -67,19 +67,19 @@
   "method_disagreement": [
     [
       "Heuristic + ML",
-      1738
+      1726
     ],
     [
       "Heuristic only",
-      352
+      311
     ],
     [
       "ML only",
-      1993
+      2005
     ],
     [
       "Neither strong",
-      145156
+      145197
     ]
   ],
   "tier_thresholds": {
@@ -90,51 +90,123 @@
     "quarantine": "is_bot == 1 and suppress conditions are not met",
     "monitor": "is_bot == 0"
   },
+  "heuristic_thresholds": {
+    "repeat_query_domain": {
+      "rule_id": "repeat_query_domain",
+      "label": "Repeated query/domain pair",
+      "threshold": 37,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 4,
+      "rate_floor": 37,
+      "selected_from": "current batch counts with fixed guardrails"
+    },
+    "repeat_query": {
+      "rule_id": "repeat_query",
+      "label": "Repeated query",
+      "threshold": 149,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 12,
+      "rate_floor": 149,
+      "selected_from": "current batch counts with fixed guardrails"
+    },
+    "high_volume_domain": {
+      "rule_id": "high_volume_domain",
+      "label": "High-volume clicked domain",
+      "threshold": 2238,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 200,
+      "rate_floor": 2238,
+      "selected_from": "current batch counts with fixed guardrails"
+    },
+    "heavy_device_cluster": {
+      "rule_id": "heavy_device_cluster",
+      "label": "Heavy region/browser/OS cluster",
+      "threshold": 43674,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 600,
+      "rate_floor": 5223,
+      "selected_from": "current batch counts with fixed guardrails"
+    },
+    "same_second_burst": {
+      "rule_id": "same_second_burst",
+      "label": "Same-second click burst",
+      "threshold": 6,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 4,
+      "rate_floor": null,
+      "selected_from": "current batch counts with fixed guardrails"
+    },
+    "concentrated_ct_context": {
+      "rule_id": "concentrated_ct_context",
+      "label": "Concentrated ct context",
+      "threshold": 29013,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 1000,
+      "rate_floor": 14923,
+      "selected_from": "current batch counts with fixed guardrails"
+    },
+    "reused_ttc": {
+      "rule_id": "reused_ttc",
+      "label": "Reused exact time-to-click",
+      "threshold": 40,
+      "threshold_mode": "adaptive_percentile",
+      "percentile": 0.99,
+      "absolute_floor": 40,
+      "rate_floor": null,
+      "selected_from": "current batch counts with fixed guardrails"
+    }
+  },
   "tier_counts": {
-    "suppress": 1951,
-    "quarantine": 1780,
+    "suppress": 1866,
+    "quarantine": 1865,
     "monitor": 145508
   },
   "top_reasons": [
     [
       "repeated query",
-      3467
+      3392
     ],
     [
       "repeated query/domain pair",
-      2093
+      2086
     ],
     [
       "confirmed query repetition",
       2023
     ],
     [
-      "same-second click burst",
-      1904
-    ],
-    [
-      "heavy region/browser/OS cluster",
-      1866
-    ],
-    [
       "very short query",
-      1816
+      1802
     ],
     [
       "high-volume clicked domain",
-      1742
+      1737
+    ],
+    [
+      "heavy region/browser/OS cluster",
+      1181
     ],
     [
       "concentrated ct context",
-      1142
+      903
     ],
     [
-      "dense burst repetition cluster",
-      549
+      "same-second click burst",
+      674
     ],
     [
       "moderately long time-to-click",
-      458
+      429
+    ],
+    [
+      "dense burst repetition cluster",
+      236
     ]
   ],
   "top_domains": [
@@ -239,28 +311,28 @@
   ],
   "bot_regions": [
     [
-      "Earth",
-      1826
+      "Mars",
+      1856
     ],
     [
-      "Mars",
-      1789
+      "Earth",
+      1697
     ],
     [
       "Mercury",
-      38
+      53
     ],
     [
       "Saturn",
-      31
+      45
     ],
     [
       "Venus",
-      28
+      44
     ],
     [
       "Jupiter",
-      19
+      36
     ]
   ]
 }
