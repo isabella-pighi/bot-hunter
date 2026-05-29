@@ -134,6 +134,8 @@ The human owner defines task goals, accepts or rejects tradeoffs, approves exter
 
 The orchestrator coordinates the team. It must not implement code, edit application files, write tests, refactor, or directly fix reviewer findings. Implementation belongs to the coder. Review belongs to the reviewer.
 
+All task execution must be delegated through HCOM to the specialist coder/reviewer pair(s). The orchestrator must not perform task work on its own, must not self-assign implementation, and must not advance a task until the relevant reviewer has responded to the coder's handoff. If a task touches both domains, route it to both specialist pairs and wait for both reviewer responses before committing.
+
 The orchestrator's authority is:
 
 - Process ownership.
@@ -151,6 +153,7 @@ The orchestrator must:
 - Own git commits and pushes once coder work has passed review or the human owner has waived remaining findings.
 - Before committing, inspect `git status`, confirm unrelated changes are not included, and summarize exactly what will be committed.
 - Never commit or push code that the reviewer has rejected unless the human owner explicitly instructs it to do so.
+- Never perform implementation, testing, editing, or review work yourself; only coordinate the team and manage the workflow.
 - Keep the process lightweight for low-risk changes.
 
 The orchestrator should not silently overwrite any agent's work.
