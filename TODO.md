@@ -212,26 +212,33 @@ botnet command and control categories should usually matter more than a broad
 - Add an allowlist stage so legitimate domains can be protected from stale or
   overly broad reputation signals.
 
-### 10. Add Richer Categorical Encodings
+### 10. Replace Raw `kp` And `sld` With Aggregate Count Features
 
-The current model uses aggregate count features for categorical fields such as
-region, browser, OS, and country. More direct encodings may help the anomaly
-model understand population shape.
+The current model already uses aggregate count features for categorical URL
+parameters such as `ct`. That treatment asks a useful question: "how common is
+this parameter value in the current batch?"
 
-`kp` and `sld` should be included in this work. Although they are parsed as
-numbers today, their observed cardinality is low enough that they should be
-treated as categorical-style codes rather than continuous measurements. The
-recommended representation is bounded categorical indicators, with lower model
-weights than broad behavioural features: `kp` at `0.50` and `sld` at `0.25`.
+`kp` and `sld` are currently parsed as raw numeric values, but their observed
+cardinality is very low. Treating them as continuous measurements may imply a
+distance or ordering that is not meaningful. A better representation is to treat
+them like other low-cardinality URL parameters and use aggregate count features:
+`log_kp_count` and `log_sld_count`.
+
+Example: if `kp=1` appears rarely but has a higher flagged-event rate, the
+model should learn that the value belongs to an unusual batch segment. It should
+not assume that the numeric distance between `kp=-2`, `kp=-1`, and `kp=1` is
+meaningful.
 
 **Proposed work:**
 
-- Add deterministic bounded encodings for region, browser, OS, country, and
-  future traffic-source fields.
-- Replace raw `kp` and `sld` ML values with bounded categorical indicators.
-- Down-weight `kp` and `sld` to `0.50` and `0.25`, respectively, unless future
-  validation shows they deserve stronger influence.
-- Avoid high-cardinality encodings that make artefacts difficult to inspect.
+- Add `kp` and `sld` counters during feature building.
+- Replace raw ML values for `kp` and `sld` with `log_kp_count` and
+  `log_sld_count`.
+- Keep raw `kp` and `sld` available for audit if useful, but do not treat them
+  as continuous ML features.
+- Down-weight the resulting aggregate features to `0.50` for `log_kp_count`
+  and `0.25` for `log_sld_count`, unless future validation shows they deserve
+  stronger influence.
 - Compare results before making the change production default.
 
 ### 11. Calibrate Thresholds Against Historical Batches
