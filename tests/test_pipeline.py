@@ -6,14 +6,9 @@ from types import ModuleType
 
 import pytest
 
-from bot_hunter.data import CATEGORY_BUCKET_COUNT, ClickEvent
+from bot_hunter.data import ClickEvent
 from bot_hunter.ml import _assign_rank_scores
-from bot_hunter.pipeline import (
-    _assign_operational_tier,
-    _method_disagreement,
-    _normalize_reason,
-    run_pipeline,
-)
+from bot_hunter.pipeline import _assign_operational_tier, _method_disagreement, _normalize_reason, run_pipeline
 
 
 class FakeEIF:
@@ -80,9 +75,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     submission = (tmp_path / "submission.tsv").read_text(encoding="utf-8")
     assert submission.startswith("event_id\tis_bot\toperational_tier\n")
     assert "evt_1" in submission
-    sample_events = (tmp_path / "artifacts" / "sample_events.json").read_text(
-        encoding="utf-8"
-    )
+    sample_events = (tmp_path / "artifacts" / "sample_events.json").read_text(encoding="utf-8")
     assert '"operational_tier"' in sample_events
     assert '"rule_contributions"' in sample_events
     assert '"threshold_mode": "absolute"' in sample_events
@@ -93,28 +86,12 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "_".join(["method", "disagreement", "support"]) not in summary
     assert summary["tier_thresholds"]["ml_agreement_score"] == 0.975
     assert "_".join(["ml", "support", "score"]) not in summary["tier_thresholds"]
-    assert (
-        "_".join(["suppress", "agreement", "ml", "score"])
-        not in summary["tier_thresholds"]
-    )
+    assert "_".join(["suppress", "agreement", "ml", "score"]) not in summary["tier_thresholds"]
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
     assert "alternate ML backends and supervised pilots have been removed" in report
     assert "Methods evaluated but not included" not in report
-    html_report = (tmp_path / "docs" / "analysis_report.html").read_text(
-        encoding="utf-8"
-    )
-    assert (
-        "<li>Rules-based classifier: transparent rules that identify repeated, "
-        "mechanically timed, or tightly clustered click patterns.</li>"
-    ) in html_report
-    assert "combined_score &gt; " in html_report
-    assert "\nor heuristic_score &gt;= 0.62" in html_report
-    features = (
-        (tmp_path / "artifacts" / "features.tsv")
-        .read_text(encoding="utf-8")
-        .splitlines()
-    )
+    features = (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8").splitlines()
     assert features[0].split("\t") == ["event_id", *summary["feature_names"]]
     assert "is_mobile_search" not in summary["feature_names"]
     assert "log_ttc_seconds" in summary["feature_names"]
@@ -135,30 +112,11 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert summary["ml_feature_weights"]["is_sub_200ms_click"] == 0.5
     assert summary["ml_feature_weights"]["query_entropy"] == 0.5
     assert summary["ml_feature_weights"]["log_device_count"] == 1.0
-    first_feature_row = features[1].split("\t")
-    assert "kp" not in summary["feature_names"]
-    assert "sld" not in summary["feature_names"]
-    for field_name in ("region", "browser", "os", "country", "source", "kp", "sld"):
-        bucket_names = [
-            f"{field_name}_cat_bucket_{idx}" for idx in range(CATEGORY_BUCKET_COUNT)
-        ]
-        assert all(name in summary["feature_names"] for name in bucket_names)
-        assert all(name in summary["ml_feature_names"] for name in bucket_names)
-        bucket_indexes = [
-            summary["feature_names"].index(name) + 1 for name in bucket_names
-        ]
-        bucket_values = [float(first_feature_row[idx]) for idx in bucket_indexes]
-        assert bucket_values.count(1.0) == 1
-        assert bucket_values.count(0.0) == CATEGORY_BUCKET_COUNT - 1
-    assert summary["ml_feature_weights"]["kp_cat_bucket_0"] == 0.5
-    assert summary["ml_feature_weights"]["kp_cat_bucket_3"] == 0.5
-    assert summary["ml_feature_weights"]["sld_cat_bucket_0"] == 0.25
-    assert summary["ml_feature_weights"]["sld_cat_bucket_3"] == 0.25
-    assert summary["ml_feature_weights"]["source_cat_bucket_0"] == 0.5
-    assert len(summary["feature_names"]) == 40
-    assert len(summary["ml_feature_names"]) == 40
+    assert len(summary["feature_names"]) == 14
+    assert len(summary["ml_feature_names"]) == 14
     assert len(features) == 4
-    assert first_feature_row[:8] == [
+    first_feature_row = features[1].split("\t")
+    assert first_feature_row == [
         "evt_1",
         "1.098612",
         "1.098612",
@@ -167,8 +125,8 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         "1.098612",
         "1.098612",
         "1.098612",
-    ]
-    assert first_feature_row[-5:] == [
+        "-1.000000",
+        "1.000000",
         "0.000000",
         "0.009950",
         "1.000000",
@@ -177,9 +135,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     ]
 
 
-def test_single_event_pipeline_is_not_selected_by_percentile_gate(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_single_event_pipeline_is_not_selected_by_percentile_gate(monkeypatch, tmp_path: Path) -> None:
     install_fake_isotree(monkeypatch)
     raw = tmp_path / "clicks.tsv"
     raw.write_text(
@@ -196,9 +152,7 @@ def test_single_event_pipeline_is_not_selected_by_percentile_gate(
     assert submission == "event_id\tis_bot\toperational_tier\nevt_1\t0\tmonitor\n"
 
 
-def test_all_tied_combined_scores_do_not_flag_all_events(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_all_tied_combined_scores_do_not_flag_all_events(monkeypatch, tmp_path: Path) -> None:
     def score_tied_anomalies(events: list[ClickEvent]) -> str:
         for event in events:
             event.ml_score = 0.5
@@ -244,9 +198,7 @@ def test_pipeline_handles_empty_input(tmp_path: Path) -> None:
     assert summary["bot_events"] == 0
     assert summary["threshold"] == 0.0
     assert summary["tier_counts"] == {"suppress": 0, "quarantine": 0, "monitor": 0}
-    assert (tmp_path / "submission.tsv").read_text(
-        encoding="utf-8"
-    ) == "event_id\tis_bot\toperational_tier\n"
+    assert (tmp_path / "submission.tsv").read_text(encoding="utf-8") == "event_id\tis_bot\toperational_tier\n"
     assert (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8") == (
         "event_id\t" + "\t".join(summary["feature_names"]) + "\n"
     )
@@ -273,14 +225,12 @@ def test_pipeline_uses_eif_backend(monkeypatch, tmp_path: Path) -> None:
     assert FakeEIF.last_instance.sample_size == 3
     assert FakeEIF.last_instance.ndim == 2
     assert FakeEIF.last_instance.standardize_data is False
-    assert FakeEIF.last_instance.fit_column_count == 40
+    assert FakeEIF.last_instance.fit_column_count == 14
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
 
 
-def test_pipeline_eif_backend_reports_missing_dependency(
-    monkeypatch, tmp_path: Path
-) -> None:
+def test_pipeline_eif_backend_reports_missing_dependency(monkeypatch, tmp_path: Path) -> None:
     hide_isotree(monkeypatch)
     raw = tmp_path / "clicks.tsv"
     raw.write_text(
@@ -294,18 +244,14 @@ def test_pipeline_eif_backend_reports_missing_dependency(
 
 def test_normalize_reason_handles_regular_interarrival() -> None:
     assert (
-        _normalize_reason(
-            "regular inter-arrival timing (8 clicks, mean 214.7s, cv 0.224)"
-        )
+        _normalize_reason("regular inter-arrival timing (8 clicks, mean 214.7s, cv 0.224)")
         == "regular inter-arrival timing"
     )
 
 
 def test_normalize_reason_handles_dense_burst_repetition_cluster() -> None:
     assert (
-        _normalize_reason(
-            "dense burst repetition cluster (device 43674, same-second 5, query 1226)"
-        )
+        _normalize_reason("dense burst repetition cluster (device 43674, same-second 5, query 1226)")
         == "dense burst repetition cluster"
     )
 

@@ -245,13 +245,8 @@ The current production feature set includes:
 | `log_country_count` | `ct` country frequency |
 | `log_same_second_count` | Events with the same timestamp |
 | `log_ttc_count` | Exact time-to-click reuse |
-| `region_cat_bucket_*` | Fixed-size categorical indicators for region |
-| `browser_cat_bucket_*` | Fixed-size categorical indicators for browser |
-| `os_cat_bucket_*` | Fixed-size categorical indicators for OS |
-| `country_cat_bucket_*` | Fixed-size categorical indicators for `ct` |
-| `source_cat_bucket_*` | Fixed-size indicators for source-like URL parameters |
-| `kp_cat_bucket_*` | Fixed-size categorical indicators for `kp` |
-| `sld_cat_bucket_*` | Fixed-size categorical indicators for `sld` |
+| `kp` | Low-cardinality categorical-style `kp` parameter |
+| `sld` | Low-cardinality categorical-style `sld` parameter |
 | `hour` | Event hour |
 | `log_ttc_seconds` | Log-scaled time-to-click |
 | `is_sub_200ms_click` | Mechanical sub-200 ms click indicator |
@@ -263,12 +258,11 @@ heavy-tailed. A small number of queries, domains, or device clusters may appear
 many times. Log transforms reduce the influence of extreme values so the model
 does not treat scale alone as the whole story.
 
-Categorical fields use deterministic four-bucket hash indicators instead of
-one column per observed value. The bounded representation covers region,
-browser, OS, `ct`, source-like URL parameters such as `st` or `utm_source`,
-`kp`, and `sld` without expanding the feature file as cardinality grows. The
-categorical buckets are down-weighted in the anomaly model; `kp` buckets use
-weight `0.50` and `sld` buckets use weight `0.25`.
+`kp` and `sld` currently appear as compact numeric codes, but the project treats
+them as categorical-style indicators because their observed cardinality is very
+low. The intended next feature change is to represent them as bounded
+categorical indicators rather than continuous values, and to down-weight them in
+the anomaly model: `kp` to `0.50` and `sld` to `0.25`.
 
 ### Probability Perspective
 

@@ -3,10 +3,10 @@
   "total_events": 149239,
   "bot_events": 3731,
   "bot_rate": 0.025000167516533882,
-  "threshold": 0.5841225103525911,
+  "threshold": 0.6068462027097655,
   "heuristic_flag_rate": 0.01400438223252635,
   "ml_tail_rate": 0.025000167516533882,
-  "estimated_precision": 0.6634896810506566,
+  "estimated_precision": 0.7253095684803001,
   "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
@@ -17,34 +17,8 @@
     "log_country_count",
     "log_same_second_count",
     "log_ttc_count",
-    "region_cat_bucket_0",
-    "region_cat_bucket_1",
-    "region_cat_bucket_2",
-    "region_cat_bucket_3",
-    "browser_cat_bucket_0",
-    "browser_cat_bucket_1",
-    "browser_cat_bucket_2",
-    "browser_cat_bucket_3",
-    "os_cat_bucket_0",
-    "os_cat_bucket_1",
-    "os_cat_bucket_2",
-    "os_cat_bucket_3",
-    "country_cat_bucket_0",
-    "country_cat_bucket_1",
-    "country_cat_bucket_2",
-    "country_cat_bucket_3",
-    "source_cat_bucket_0",
-    "source_cat_bucket_1",
-    "source_cat_bucket_2",
-    "source_cat_bucket_3",
-    "kp_cat_bucket_0",
-    "kp_cat_bucket_1",
-    "kp_cat_bucket_2",
-    "kp_cat_bucket_3",
-    "sld_cat_bucket_0",
-    "sld_cat_bucket_1",
-    "sld_cat_bucket_2",
-    "sld_cat_bucket_3",
+    "kp",
+    "sld",
     "hour",
     "log_ttc_seconds",
     "is_sub_200ms_click",
@@ -59,34 +33,8 @@
     "log_country_count",
     "log_same_second_count",
     "log_ttc_count",
-    "region_cat_bucket_0",
-    "region_cat_bucket_1",
-    "region_cat_bucket_2",
-    "region_cat_bucket_3",
-    "browser_cat_bucket_0",
-    "browser_cat_bucket_1",
-    "browser_cat_bucket_2",
-    "browser_cat_bucket_3",
-    "os_cat_bucket_0",
-    "os_cat_bucket_1",
-    "os_cat_bucket_2",
-    "os_cat_bucket_3",
-    "country_cat_bucket_0",
-    "country_cat_bucket_1",
-    "country_cat_bucket_2",
-    "country_cat_bucket_3",
-    "source_cat_bucket_0",
-    "source_cat_bucket_1",
-    "source_cat_bucket_2",
-    "source_cat_bucket_3",
-    "kp_cat_bucket_0",
-    "kp_cat_bucket_1",
-    "kp_cat_bucket_2",
-    "kp_cat_bucket_3",
-    "sld_cat_bucket_0",
-    "sld_cat_bucket_1",
-    "sld_cat_bucket_2",
-    "sld_cat_bucket_3",
+    "kp",
+    "sld",
     "hour",
     "log_ttc_seconds",
     "is_sub_200ms_click",
@@ -101,34 +49,8 @@
     "log_country_count": 0.5,
     "log_same_second_count": 1.0,
     "log_ttc_count": 1.0,
-    "region_cat_bucket_0": 0.5,
-    "region_cat_bucket_1": 0.5,
-    "region_cat_bucket_2": 0.5,
-    "region_cat_bucket_3": 0.5,
-    "browser_cat_bucket_0": 0.5,
-    "browser_cat_bucket_1": 0.5,
-    "browser_cat_bucket_2": 0.5,
-    "browser_cat_bucket_3": 0.5,
-    "os_cat_bucket_0": 0.5,
-    "os_cat_bucket_1": 0.5,
-    "os_cat_bucket_2": 0.5,
-    "os_cat_bucket_3": 0.5,
-    "country_cat_bucket_0": 0.5,
-    "country_cat_bucket_1": 0.5,
-    "country_cat_bucket_2": 0.5,
-    "country_cat_bucket_3": 0.5,
-    "source_cat_bucket_0": 0.5,
-    "source_cat_bucket_1": 0.5,
-    "source_cat_bucket_2": 0.5,
-    "source_cat_bucket_3": 0.5,
-    "kp_cat_bucket_0": 0.5,
-    "kp_cat_bucket_1": 0.5,
-    "kp_cat_bucket_2": 0.5,
-    "kp_cat_bucket_3": 0.5,
-    "sld_cat_bucket_0": 0.25,
-    "sld_cat_bucket_1": 0.25,
-    "sld_cat_bucket_2": 0.25,
-    "sld_cat_bucket_3": 0.25,
+    "kp": 1.0,
+    "sld": 1.0,
     "hour": 1.0,
     "log_ttc_seconds": 0.5,
     "is_sub_200ms_click": 0.5,
@@ -143,19 +65,19 @@
   "method_disagreement": [
     [
       "Heuristic + ML",
-      860
+      1478
     ],
     [
       "Heuristic only",
-      1230
+      612
     ],
     [
       "ML only",
-      2871
+      2253
     ],
     [
       "Neither strong",
-      144278
+      144896
     ]
   ],
   "tier_thresholds": {
@@ -167,18 +89,18 @@
     "monitor": "is_bot == 0"
   },
   "tier_counts": {
-    "suppress": 1744,
-    "quarantine": 1987,
+    "suppress": 1966,
+    "quarantine": 1765,
     "monitor": 145508
   },
   "top_reasons": [
     [
       "repeated query",
-      3414
+      3476
     ],
     [
       "repeated query/domain pair",
-      2068
+      2091
     ],
     [
       "confirmed query repetition",
@@ -186,31 +108,31 @@
     ],
     [
       "same-second click burst",
-      1994
-    ],
-    [
-      "high-volume clicked domain",
-      1773
-    ],
-    [
-      "very short query",
-      1759
+      1876
     ],
     [
       "heavy region/browser/OS cluster",
-      1541
+      1868
+    ],
+    [
+      "very short query",
+      1835
+    ],
+    [
+      "high-volume clicked domain",
+      1726
     ],
     [
       "concentrated ct context",
-      894
-    ],
-    [
-      "moderately long time-to-click",
-      476
+      1154
     ],
     [
       "dense burst repetition cluster",
-      421
+      526
+    ],
+    [
+      "moderately long time-to-click",
+      472
     ]
   ],
   "top_domains": [
@@ -316,27 +238,27 @@
   "bot_regions": [
     [
       "Earth",
-      1863
+      1824
     ],
     [
       "Mars",
-      1680
-    ],
-    [
-      "Jupiter",
-      60
+      1782
     ],
     [
       "Mercury",
-      59
-    ],
-    [
-      "Venus",
-      36
+      45
     ],
     [
       "Saturn",
-      33
+      31
+    ],
+    [
+      "Venus",
+      29
+    ],
+    [
+      "Jupiter",
+      20
     ]
   ]
 }
