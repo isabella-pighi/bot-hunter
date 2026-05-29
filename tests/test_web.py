@@ -17,8 +17,8 @@ SIDEBAR_LABELS = [
 ]
 
 OVERVIEW_HEADINGS = [
-    "<h2>Run at a glance</h2>",
-    "<h2>What this run says</h2>",
+    "<h2>Analysis Brief</h2>",
+    "<h2>Analysis Scorecard</h2>",
     "<h2>Recommended actions</h2>",
 ]
 
@@ -103,13 +103,20 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "html { overflow-x:hidden; }" in dashboard
         assert "overflow-x:hidden" in dashboard
         assert ".table-wrap { overflow:auto; contain:inline-size; }" in dashboard
-        assert "What this run says" in dashboard
+        assert "Analysis Brief" in dashboard
+        assert "What this run says" not in dashboard
         assert "Business problem" in dashboard
         assert "What was analysed" in dashboard
         assert "How to act" in dashboard
-        assert "Run at a glance" in dashboard
+        assert "Analysis Scorecard" in dashboard
+        assert "Run at a glance" not in dashboard
         overview_markup = _overview_markup(dashboard)
         assert _labels_are_ordered(overview_markup, OVERVIEW_HEADINGS)
+        assert "Explore detected anomalies" not in overview_markup
+        assert (
+            'class="panel global-filters" aria-labelledby="filterTitle" hidden'
+            in dashboard
+        )
         assert 'aria-label="Current result proportions"' not in overview_markup
         assert 'id="tierChart"' not in overview_markup
         assert 'id="methodChart"' not in overview_markup
@@ -211,6 +218,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "All traffic rows unavailable" not in dashboard
         assert "Device cluster (region/browser/OS sample)" not in dashboard
         assert "Explore detected anomalies" in dashboard
+        assert "globalFilters.hidden = page === 'overview'" in dashboard
         assert "Clear filters" in dashboard
         assert (
             "Compact row-level controls for the full selected anomaly set." in dashboard
@@ -244,7 +252,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "full-run aggregate; not affected by explorer filters" in dashboard
         assert (
             "Full-run aggregate. Explorer filters do not change these KPI cards."
-            in dashboard
+            not in dashboard
         )
         assert "sample filters do not change them" not in dashboard
         assert "Overview charts use full-run aggregates" not in dashboard
@@ -274,10 +282,13 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "0.58 rule evidence plus 0.42 anomaly-model evidence" in dashboard
         assert "A review group that explains the main pattern" in dashboard
         assert "not measured precision" in dashboard
+        assert "calibrated fraud probability" in dashboard
+        assert "Review-priority signal" in dashboard
         assert "The run-specific cutoff" in dashboard
         assert "Data without known right answers" in dashboard
-        assert "not proven fraud labels" in dashboard
-        assert "ML-only traffic should be sampled or quarantined" in dashboard
+        assert "Anomaly classes are operational review groups" not in dashboard
+        assert "not proven fraud labels" not in dashboard
+        assert "ML-only traffic should be sampled or quarantined" not in dashboard
         assert "not ground-truth fraud rules" in dashboard
         assert '<p class="label">${escapeHtml(definitions[tier])}</p>' not in dashboard
         assert '<section class="panel">' in dashboard

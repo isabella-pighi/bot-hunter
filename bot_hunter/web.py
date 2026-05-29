@@ -424,7 +424,7 @@ def _dashboard_html() -> str:
       </nav>
     </aside>
     <div class="workspace">
-      <section class="panel global-filters" aria-labelledby="filterTitle">
+      <section class="panel global-filters" aria-labelledby="filterTitle" hidden>
         <div class="control-head">
           <div>
             <h2 id="filterTitle">Explore detected anomalies</h2>
@@ -439,12 +439,7 @@ def _dashboard_html() -> str:
       </section>
     <section class="page active" id="page-overview">
       <div class="panel">
-        <h2>Run at a glance</h2>
-        <p class="label">Full-run aggregate. Explorer filters do not change these KPI cards.</p>
-        <div class="metric-grid" id="metrics"></div>
-      </div>
-      <div class="panel">
-        <h2>What this run says</h2>
+        <h2>Analysis Brief</h2>
         <p id="storyLead" class="loading">Loading current run...</p>
         <div class="three">
           <div class="card">
@@ -463,11 +458,10 @@ def _dashboard_html() -> str:
             quarantine means review or sample, monitor stays in trend tracking.</p>
           </div>
         </div>
-        <div class="caveat">
-          Anomaly classes are operational review groups, not proven fraud labels.
-          ML-only traffic should be sampled or quarantined rather than
-          automatically suppressed.
-        </div>
+      </div>
+      <div class="panel">
+        <h2>Analysis Scorecard</h2>
+        <div class="metric-grid" id="metrics"></div>
       </div>
       <section class="panel">
         <h2>Recommended actions</h2>
@@ -618,7 +612,7 @@ def _dashboard_html() -> str:
       'ML score': ['How unusual the event looks compared with this batch. It does not prove fraud.', 'Example: a rare combination of features can score high.'],
       'combined score': ['The score used for selection: 0.58 rule evidence plus 0.42 anomaly-model evidence.', 'Example: a high combined score can pass the run threshold.'],
       'anomaly class': ['A review group that explains the main pattern. It is not a confirmed fraud label.', 'Example: Compound burst/replay means repetition and burst timing appeared together.'],
-      'operational confidence estimate': ['A signal-based confidence estimate for prioritising review. It is not measured precision.', 'Example: use it to plan review effort, not as a fraud probability.'],
+      'operational confidence estimate': ['A signal-based review-priority estimate from agreement and score strength. It is not measured precision, recall, or calibrated fraud probability.', 'Example: use it to plan review effort, not as a fraud probability.'],
       'threshold': ['The run-specific cutoff used to select likely bot traffic.', 'Example: events above the combined-score cutoff are selected unless policy later rejects them.'],
       'unlabelled data': ['Data without known right answers. Precision, recall, and calibrated fraud probability cannot be measured yet.', 'Example: manual review labels would be needed to calculate precision.']
     };
@@ -657,7 +651,7 @@ def _dashboard_html() -> str:
         ['Events analysed', count(total), 'Click events in the current run.'],
         ['Selected as likely bot', count(selected), '`is_bot = 1` events.'],
         ['Selected rate', pct(s.bot_rate), 'Share of traffic selected.'],
-        ['Operational confidence estimate', confidence, 'Not measured precision.'],
+        ['Operational confidence estimate', confidence, 'Review-priority signal, not measured precision or calibrated fraud probability.'],
         ['Selection threshold', threshold, 'Run-specific combined-score cutoff.'],
         ['Suppress tier', count((s.tier_counts || {}).suppress), 'Policy approval required.'],
         ['Quarantine tier', count((s.tier_counts || {}).quarantine), 'Review or sample first.'],
@@ -840,6 +834,8 @@ def _dashboard_html() -> str:
     function showPage(page) {
       document.querySelectorAll('.page').forEach(item => item.classList.remove('active'));
       document.getElementById(`page-${page}`).classList.add('active');
+      const globalFilters = document.querySelector('.global-filters');
+      if (globalFilters) globalFilters.hidden = page === 'overview';
       document.querySelectorAll('button.nav').forEach(button => {
         button.setAttribute('aria-current', button.dataset.page === page ? 'page' : 'false');
       });
