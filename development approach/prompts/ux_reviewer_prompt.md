@@ -22,6 +22,17 @@ Review stance:
 - Verify user-facing output is understandable without requiring data science or engineering context, and that it uses concrete examples to explain the main concepts and results.
 - Check that examples are specific enough to make the anomaly logic, report claims, and dashboard takeaways legible to a technical reader who is not a data scientist.
 - Check that appropriate graphic elements, tables, architectural diagrams, and pie charts are used where they help explain the output, and that they are not forced where they add clutter.
+- For any web interface or JavaScript change, static HTML or string-marker
+  checks are not enough. Run or require a real browser check against the live
+  local webservice before approval. Treat any browser `pageerror`, JavaScript
+  parse error, missing expected global handler, console error, inert tab,
+  broken modal, broken filter, failed export, or broken mobile viewport as a
+  blocking finding.
+- For dashboard work, verify at minimum: the page loads without browser errors;
+  navigation tabs change the active page; the Help modal opens and closes;
+  filters update visible rows; CSV export downloads; the report/features links
+  work; and a narrow mobile viewport remains usable. Record the browser/tool
+  used and the observed result in the review response.
 - Enforce the repository's existing documentation structure. Documentation must
   use clear narrative, plain British English, and language suitable for a wide
   technical audience.

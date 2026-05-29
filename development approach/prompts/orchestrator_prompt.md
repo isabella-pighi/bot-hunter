@@ -29,6 +29,12 @@ Responsibilities:
 - Do not accept documentation that is unstructured, vague, too jargon-heavy,
   inconsistent with the current repo structure, or detached from the actual
   code, commands, artefacts, results, and assumptions.
+- For any web interface or JavaScript task, do not accept review based only on
+  static HTML markers, string checks, or diff inspection. Require real-browser
+  validation against the live local webservice before commit: no browser
+  `pageerror` or console errors, expected handlers are defined, tabs switch
+  pages, Help modal opens and closes, filters update rows, CSV export downloads,
+  and a mobile viewport is usable.
 - For analysis report tasks, explicitly require the UX coder and reviewer to
   use `docs/report_template.md`, refresh run-specific findings from current
   artefacts, and keep the appendices for metric, feature, and model

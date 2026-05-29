@@ -300,6 +300,16 @@ The reviewer must check:
 - whether Completed Work `Why it mattered` entries explain rationale or user
   value rather than only implementation details or validation output
 - whether the interface is scannable, accessible, and practical to use
+- for any web interface or JavaScript change, whether a real browser can load
+  the live local webservice without `pageerror` or console errors
+- for dashboard changes, whether tabs switch pages, Help opens and closes,
+  filters update rows, CSV export downloads, report/features links work, and a
+  mobile viewport remains usable
+
+Static HTML markers, string assertions, or visual reasoning from the diff do
+not prove the frontend works. They are useful supporting checks, but the UX
+reviewer must treat missing real-browser validation as a blocking review gap
+for web and JavaScript tasks.
 
 The reviewer should distinguish blocking clarity or accuracy problems from
 optional style improvements.
