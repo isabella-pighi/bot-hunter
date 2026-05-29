@@ -63,7 +63,7 @@ T*
 T*
 (query/domain pattern on the same event. The second classifier is an Extended Isolation) Tj
 T*
-(Forest anomaly model over 15 ML features selected from 15 engineered behavioral) Tj
+(Forest anomaly model over 14 ML features selected from 14 engineered behavioral) Tj
 T*
 (features, including region/browser/OS frequency, global ct country frequency, explicit) Tj
 T*
@@ -97,7 +97,7 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,427 events) Tj
+(- repeated query: 3,421 events) Tj
 T*
 ET
 endstream
@@ -112,23 +112,23 @@ BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(- repeated query/domain pair: 2,099 events) Tj
+(- repeated query/domain pair: 2,095 events) Tj
 T*
 (- confirmed query repetition: 2,023 events) Tj
 T*
-(- same-second click burst: 1,994 events) Tj
+(- same-second click burst: 1,974 events) Tj
 T*
-(- very short query: 1,828 events) Tj
+(- very short query: 1,805 events) Tj
 T*
-(- heavy region/browser/os cluster: 1,784 events) Tj
+(- heavy region/browser/os cluster: 1,794 events) Tj
 T*
-(- high-volume clicked domain: 1,773 events) Tj
+(- high-volume clicked domain: 1,787 events) Tj
 T*
-(- dense burst repetition cluster: 517 events) Tj
+(- dense burst repetition cluster: 524 events) Tj
 T*
-(- moderately long time-to-click: 461 events) Tj
+(- moderately long time-to-click: 502 events) Tj
 T*
-(- extreme time-to-click: 176 events) Tj
+(- extreme time-to-click: 173 events) Tj
 T*
 () Tj
 T*
@@ -152,9 +152,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,940 events) Tj
+(- suppress: 1,954 events) Tj
 T*
-(- quarantine: 1,792 events) Tj
+(- quarantine: 1,778 events) Tj
 T*
 (- monitor: 145,507 events) Tj
 T*
@@ -188,7 +188,7 @@ T*
 T*
 () Tj
 T*
-(At the ML agreement threshold, this run has 1,572 Heuristic + ML events and 2,159 ML) Tj
+(At the ML agreement threshold, this run has 1,475 Heuristic + ML events and 2,256 ML) Tj
 T*
 (only events.) Tj
 T*
@@ -211,13 +211,13 @@ BT
 14 TL
 () Tj
 T*
-(- Heuristic + ML: 1,572 events) Tj
+(- Heuristic + ML: 1,475 events) Tj
 T*
-(- Heuristic only: 498 events) Tj
+(- Heuristic only: 595 events) Tj
 T*
-(- ML only: 2,159 events) Tj
+(- ML only: 2,256 events) Tj
 T*
-(- Neither strong: 145,010 events) Tj
+(- Neither strong: 144,913 events) Tj
 T*
 () Tj
 T*
@@ -229,7 +229,7 @@ T*
 T*
 (when its combined score is at or above the run-specific 97.5th-percentile cutoff) Tj
 T*
-(\(0.598913 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
+(\(0.597401 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
 T*
 (The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset) Tj
 T*
@@ -324,7 +324,7 @@ T*
 T*
 () Tj
 T*
-(The estimated probability that a flagged event is fraudulent is 73%. This is not label-) Tj
+(The estimated probability that a flagged event is fraudulent is 72%. This is not label-) Tj
 T*
 (calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
 T*
@@ -427,9 +427,9 @@ T*
 T*
 (preserving the final binary prediction while adding a workflow tier. This run selected) Tj
 T*
-(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,940 suppress,) Tj
+(3,732 of 149,239 events as likely bots \(2.50%\). The operational split is 1,954 suppress,) Tj
 T*
-(1,792 quarantine, and 145,507 monitor events.) Tj
+(1,778 quarantine, and 145,507 monitor events.) Tj
 T*
 () Tj
 T*

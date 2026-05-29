@@ -6,22 +6,22 @@ Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer re
 
 ## 2. Classifiers
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, confirmed query repetition, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, dense burst repetition clusters, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. Confirmed query repetition is intentionally conjunctive: it requires the query/domain pair to repeat and the query to be widely repeated. Dense burst repetition is also conjunctive: it requires a heavy region/browser/OS cluster, at least five same-second clicks, and a repeated query or query/domain pattern on the same event. The second classifier is an Extended Isolation Forest anomaly model over 15 ML features selected from 15 engineered behavioral features, including region/browser/OS frequency, global `ct` country frequency, explicit mechanical features for sub-200ms clicks, local burst density, and query entropy. Query length, query word count, and uncertain URL flags are no longer engineered features. High-volume domain frequency and global country frequency remain available but are down-weighted to 0.50 and 0.50, respectively, in the standardized ML matrix. Repetition and timing features that can dominate standalone EIF tail evidence are also down-weighted to 0.50: query/domain repetition, query repetition, log-scaled time-to-click magnitude, sub-200ms click flags, and query entropy. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
+The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, confirmed query repetition, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, dense burst repetition clusters, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. Confirmed query repetition is intentionally conjunctive: it requires the query/domain pair to repeat and the query to be widely repeated. Dense burst repetition is also conjunctive: it requires a heavy region/browser/OS cluster, at least five same-second clicks, and a repeated query or query/domain pattern on the same event. The second classifier is an Extended Isolation Forest anomaly model over 14 ML features selected from 14 engineered behavioral features, including region/browser/OS frequency, global `ct` country frequency, explicit mechanical features for sub-200ms clicks, local burst density, and query entropy. Query length, query word count, and uncertain URL flags are no longer engineered features. High-volume domain frequency and global country frequency remain available but are down-weighted to 0.50 and 0.50, respectively, in the standardized ML matrix. Repetition and timing features that can dominate standalone EIF tail evidence are also down-weighted to 0.50: query/domain repetition, query repetition, log-scaled time-to-click magnitude, sub-200ms click flags, and query entropy. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
 
 ## 3. Anomalies found
 
 The run analyzed 149,239 events and flagged 3,732 events as bots (2.50%). The strongest explainable patterns were:
 
-- repeated query: 3,427 events
-- repeated query/domain pair: 2,099 events
+- repeated query: 3,421 events
+- repeated query/domain pair: 2,095 events
 - confirmed query repetition: 2,023 events
-- same-second click burst: 1,994 events
-- very short query: 1,828 events
-- heavy region/browser/os cluster: 1,784 events
-- high-volume clicked domain: 1,773 events
-- dense burst repetition cluster: 517 events
-- moderately long time-to-click: 461 events
-- extreme time-to-click: 176 events
+- same-second click burst: 1,974 events
+- very short query: 1,805 events
+- heavy region/browser/os cluster: 1,794 events
+- high-volume clicked domain: 1,787 events
+- dense burst repetition cluster: 524 events
+- moderately long time-to-click: 502 events
+- extreme time-to-click: 173 events
 
 The dashboard exposes these same signals with sample events so a business user can inspect the likely automated behavior without reading model internals.
 
@@ -29,8 +29,8 @@ The dashboard exposes these same signals with sample events so a business user c
 
 Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. Bot Hunter assigns operational tiers without changing the binary `is_bot` prediction:
 
-- suppress: 1,940 events
-- quarantine: 1,792 events
+- suppress: 1,954 events
+- quarantine: 1,778 events
 - monitor: 145,507 events
 
 Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
@@ -39,18 +39,18 @@ Use `suppress` for high-confidence bot traffic after policy approval, `quarantin
 
 The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. Bot Hunter reports one method disagreement view using the rules threshold (`heuristic_score >= 0.62`) and the ML agreement threshold (`ml_score >= 0.975`). This agreement view is review evidence for an unlabeled dataset; it should not be read as measured accuracy.
 
-At the ML agreement threshold, this run has 1,572 `Heuristic + ML` events and 2,159 `ML only` events.
+At the ML agreement threshold, this run has 1,475 `Heuristic + ML` events and 2,256 `ML only` events.
 
 Method disagreement (`ml_score >= 0.975`):
 
-- Heuristic + ML: 1,572 events
-- Heuristic only: 498 events
-- ML only: 2,159 events
-- Neither strong: 145,010 events
+- Heuristic + ML: 1,475 events
+- Heuristic only: 595 events
+- ML only: 2,256 events
+- Neither strong: 144,913 events
 
 ## 6. Threshold rationale
 
-The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.598913 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
+The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.597401 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
 
 The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 1.39%, while the ML agreement-tail reference rate was 2.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
 
@@ -60,7 +60,7 @@ The heuristic model is transparent and easy to convert into policy. Only exact t
 
 ## 8. Probability assessment
 
-The estimated probability that a flagged event is fraudulent is 73%. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. This estimate uses the `ml_score >= 0.975` agreement threshold; the value is higher than estimates computed at 0.995 because the agreement definition broadened, not because detection quality improved. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
+The estimated probability that a flagged event is fraudulent is 72%. This is not label-calibrated precision; it is a reasoned estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. This estimate uses the `ml_score >= 0.975` agreement threshold; the value is higher than estimates computed at 0.995 because the agreement definition broadened, not because detection quality improved. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
 
 ## 9. Known limitations
 
@@ -80,6 +80,6 @@ With more time, I would add labeled validation data, campaign-level normalizatio
 
 ## 12. Submission and decision summary
 
-The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,732 of 149,239 events as likely bots (2.50%). The operational split is 1,940 suppress, 1,792 quarantine, and 145,507 monitor events.
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,732 of 149,239 events as likely bots (2.50%). The operational split is 1,954 suppress, 1,778 quarantine, and 145,507 monitor events.
 
 Use the binary `is_bot` field as the compatibility output for downstream systems. Use `operational_tier` to decide handling: suppress high-confidence bot traffic after policy approval, quarantine lower-confidence bot traffic for review or delayed action, and monitor the remaining traffic for drift checks and future labels. The report and dashboard should be read as review aids, not as proof of fraud for every individual event.

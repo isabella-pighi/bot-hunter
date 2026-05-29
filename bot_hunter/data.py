@@ -131,7 +131,6 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "log_country_count",
         "log_same_second_count",
         "log_ttc_count",
-        "ttc_seconds",
         "kp",
         "sld",
         "hour",
@@ -151,7 +150,7 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             sld = float(event.params.get("sld", "0"))
         except ValueError:
             sld = 0.0
-        ttc_seconds = max(event.ttc, 0) / 1000.0
+        click_delay_seconds = max(event.ttc, 0) / 1000.0
         event.features = [
             log1p(counters["domain"][event.domain]),
             log1p(counters["query"][event.query]),
@@ -160,11 +159,10 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             log1p(counters["country"][event.params.get("ct", "")]),
             log1p(counters["second"][event.event_time]),
             log1p(counters["ttc"][event.ttc]),
-            ttc_seconds,
             kp,
             sld,
             float(event.event_time.hour),
-            log1p(ttc_seconds),
+            log1p(click_delay_seconds),
             1.0 if 0 <= event.ttc < 200 else 0.0,
             log1p(burst_counts[id(event)]),
             _query_entropy(event.query),

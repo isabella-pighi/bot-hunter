@@ -111,8 +111,8 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert summary["ml_feature_weights"]["is_sub_200ms_click"] == 0.5
     assert summary["ml_feature_weights"]["query_entropy"] == 0.5
     assert summary["ml_feature_weights"]["log_device_count"] == 1.0
-    assert len(summary["feature_names"]) == 15
-    assert len(summary["ml_feature_names"]) == 15
+    assert len(summary["feature_names"]) == 14
+    assert len(summary["ml_feature_names"]) == 14
     assert len(features) == 4
     first_feature_row = features[1].split("\t")
     assert first_feature_row == [
@@ -124,7 +124,6 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         "1.098612",
         "1.098612",
         "1.098612",
-        "0.010000",
         "-1.000000",
         "1.000000",
         "0.000000",
@@ -172,7 +171,7 @@ def test_pipeline_uses_eif_backend(monkeypatch, tmp_path: Path) -> None:
     assert FakeEIF.last_instance.sample_size == 3
     assert FakeEIF.last_instance.ndim == 2
     assert FakeEIF.last_instance.standardize_data is False
-    assert FakeEIF.last_instance.fit_column_count == 15
+    assert FakeEIF.last_instance.fit_column_count == 14
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
 

@@ -41,7 +41,7 @@ event_id    event_time    region    browser    os    url
 
 ## Scoring
 
-Bot Hunter builds 15 numeric features for each event:
+Bot Hunter builds 14 numeric features for each event:
 
 | Feature | Meaning |
 |---|---|
@@ -52,7 +52,6 @@ Bot Hunter builds 15 numeric features for each event:
 | `log_country_count` | `ct` country frequency |
 | `log_same_second_count` | Events with the same timestamp |
 | `log_ttc_count` | Exact time-to-click reuse |
-| `ttc_seconds` | Time-to-click in seconds |
 | `kp` | Numeric `kp` parameter |
 | `sld` | Numeric `sld` parameter |
 | `hour` | Event hour |
