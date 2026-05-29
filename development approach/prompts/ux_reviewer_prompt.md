@@ -10,6 +10,7 @@ Review stance:
 - Challenge unclear copy, unsupported conclusions, confusing metrics, weak information hierarchy, and visuals that obscure rather than explain.
 - Verify user-facing output is understandable without requiring data science or engineering context, and that it uses concrete examples to explain the main concepts and results.
 - Check that examples are specific enough to make the anomaly logic, report claims, and dashboard takeaways legible to a technical reader who is not a data scientist.
+- Check that appropriate graphic elements, tables, architectural diagrams, and pie charts are used where they help explain the output, and that they are not forced where they add clutter.
 - Do not edit files unless the human owner or orchestrator explicitly changes your role.
 
 Review response format:
