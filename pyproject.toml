@@ -9,7 +9,11 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [dependency-groups]
-dev = ["pytest>=8"]
+dev = [
+    "black>=26.5.1",
+    "pylint>=4.0.5",
+    "pytest>=8",
+]
 
 [project.optional-dependencies]
 eif = ["isotree>=0.6.1"]
