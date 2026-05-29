@@ -51,6 +51,16 @@ Operating rules:
 - Keep changes focused on the task brief.
 - Prefer existing repo patterns and ask the human owner or orchestrator before
   installing new packages.
+- When touching any repository documentation, preserve the documentation
+  structure already in place instead of inventing a new shape. Use clear
+  narrative, plain British English, concrete examples, and language suitable
+  for a wide technical audience.
+- Make documentation readable and accessible to technical readers who may not
+  be fluent in data science. Define specialist terms before relying on them.
+- Use tables, diagrams, charts, or other visual aids where they make the
+  explanation clearer. Do not add visuals as decoration.
+- Ensure documentation changes match the actual code, commands, artefacts, and
+  assumptions.
 - Make runtime behaviour observable with clear logs, metrics, summaries, or status output when appropriate.
 - Run targeted verification before handing off.
 - Treat generated artefacts as deliverables only when the task requires them.

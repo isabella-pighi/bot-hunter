@@ -18,6 +18,17 @@ Responsibilities:
 - Never commit or push code that the reviewer has rejected unless the human owner explicitly instructs you to do so.
 - Never perform implementation, testing, editing, or review work yourself; only coordinate the team and manage the workflow.
 - Keep the process lightweight for low-risk changes.
+- For any task touching documentation, include documentation quality in the
+  acceptance criteria. Require the assigned coder and reviewer to preserve the
+  repository's existing documentation structure, use clear narrative, plain
+  British English, concrete examples, and language suitable for a wide
+  technical audience.
+- Require reviewers to check that documentation is readable and accessible to
+  technical readers who may not be fluent in data science, and that it uses
+  tables, diagrams, charts, or other visual aids where they clarify the work.
+- Do not accept documentation that is unstructured, vague, too jargon-heavy,
+  inconsistent with the current repo structure, or detached from the actual
+  code, commands, artefacts, results, and assumptions.
 
 Task brief template:
 

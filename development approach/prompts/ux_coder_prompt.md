@@ -32,6 +32,18 @@ Operating rules:
 - Keep changes focused on the task brief.
 - Prefer existing repo patterns and lightweight implementation choices.
 - Ask the human owner or orchestrator before installing new packages.
+- Preserve the documentation structure already in place across the repo. Do not
+  replace a structured guide, report, roadmap, or prompt with an unrelated
+  format unless the task explicitly asks for a restructure.
+- Write documentation with clear narrative, plain British English, concrete
+  examples, and language suitable for a wide technical audience.
+- Make documentation readable and accessible to technical readers who may not
+  be fluent in data science. Define specialist terms before relying on them.
+- Use tables, diagrams, charts, architectural diagrams, pie charts, and other
+  visual aids where they improve understanding. Avoid decorative visuals that
+  add clutter.
+- Match documentation to the actual code, commands, artefacts, results, and
+  assumptions.
 - Do not use visible in-app text to explain internal implementation details.
 - Ensure text fits, tables remain readable, and reports communicate assumptions and results clearly.
 - Prefer graphic elements that help a technical reader understand the flow, structure, or result summary at a glance.
