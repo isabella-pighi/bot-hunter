@@ -89,8 +89,21 @@ def _assign_rank_scores(events: list[ClickEvent], anomaly_values) -> None:
     ordered = sorted(float(value) for value in anomaly_values)
     max_rank = max(len(ordered) - 1, 1)
     for event, value in zip(events, anomaly_values):
-        rank = _upper_bound(ordered, float(value))
+        score = float(value)
+        rank = (_lower_bound(ordered, score) + _upper_bound(ordered, score)) / 2
         event.ml_score = rank / max_rank
+
+
+def _lower_bound(values: list[float], needle: float) -> int:
+    low = 0
+    high = len(values)
+    while low < high:
+        mid = (low + high) // 2
+        if values[mid] < needle:
+            low = mid + 1
+        else:
+            high = mid
+    return low
 
 
 def _upper_bound(values: list[float], needle: float) -> int:

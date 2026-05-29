@@ -191,15 +191,18 @@ git diff --cached
 For classifier or pipeline changes:
 
 ```bash
-python3 -m py_compile bot_hunter/*.py
-python3 -m bot_hunter.cli run --input /Users/isabella/Downloads/bot-hunter-dataset.tsv
+uv run --extra eif python -m py_compile bot_hunter/*.py
+uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
 ```
 
 For web/report changes:
 
 ```bash
-python3 -m bot_hunter.web --port 8000
+uv run --extra eif python -m bot_hunter.web --host 127.0.0.1 --port 8000
 ```
+
+Use `--host 0.0.0.0` only when you intentionally want the dashboard reachable from
+other machines on the network.
 
 If port `8000` is blocked:
 
@@ -230,4 +233,3 @@ kill <pid>
 ## Principle
 
 The workflow is useful when it creates better evidence and better review. It is not useful when it adds ceremony without improving the code, report, or product decision.
-

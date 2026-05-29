@@ -131,6 +131,30 @@ def test_web_upload_reports_missing_file(monkeypatch, tmp_path: Path) -> None:
         thread.join(timeout=5)
 
 
+def test_web_upload_rejects_oversized_body(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(web, "ROOT", tmp_path)
+    monkeypatch.setattr(web, "MAX_UPLOAD_BYTES", 1)
+    server = ThreadingHTTPServer(("127.0.0.1", 0), web.Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{server.server_port}"
+    try:
+        body, content_type = _multipart({}, {"file": ("clicks.tsv", b"too large")})
+        request = Request(base_url + "/upload", data=body, headers={"Content-Type": content_type}, method="POST")
+        try:
+            urlopen(request, timeout=5)
+        except HTTPError as exc:
+            assert exc.code == 413
+            payload = json.loads(exc.read().decode("utf-8"))
+            assert "Upload exceeds" in payload["error"]
+        else:
+            raise AssertionError("oversized upload should return HTTP 413")
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
 def test_web_upload_reports_invalid_upload_and_cleans_temp_file(monkeypatch, tmp_path: Path) -> None:
     temp_paths = []
 
@@ -173,6 +197,8 @@ def test_web_run_uses_production_pipeline(monkeypatch, tmp_path: Path) -> None:
         calls.append((str(input_path), output_dir))
         return {"total_events": 0, "ml_backend": "eif"}
 
+    raw = tmp_path / "clicks.tsv"
+    raw.write_text("", encoding="utf-8")
     monkeypatch.setattr(web, "ROOT", tmp_path)
     monkeypatch.setattr(web, "run_pipeline", fake_run_pipeline)
 
@@ -181,9 +207,30 @@ def test_web_run_uses_production_pipeline(monkeypatch, tmp_path: Path) -> None:
     thread.start()
     base_url = f"http://127.0.0.1:{server.server_port}"
     try:
-        payload = json.loads(urlopen(base_url + "/run?input=/tmp/clicks.tsv", timeout=5).read())
+        payload = json.loads(urlopen(base_url + f"/run?input={raw}", timeout=5).read())
         assert payload == {"total_events": 0, "ml_backend": "eif"}
-        assert calls == [("/tmp/clicks.tsv", tmp_path)]
+        assert calls == [(str(raw), tmp_path)]
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=5)
+
+
+def test_web_run_rejects_server_path_outside_root(monkeypatch, tmp_path: Path) -> None:
+    monkeypatch.setattr(web, "ROOT", tmp_path)
+    server = ThreadingHTTPServer(("127.0.0.1", 0), web.Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    base_url = f"http://127.0.0.1:{server.server_port}"
+    try:
+        try:
+            urlopen(base_url + "/run?input=/etc/passwd", timeout=5)
+        except HTTPError as exc:
+            assert exc.code == 400
+            payload = json.loads(exc.read().decode("utf-8"))
+            assert "Server-side input path must be under" in payload["error"]
+        else:
+            raise AssertionError("server path outside root should return HTTP 400")
     finally:
         server.shutdown()
         server.server_close()

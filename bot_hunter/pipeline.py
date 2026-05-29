@@ -44,7 +44,7 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path = ".") -> dict[s
 
     cutoff = _quantile(combined, 0.975) if combined else 0.0
     for event in events:
-        event.is_bot = 1 if event.combined_score >= cutoff or event.heuristic_score >= 0.62 else 0
+        event.is_bot = 1 if event.combined_score > cutoff or event.heuristic_score >= 0.62 else 0
         event.operational_tier = _assign_operational_tier(event)
 
     bot_events = [event for event in events if event.is_bot]

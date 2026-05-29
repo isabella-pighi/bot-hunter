@@ -7,6 +7,7 @@ from types import ModuleType
 import pytest
 
 from bot_hunter.data import ClickEvent
+from bot_hunter.ml import _assign_rank_scores
 from bot_hunter.pipeline import _assign_operational_tier, _method_disagreement, _normalize_reason, run_pipeline
 
 
@@ -70,7 +71,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert summary["total_events"] == 3
     assert summary["ml_backend"] == "eif"
     assert summary["feature_artifact"] == "artifacts/features.tsv"
-    assert summary["tier_counts"] == {"suppress": 0, "quarantine": 1, "monitor": 2}
+    assert summary["tier_counts"] == {"suppress": 0, "quarantine": 0, "monitor": 3}
     submission = (tmp_path / "submission.tsv").read_text(encoding="utf-8")
     assert submission.startswith("event_id\tis_bot\toperational_tier\n")
     assert "evt_1" in submission
@@ -132,6 +133,59 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         "1.098612",
         "2.521641",
     ]
+
+
+def test_single_event_pipeline_is_not_selected_by_percentile_gate(monkeypatch, tmp_path: Path) -> None:
+    install_fake_isotree(monkeypatch)
+    raw = tmp_path / "clicks.tsv"
+    raw.write_text(
+        "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t"
+        "/ad_click?d=a.com&ttc=3000&q=human%20search&ct=US&kl=en&kp=-1&sld=1",
+        encoding="utf-8",
+    )
+
+    summary = run_pipeline(raw, tmp_path)
+    submission = (tmp_path / "submission.tsv").read_text(encoding="utf-8")
+
+    assert summary["bot_events"] == 0
+    assert summary["tier_counts"] == {"suppress": 0, "quarantine": 0, "monitor": 1}
+    assert submission == "event_id\tis_bot\toperational_tier\nevt_1\t0\tmonitor\n"
+
+
+def test_all_tied_combined_scores_do_not_flag_all_events(monkeypatch, tmp_path: Path) -> None:
+    def score_tied_anomalies(events: list[ClickEvent]) -> str:
+        for event in events:
+            event.ml_score = 0.5
+        return "test"
+
+    monkeypatch.setattr("bot_hunter.pipeline.score_anomalies", score_tied_anomalies)
+    raw = tmp_path / "clicks.tsv"
+    raw.write_text(
+        "\n".join(
+            [
+                f"evt_{idx}\t2019-12-02 00:00:0{idx}\tMars\tChrome\tiOS\t"
+                f"/ad_click?d=a-{idx}.com&ttc=3000&q=human%20search%20{idx}"
+                for idx in range(3)
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    summary = run_pipeline(raw, tmp_path)
+
+    assert summary["bot_events"] == 0
+    assert summary["tier_counts"] == {"suppress": 0, "quarantine": 0, "monitor": 3}
+
+
+def test_all_tied_anomaly_scores_use_non_inflated_midrank() -> None:
+    events = [
+        ClickEvent(f"evt_{idx}", datetime(2019, 12, 2), "Mars", "Chrome", "Android", "")
+        for idx in range(4)
+    ]
+
+    _assign_rank_scores(events, [0.5, 0.5, 0.5, 0.5])
+
+    assert [event.ml_score for event in events] == [0.5, 0.5, 0.5, 0.5]
 
 
 def test_pipeline_handles_empty_input(tmp_path: Path) -> None:

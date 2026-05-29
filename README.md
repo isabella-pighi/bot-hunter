@@ -13,9 +13,19 @@ Extended Isolation Forest (EIF) anomaly scorer.
 - `docs/analysis_report.md`, `.html`, and `.pdf`
 - A local HTTP dashboard for review
 
+## Setup
+
+Use `uv sync --extra eif` for a reusable local environment. For one-off commands,
+keep the `uv run --extra eif ...` prefix so the EIF dependency is available without
+an explicit sync step.
+
+```bash
+uv sync --extra eif
+```
+
 ## Quick Start
 
-Install with the EIF extra, then run the single production classifier:
+Run the single production classifier, then start the dashboard:
 
 ```bash
 uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
@@ -100,11 +110,11 @@ The rules agreement threshold is `heuristic_score >= 0.62`. The ML agreement thr
 `ml_score >= 0.975`. This agreement view is diagnostic evidence for review on unlabeled
 data, not a claim of higher measured accuracy.
 
-On `data/bot-hunter-dataset.tsv`, the method disagreement bucket reports 1,572
-`Heuristic + ML` events and 2,159 `ML only` events. The binary bot count remains
-3,732 events; using the single 0.975 agreement threshold moves the operational split
-to 1,940 `suppress`, 1,792 `quarantine`, and 145,507 `monitor` events. This is an
-operational threshold change on unlabeled data, not measured accuracy improvement.
+For the checked-in artifact snapshot generated from `data/bot-hunter-dataset.tsv`,
+the method disagreement bucket reports 1,475 `Heuristic + ML` events and 2,256
+`ML only` events. The binary bot count remains 3,732 events, split into 1,954
+`suppress`, 1,778 `quarantine`, and 145,507 `monitor` events. These are
+run-specific operational counts on unlabeled data, not measured accuracy.
 
 ## Dashboard
 
@@ -116,6 +126,16 @@ repository root and serves:
 - `/features` feature table
 - `/report` HTML report
 - `/api/summary`, `/api/events`, `/api/features`
+- `POST /upload` uploaded TSV form submission that runs the pipeline
+- `GET /run?input=<path>` server-side TSV pipeline run for paths that resolve
+  under the repository/dashboard root
+
+By default, the web server binds to `127.0.0.1`. Use `--host 0.0.0.0` only when you
+intentionally want the dashboard reachable from other machines on the network:
+
+```bash
+uv run --extra eif python -m bot_hunter.web --host 0.0.0.0 --port 8000
+```
 
 ## Development
 
@@ -130,6 +150,9 @@ Run a full artifact refresh:
 ```bash
 uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
 ```
+
+Use `--output-dir <path>` to write `submission.tsv`, `artifacts/`, and `docs/` under
+a different output root.
 
 The project intentionally omits supervised pilots, sklearn Isolation Forest, k-means, and
 obsolete benchmark report surfaces. Reintroduce alternate models only with labelled

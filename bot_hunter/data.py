@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
-from math import log1p, log2
+from math import isfinite, log1p, log2
 from pathlib import Path
 from typing import Iterable
 from urllib.parse import parse_qs, urlsplit
@@ -65,10 +65,7 @@ class ClickEvent:
 
     @property
     def ttc(self) -> int:
-        try:
-            return int(float(self.params.get("ttc", "-1")))
-        except ValueError:
-            return -1
+        return _parse_int_param(self.params.get("ttc"), default=-1)
 
 
 def parse_clicks(path: str | Path) -> list[ClickEvent]:
@@ -142,14 +139,8 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
     ml_feature_weights = select_ml_feature_weights(names)
     burst_counts = _pseudo_session_burst_counts(events)
     for event in events:
-        try:
-            kp = float(event.params.get("kp", "-9"))
-        except ValueError:
-            kp = -9.0
-        try:
-            sld = float(event.params.get("sld", "0"))
-        except ValueError:
-            sld = 0.0
+        kp = _parse_float_param(event.params.get("kp"), default=-9.0)
+        sld = _parse_float_param(event.params.get("sld"), default=0.0)
         click_delay_seconds = max(event.ttc, 0) / 1000.0
         event.features = [
             log1p(counters["domain"][event.domain]),
@@ -211,6 +202,24 @@ def _query_entropy(query: str) -> float:
     total = len(query)
     counts = Counter(query)
     return -sum((count / total) * log2(count / total) for count in counts.values())
+
+
+def _parse_int_param(value: str | None, default: int) -> int:
+    try:
+        parsed = float(value if value is not None else str(default))
+        if not isfinite(parsed):
+            return default
+        return int(parsed)
+    except (OverflowError, ValueError):
+        return default
+
+
+def _parse_float_param(value: str | None, default: float) -> float:
+    try:
+        parsed = float(value if value is not None else str(default))
+    except (OverflowError, ValueError):
+        return default
+    return parsed if isfinite(parsed) else default
 
 
 def iter_event_dicts(events: Iterable[ClickEvent]) -> Iterable[dict[str, object]]:

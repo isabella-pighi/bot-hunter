@@ -91,7 +91,7 @@ The reviewer should be read-only by default. If the reviewer proposes code, the 
 Run each agent from the project root so they share the same repository context:
 
 ```bash
-cd /Users/isabella/bot-hunter
+cd <repo-root>
 ```
 
 Check local prerequisites:
@@ -139,10 +139,10 @@ Optional orchestrator:
 For headless review, the reviewer can be started with a standing instruction:
 
 ```bash
-HCOM_TAG=reviewer hcom claude -p "Act as read-only reviewer. Watch for coder handoffs, inspect the git diff, and reply with blocking findings first."
+uvx hcom claude --help
 ```
 
-Exact command flags may vary by local HCOM, Claude Code, and Codex CLI versions. The stable requirements are the tags, shared working directory, and explicit handoff messages.
+Prefer the `scripts/start-*-reviewer` helpers for normal reviewer launches. Exact direct-launch command flags may vary by local HCOM, Claude Code, and Codex CLI versions, so check `uvx hcom claude --help` before bypassing the scripts. The stable requirements are the tags, shared working directory, and explicit handoff messages.
 
 This folder also includes role prompts in `development approach/prompts/`. The helper scripts pass these prompts to HCOM with `--hcom-system-prompt`, so each agent starts with the expected role and handoff discipline.
 
@@ -255,8 +255,8 @@ For classifier or dashboard changes:
 3. Coder runs:
 
 ```bash
-python3 -m py_compile bot_hunter/*.py
-python3 -m bot_hunter.cli run --input /Users/isabella/Downloads/bot-hunter-dataset.tsv
+uv run --extra eif python -m py_compile bot_hunter/*.py
+uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
 ```
 
 4. Reviewer inspects:

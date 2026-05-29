@@ -9,7 +9,7 @@ endobj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 2943 >>
+<< /Length 3007 >>
 stream
 BT
 /F1 10 Tf
@@ -31,7 +31,9 @@ T*
 T*
 (the dataset does not include labels, so precision is reported as an operational) Tj
 T*
-(confidence estimate instead of a calibrated metric.) Tj
+(confidence estimate instead of a calibrated metric. All event counts in this report are) Tj
+T*
+(run-specific and will change if the pipeline is re-run on updated data.) Tj
 T*
 () Tj
 T*
@@ -63,27 +65,27 @@ T*
 T*
 (query/domain pattern on the same event. The second classifier is an Extended Isolation) Tj
 T*
-(Forest anomaly model over 14 ML features selected from 14 engineered behavioral) Tj
+(Forest anomaly model over all 14 engineered behavioral features as ML inputs, including) Tj
 T*
-(features, including region/browser/OS frequency, global ct country frequency, explicit) Tj
+(region/browser/OS frequency, global ct country frequency, explicit mechanical features) Tj
 T*
-(mechanical features for sub-200ms clicks, local burst density, and query entropy. Query) Tj
+(for sub-200ms clicks, local burst density, and query entropy. Query length, query word) Tj
 T*
-(length, query word count, and uncertain URL flags are no longer engineered features.) Tj
+(count, and uncertain URL flags are no longer engineered features. High-volume domain) Tj
 T*
-(High-volume domain frequency and global country frequency remain available but are down-) Tj
+(frequency and global country frequency remain available but are down-weighted to 0.50) Tj
 T*
-(weighted to 0.50 and 0.50, respectively, in the standardized ML matrix. Repetition and) Tj
+(and 0.50, respectively, in the standardized ML matrix. Repetition and timing features) Tj
 T*
-(timing features that can dominate standalone EIF tail evidence are also down-weighted to) Tj
+(that can dominate standalone EIF tail evidence are also down-weighted to 0.50:) Tj
 T*
-(0.50: query/domain repetition, query repetition, log-scaled time-to-click magnitude,) Tj
+(query/domain repetition, query repetition, log-scaled time-to-click magnitude, sub-200ms) Tj
 T*
-(sub-200ms click flags, and query entropy. Events isolated quickly by random hyperplane) Tj
+(click flags, and query entropy. Events isolated quickly by random hyperplane splits) Tj
 T*
-(splits receive higher anomaly scores. EIF is the only production anomaly model;) Tj
+(receive higher anomaly scores. EIF is the only production anomaly model; alternate ML) Tj
 T*
-(alternate ML backends and supervised pilots have been removed.) Tj
+(backends and supervised pilots have been removed.) Tj
 T*
 () Tj
 T*
@@ -97,8 +99,6 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,421 events) Tj
-T*
 ET
 endstream
 endobj
@@ -106,12 +106,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2289 >>
+<< /Length 2277 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(- repeated query: 3,421 events) Tj
+T*
 (- repeated query/domain pair: 2,095 events) Tj
 T*
 (- confirmed query repetition: 2,023 events) Tj
@@ -194,8 +196,6 @@ T*
 T*
 () Tj
 T*
-(Method disagreement \(ml_score >= 0.975\):) Tj
-T*
 ET
 endstream
 endobj
@@ -203,12 +203,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 3148 >>
+<< /Length 3106 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(Method disagreement \(ml_score >= 0.975\):) Tj
+T*
 () Tj
 T*
 (- Heuristic + ML: 1,475 events) Tj
@@ -291,8 +293,6 @@ T*
 T*
 (adds low-weight supporting evidence rather than a standalone bot decision. Structured) Tj
 T*
-(rule contributions include threshold_mode, with fixed rules reported as absolute and) Tj
-T*
 ET
 endstream
 endobj
@@ -300,12 +300,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 2946 >>
+<< /Length 2909 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(rule contributions include threshold_mode, with fixed rules reported as absolute and) Tj
+T*
 (adaptive exact-ttc reuse reported as adaptive_percentile when present. The Extended) Tj
 T*
 (Isolation Forest model catches multivariate oddities that a small rule set may miss.) Tj
@@ -324,21 +326,23 @@ T*
 T*
 () Tj
 T*
-(The estimated probability that a flagged event is fraudulent is 72%. This is not label-) Tj
+(Operational confidence estimate: 72% of flagged events are likely fraudulent. This is) Tj
 T*
-(calibrated precision; it is a reasoned estimate based on agreement between independent) Tj
+(not label-calibrated precision; it is a reasoned, run-specific estimate based on) Tj
 T*
-(signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly) Tj
+(agreement between independent signals. Events flagged by both the heuristic model and) Tj
 T*
-(score are more likely to be fraudulent than events flagged by only one weak signal. This) Tj
+(the upper tail of the ML anomaly score are more likely to be fraudulent than events) Tj
 T*
-(estimate uses the ml_score >= 0.975 agreement threshold; the value is higher than) Tj
+(flagged by only one weak signal. This estimate uses the ml_score >= 0.975 agreement) Tj
 T*
-(estimates computed at 0.995 because the agreement definition broadened, not because) Tj
+(threshold; the value is higher than estimates computed at 0.995 because the agreement) Tj
 T*
-(detection quality improved. The report therefore treats probability as an operational) Tj
+(definition broadened, not because detection quality improved. The report therefore) Tj
 T*
-(confidence estimate, not a measured ground truth metric.) Tj
+(treats probability as an operational confidence estimate, not a measured ground truth) Tj
+T*
+(metric.) Tj
 T*
 () Tj
 T*
@@ -386,10 +390,6 @@ T*
 T*
 (the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the) Tj
 T*
-(remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
-T*
-(while retaining it for drift checks and future labels.) Tj
-T*
 ET
 endstream
 endobj
@@ -397,12 +397,16 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
 endobj
 12 0 obj
-<< /Length 1290 >>
+<< /Length 1450 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
+T*
+(while retaining it for drift checks and future labels.) Tj
+T*
 () Tj
 T*
 ( 11. Future work) Tj
@@ -458,16 +462,16 @@ xref
 0000000058 00000 n
 0000000141 00000 n
 0000000211 00000 n
-0000003206 00000 n
-0000003332 00000 n
-0000005673 00000 n
-0000005799 00000 n
-0000008999 00000 n
-0000009125 00000 n
-0000012124 00000 n
-0000012252 00000 n
-0000013595 00000 n
+0000003270 00000 n
+0000003396 00000 n
+0000005725 00000 n
+0000005851 00000 n
+0000009009 00000 n
+0000009135 00000 n
+0000012097 00000 n
+0000012225 00000 n
+0000013728 00000 n
 trailer << /Size 14 /Root 1 0 R >>
 startxref
-13723
+13856
 %%EOF

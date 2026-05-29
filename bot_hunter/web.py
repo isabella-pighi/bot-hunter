@@ -5,12 +5,15 @@ import json
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from threading import Lock
 from urllib.parse import parse_qs, urlparse
 
 from .pipeline import run_pipeline
 
 
 ROOT = Path(__file__).resolve().parents[1]
+MAX_UPLOAD_BYTES = 50 * 1024 * 1024
+PIPELINE_LOCK = Lock()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -38,7 +41,9 @@ class Handler(BaseHTTPRequestHandler):
                 self._send_json({"error": "Pass ?input=/path/to/raw.tsv"}, status=400)
                 return
             try:
-                summary = run_pipeline(input_path, ROOT)
+                safe_input_path = _validate_server_input_path(input_path)
+                with PIPELINE_LOCK:
+                    summary = run_pipeline(safe_input_path, ROOT)
             except (OSError, ValueError) as exc:
                 self._send_json({"error": str(exc)}, status=400)
             else:
@@ -56,6 +61,12 @@ class Handler(BaseHTTPRequestHandler):
         content_length = _parse_int(self.headers.get("Content-Length", "0"), default=0)
         if content_length <= 0:
             self._send_json({"error": "Upload a TSV file before running the pipeline"}, status=400)
+            return
+        if content_length > MAX_UPLOAD_BYTES:
+            self._send_json(
+                {"error": f"Upload exceeds the {MAX_UPLOAD_BYTES} byte limit"},
+                status=413,
+            )
             return
 
         body = self.rfile.read(content_length)
@@ -76,7 +87,8 @@ class Handler(BaseHTTPRequestHandler):
             with tempfile.NamedTemporaryFile("wb", suffix=suffix, delete=False) as handle:
                 handle.write(upload["content"])
                 tmp_path = Path(handle.name)
-            summary = run_pipeline(tmp_path, ROOT)
+            with PIPELINE_LOCK:
+                summary = run_pipeline(tmp_path, ROOT)
         except (OSError, ValueError) as exc:
             self._send_json({"error": str(exc)}, status=400)
         else:
@@ -116,6 +128,18 @@ def _parse_int(value: str, default: int) -> int:
         return max(0, int(value))
     except ValueError:
         return default
+
+
+def _validate_server_input_path(input_path: str) -> Path:
+    root = ROOT.resolve()
+    path = Path(input_path).expanduser().resolve()
+    try:
+        path.relative_to(root)
+    except ValueError as exc:
+        raise ValueError(
+            f"Server-side input path must be under {root}"
+        ) from exc
+    return path
 
 
 def _parse_multipart_form(content_type: str, body: bytes) -> tuple[dict[str, str], dict[str, dict[str, object]]]:
@@ -309,7 +333,7 @@ def _dashboard_html() -> str:
         ['Events analyzed', s.total_events.toLocaleString()],
         ['Flagged bots', s.bot_events.toLocaleString()],
         ['Bot rate', pct(s.bot_rate)],
-        ['Operational confidence', pct(s.estimated_precision)]
+        ['Operational confidence estimate', pct(s.estimated_precision)]
       ];
       document.getElementById('metrics').innerHTML = metrics.map(([k,v]) => `<div class="card"><div class="label">${k}</div><div class="metric">${v}</div></div>`).join('');
       renderBars('reasons', s.top_reasons || []);

@@ -49,7 +49,7 @@ The memory store is ignored by git. Use MCP memory for working context, not for 
 From the repository root:
 
 ```bash
-cd /Users/isabella/bot-hunter
+cd <repo-root>
 ./scripts/setup-memory-mcp
 ./scripts/check-agent-team
 ```
@@ -383,8 +383,8 @@ Never revert user or agent changes casually. Work with existing changes. Ask the
 For classifier, report, dashboard, or submission changes, the coder should run:
 
 ```bash
-python3 -m py_compile bot_hunter/*.py
-python3 -m bot_hunter.cli run --input /Users/isabella/Downloads/bot-hunter-dataset.tsv
+uv run --extra eif python -m py_compile bot_hunter/*.py
+uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
 ```
 
 The algorithm and engineering reviewer should inspect:
@@ -396,7 +396,7 @@ git diff
 
 The algorithm and engineering reviewer should verify that `submission.tsv`, `artifacts/summary.json`, and report files are consistent with the changed logic when those artifacts are affected.
 
-For dashboard, report, or documentation changes, the UX/docs coder should run targeted rendering or content checks appropriate to the change. If the HTTP interface changes, verify the local app can still serve and the page remains business-readable.
+For dashboard, report, or documentation changes, the UX/docs coder should run targeted rendering or content checks appropriate to the change. If the HTTP interface changes, verify the local app can still serve and the page remains business-readable. Use `uv run --extra eif python -m bot_hunter.web --host 127.0.0.1 --port 8000` for local-only testing, or `--host 0.0.0.0` only when another machine must reach the dashboard.
 
 ## Review Checklist
 
