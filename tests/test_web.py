@@ -43,7 +43,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
             'id="inputPath" class="dataset-field" placeholder="/path/to/bot-hunter-dataset.tsv"'
             in dashboard
         )
-        assert "Choose a local .tsv file to upload and analyze." in dashboard
+        assert "Choose a local .tsv file to upload and analyse." in dashboard
         assert (
             "Use only when the TSV already exists on the machine running this dashboard."
             in dashboard
@@ -59,13 +59,79 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Choose a TSV file before running the pipeline." in dashboard
         assert "Enter a file path before running the pipeline." in dashboard
         assert 'id="mlBackend"' not in dashboard
-        assert "Operational confidence" in dashboard
-        assert "Method Disagreement" in dashboard
-        assert 'id="disagreement"' in dashboard
-        assert "Adaptive Rule Thresholds" in dashboard
+        assert "Bot Hunter Business Dashboard" in dashboard
+        assert "What this run says" in dashboard
+        assert "Business problem" in dashboard
+        assert "What was analysed" in dashboard
+        assert "How to act" in dashboard
+        assert "Run at a glance" in dashboard
+        assert "Traffic Explorer" in dashboard
+        assert "Query Terms" in dashboard
+        assert "Method/Tier Breakdown" in dashboard
+        assert "Help" in dashboard
+        assert "Operational tiers" in dashboard
+        assert "Method buckets" in dashboard
+        assert "Anomaly classes" in dashboard
+        assert "Anomaly classes and handling" in dashboard
+        assert "Recommended actions" in dashboard
+        assert "Technical evidence" in dashboard
+        assert "Adaptive rule thresholds" in dashboard
         assert 'id="ruleStrengths"' in dashboard
         assert 'id="heuristicThresholds"' in dashboard
-        assert '<section class="card block">' in dashboard
+        assert 'id="tierChart"' in dashboard
+        assert 'id="methodChart"' in dashboard
+        assert 'id="classChart"' in dashboard
+        assert 'id="classCards"' in dashboard
+        assert 'id="filteringOptions"' in dashboard
+        assert 'id="definitionButtons"' in dashboard
+        assert 'id="helpModal" role="dialog" aria-modal="true"' in dashboard
+        assert 'onclick="if(event.target===this)closeDefinition()"' in dashboard
+        assert "openDefinition" in dashboard
+        assert "closeDefinition" in dashboard
+        assert "Escape" in dashboard
+        assert "event.key === 'Tab'" in dashboard
+        assert "event.preventDefault()" in dashboard
+        assert "Country / ct" in dashboard
+        assert "Not available in sample_events.json" in dashboard
+        assert "Raw country/ct is not available in the row sample." in dashboard
+        assert "Country/ct: unavailable in row sample" not in dashboard
+        assert "Detected anomaly sample" in dashboard
+        assert "All traffic rows unavailable" in dashboard
+        assert "Device cluster (region/browser/OS)" in dashboard
+        assert "Rows below come from `artifacts/sample_events.json`" in dashboard
+        assert "250-row highest-risk suppress sample" in dashboard
+        assert "quarantine/monitor rows" in dashboard
+        assert "ML-only event rows" in dashboard
+        assert "anomaly class per row" in dashboard
+        assert "Top query terms in anomaly sample" in dashboard
+        assert "Top query/domain combinations" in dashboard
+        assert "Summary top queries" in dashboard
+        assert 'id="activeFilters"' in dashboard
+        assert 'id="filteredEvents"' in dashboard
+        assert 'id="sampleQueries"' in dashboard
+        assert 'id="queryDomainPairs"' in dashboard
+        assert 'id="summaryQueries"' in dashboard
+        assert 'role="img"' in dashboard
+        assert 'aria-label="${escapeHtml(label)} donut chart"' in dashboard
+        assert "tierChart donut chart" not in dashboard
+        assert "classChart donut chart" not in dashboard
+        assert "The required yes/no output" in dashboard
+        assert "The suggested business handling" in dashboard
+        assert "A high-confidence candidate" in dashboard
+        assert "Traffic to hold, delay, sample" in dashboard
+        assert "Traffic not selected for action" in dashboard
+        assert "Evidence from transparent rules" in dashboard
+        assert "How unusual the event looks" in dashboard
+        assert "0.58 rule evidence plus 0.42 anomaly-model evidence" in dashboard
+        assert "A review group that explains the main pattern" in dashboard
+        assert "not measured precision" in dashboard
+        assert "The run-specific cutoff" in dashboard
+        assert "Data without known right answers" in dashboard
+        assert "not proven fraud labels" in dashboard
+        assert "ML-only traffic should be sampled or quarantined" in dashboard
+        assert "not ground-truth fraud rules" in dashboard
+        assert '<p class="label">${escapeHtml(definitions[tier])}</p>' not in dashboard
+        assert '<section class="panel">' in dashboard
         assert 'style="margin-bottom' not in dashboard
         assert "renderRuleStrengths(s.rule_strengths || {})" in dashboard
         assert "renderHeuristicThresholds(s.heuristic_thresholds || {})" in dashboard
@@ -78,8 +144,28 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "item.family || item.rule_family || 'general'" in dashboard
         assert "score +${applied} of ${raw}" in dashboard
         assert "method_disagreement || []" in dashboard
-        assert "ML >= ${ml}" in dashboard
-        assert "not measured accuracy" in dashboard
+        assert "renderMethodChart(s.method_disagreement || [])" in dashboard
+        assert (
+            "renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown')"
+            in dashboard
+        )
+        assert "renderExplorer()" in dashboard
+        assert "renderQueries(sampleEvents, summary)" in dashboard
+        assert "methodBucket(event)" in dashboard
+        assert "deviceLabel(event)" in dashboard
+        assert 'class="method-bars" role="img"' in dashboard
+        assert "Method buckets bar chart for review-relevant events" in dashboard
+        assert "label !== 'Neither strong'" in dashboard
+        assert "excluded from this review-bucket chart" in dashboard
+        assert (
+            "renderDonut('tierChart', 'Operational tiers', "
+            "Object.entries(s.tier_counts || {})" in dashboard
+        )
+        assert (
+            "renderDonut('classChart', 'Anomaly classes', classes, 'selected')"
+            in dashboard
+        )
+        assert "(s.anomaly_classes || {}).classes || []" in dashboard
         assert "0.90 ML agreement" not in dashboard
 
         features_page = (
