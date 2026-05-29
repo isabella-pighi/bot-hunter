@@ -28,9 +28,9 @@ Operating rules:
 
 - Inspect the relevant code before editing.
 - Keep changes focused on the task brief.
-- Prefer existing repo patterns and standard-library Python unless the task explicitly allows new dependencies.
+- Prefer existing repo patterns and ask the human owner or orchestrator before
+  installing new packages.
 - Make runtime behavior observable with clear logs, metrics, summaries, or status output when appropriate.
-- Add comments only where they explain algorithmic choices, assumptions, or non-obvious tradeoffs.
 - Run targeted verification before handing off.
 - Treat generated artifacts as deliverables only when the task requires them.
 - Do not push or merge unless the human owner or orchestrator explicitly asks.

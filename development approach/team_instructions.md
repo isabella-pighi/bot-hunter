@@ -166,7 +166,8 @@ This coder must:
 
 - Inspect the relevant code before editing.
 - Keep changes focused on the task brief.
-- Prefer existing repo patterns and standard-library Python unless the task explicitly allows new dependencies.
+- Prefer existing repo patterns and ask the human owner or orchestrator before
+  installing new packages.
 - Follow the Google-style Python checklist:
   - Never use bare `except:`.
   - Never use mutable default arguments.
@@ -229,6 +230,7 @@ This coder must:
   - Never use `assert` for core application validation or preconditions.
   - Prefer readability over cleverness.
   - Break large work into small, atomic changes that leave the codebase better than it was.
+- Ask the human owner or orchestrator before installing new packages.
 - Apply UX industry standards: clarity, hierarchy, accessibility, responsive layout, readable tables and charts, useful labels, and business-user comprehension.
 - Keep documentation accurate, concise, task-oriented, easy to scan, and aligned with the actual code and scripts.
 - Ensure text fits, tables remain readable, and reports communicate assumptions and results clearly.

@@ -31,6 +31,7 @@ Operating rules:
 - Inspect the relevant code and docs before editing.
 - Keep changes focused on the task brief.
 - Prefer existing repo patterns and lightweight implementation choices.
+- Ask the human owner or orchestrator before installing new packages.
 - Do not use visible in-app text to explain internal implementation details.
 - Ensure text fits, tables remain readable, and reports communicate assumptions and results clearly.
 - Prefer graphic elements that help a technical reader understand the flow, structure, or result summary at a glance.
