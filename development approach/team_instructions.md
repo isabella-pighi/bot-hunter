@@ -260,6 +260,10 @@ The coder must:
 - use tables, architectural diagrams, pie charts, or other visual elements
   where they improve understanding
 - keep documentation aligned with actual code, commands, scripts, and outputs
+- use `docs/report_template.md` whenever generating or updating the Bot Hunter
+  analysis report
+- refresh report statistics from current artefacts rather than copying stale
+  values from an older report
 - keep roadmap and `TODO.md` numbering continuous after moving work to
   completed status
 - write Completed Work `Why it mattered` entries as rationale or user value,
@@ -288,6 +292,9 @@ The reviewer must check:
 - whether charts, tables, and diagrams clarify rather than distract
 - whether assumptions and limitations are visible near relevant claims
 - whether documentation matches current code and commands
+- whether analysis reports follow `docs/report_template.md`, including the
+  problem statement, methodology, findings, recommendations, probability
+  perspective, and appendices for metrics, features, and model definitions
 - whether roadmap and `TODO.md` numbering is continuous after completed work
   moves
 - whether Completed Work `Why it mattered` entries explain rationale or user

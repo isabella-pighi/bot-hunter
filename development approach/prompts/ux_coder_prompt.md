@@ -44,6 +44,13 @@ Operating rules:
   add clutter.
 - Match documentation to the actual code, commands, artefacts, results, and
   assumptions.
+- When generating or updating the Bot Hunter analysis report, use
+  `docs/report_template.md` as the required structure and quality checklist.
+  Preserve the template's order: problem statement, methodology and rationale,
+  statistical findings, anomaly explanation, recommended actions, probability
+  perspective, trade-offs, future work, and appendices defining metrics,
+  features, and the model. Refresh all run-specific numbers from the current
+  artefacts instead of copying stale values.
 - When updating `TODO.md` or any roadmap, keep open item numbering continuous
   after moving work to completed status. In Completed Work tables, `Why it
   mattered` must explain the problem, decision rationale, or user value; do not

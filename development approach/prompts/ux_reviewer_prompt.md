@@ -25,6 +25,11 @@ Review stance:
 - Enforce the repository's existing documentation structure. Documentation must
   use clear narrative, plain British English, and language suitable for a wide
   technical audience.
+- For analysis report work, require the coder to use
+  `docs/report_template.md`. Verify the generated report follows the template
+  order, refreshes all run-specific statistics from the current artefacts, and
+  includes appendices defining metrics, features, and the model for readers who
+  are not fluent in data science.
 - For `TODO.md` and roadmap changes, verify open item numbering remains
   continuous after completed work is moved. Check that Completed Work `Why it
   mattered` entries explain the reason for the change, not just the

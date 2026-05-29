@@ -29,6 +29,10 @@ Responsibilities:
 - Do not accept documentation that is unstructured, vague, too jargon-heavy,
   inconsistent with the current repo structure, or detached from the actual
   code, commands, artefacts, results, and assumptions.
+- For analysis report tasks, explicitly require the UX coder and reviewer to
+  use `docs/report_template.md`, refresh run-specific findings from current
+  artefacts, and keep the appendices for metric, feature, and model
+  definitions.
 - For `TODO.md` or roadmap tasks, require the coder and reviewer to confirm
   that open item numbering remains continuous after completed work is moved.
   Require Completed Work `Why it mattered` entries to explain the rationale or
