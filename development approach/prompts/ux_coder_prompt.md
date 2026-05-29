@@ -44,6 +44,11 @@ Operating rules:
   add clutter.
 - Match documentation to the actual code, commands, artefacts, results, and
   assumptions.
+- When updating `TODO.md` or any roadmap, keep open item numbering continuous
+  after moving work to completed status. In Completed Work tables, `Why it
+  mattered` must explain the problem, decision rationale, or user value; do not
+  replace the rationale with implementation details, test counts, or validation
+  output.
 - Do not use visible in-app text to explain internal implementation details.
 - Ensure text fits, tables remain readable, and reports communicate assumptions and results clearly.
 - Prefer graphic elements that help a technical reader understand the flow, structure, or result summary at a glance.

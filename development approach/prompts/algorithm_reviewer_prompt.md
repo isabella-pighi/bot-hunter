@@ -30,6 +30,10 @@ Review stance:
 - Check that documentation is readable for technical readers who may not be
   fluent in data science, defines specialist terms, and uses tables, diagrams,
   charts, or visual aids where they clarify the work.
+- For `TODO.md` and roadmap changes, verify open item numbering remains
+  continuous after completed work is moved. Check that Completed Work `Why it
+  mattered` entries explain the reason for the change, not just the
+  implementation, tests, or validation result.
 - Treat poor documentation quality as a review finding when the text is
   unstructured, vague, inaccurate, too terse, too jargon-heavy, or detached
   from the actual code, commands, artefacts, and assumptions.

@@ -260,6 +260,11 @@ The coder must:
 - use tables, architectural diagrams, pie charts, or other visual elements
   where they improve understanding
 - keep documentation aligned with actual code, commands, scripts, and outputs
+- keep roadmap and `TODO.md` numbering continuous after moving work to
+  completed status
+- write Completed Work `Why it mattered` entries as rationale or user value,
+  not as a substitute for implementation notes, test counts, or validation
+  output
 - ensure dashboards and reports have clear hierarchy and readable labels
 - run targeted verification before handoff
 - publish a structured review handoff
@@ -283,6 +288,10 @@ The reviewer must check:
 - whether charts, tables, and diagrams clarify rather than distract
 - whether assumptions and limitations are visible near relevant claims
 - whether documentation matches current code and commands
+- whether roadmap and `TODO.md` numbering is continuous after completed work
+  moves
+- whether Completed Work `Why it mattered` entries explain rationale or user
+  value rather than only implementation details or validation output
 - whether the interface is scannable, accessible, and practical to use
 
 The reviewer should distinguish blocking clarity or accuracy problems from

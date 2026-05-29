@@ -212,7 +212,7 @@ botnet command and control categories should usually matter more than a broad
 - Add an allowlist stage so legitimate domains can be protected from stale or
   overly broad reputation signals.
 
-### 11. Calibrate Thresholds Against Historical Batches
+### 10. Calibrate Thresholds Against Historical Batches
 
 Current thresholds are batch-relative. That is appropriate for a self-contained
 dataset, but production use would benefit from historical stability.
@@ -231,7 +231,7 @@ that visible before anyone treats the new output as normal.
 
 ## P3: Future Work That Needs More Evidence Or External Context
 
-### 12. Add Optional Live Reputation Providers
+### 11. Add Optional Live Reputation Providers
 
 Live providers such as Google Safe Browsing, Google Web Risk, Spamhaus DBL, or
 SURBL could add stronger threat intelligence when credentials and usage terms
@@ -244,7 +244,7 @@ allow it.
 - Use cached unique-domain lookups, not per-event calls.
 - Document provider terms and data handling before enabling the feature.
 
-### 13. Add Labelled Validation
+### 12. Add Labelled Validation
 
 The most important future improvement is labelled validation. Labels could come
 from manual review, invalid-traffic feedback, chargebacks, confirmed abuse
@@ -271,7 +271,7 @@ pipeline looks the way it does.
 | Anomaly classifier | Added `is_sub_200ms_click` | Makes sub-human reaction timing explicit for ML, not only the rules layer. |
 | Anomaly classifier | Added 10-second pseudo-session burst density | Captures coordinated click patterns that exact same-second counts can miss. |
 | Anomaly classifier | Added query entropy | Helps distinguish natural-looking query text from synthetic or random strings. |
-| Anomaly classifier | Replaced raw `kp` and `sld` ML inputs with aggregate counts | Uses `log_kp_count` and `log_sld_count` for ML, weighted `0.50` and `0.25`, while retaining raw values in `artifacts/features.tsv` for audit. Validation: targeted tests 20 passed, full tests 44 passed, selected bot count unchanged at 3,731 on the full EIF run. |
+| Anomaly classifier | Replaced raw `kp` and `sld` ML inputs with aggregate counts | Treats `kp` and `sld` as categorical identifiers rather than ordered measurements, so the model learns whether a value is unusually concentrated without inventing false numeric distance between categories. Raw values remain in `artifacts/features.tsv` for audit. |
 | Anomaly classifier | Consolidated production scoring on Extended Isolation Forest | Removes alternate backend drift and keeps output semantics consistent. |
 | Explainability | Added structured rule contributions | Gives stable rule IDs, labels, weights, observed values, and thresholds for audits. |
 | Rules classifier | Added concentrated `ct` context as supporting evidence | Lets the rules layer use country-like concentration only when paired with repeated query behaviour and clustering. |

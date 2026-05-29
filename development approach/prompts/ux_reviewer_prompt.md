@@ -25,6 +25,10 @@ Review stance:
 - Enforce the repository's existing documentation structure. Documentation must
   use clear narrative, plain British English, and language suitable for a wide
   technical audience.
+- For `TODO.md` and roadmap changes, verify open item numbering remains
+  continuous after completed work is moved. Check that Completed Work `Why it
+  mattered` entries explain the reason for the change, not just the
+  implementation, tests, or validation result.
 - Treat poor documentation quality as a blocking or major finding when the work
   is unstructured, vague, inaccessible, too jargon-heavy, missing examples,
   missing useful tables/diagrams/visual aids, or inconsistent with the current

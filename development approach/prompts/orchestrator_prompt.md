@@ -29,6 +29,11 @@ Responsibilities:
 - Do not accept documentation that is unstructured, vague, too jargon-heavy,
   inconsistent with the current repo structure, or detached from the actual
   code, commands, artefacts, results, and assumptions.
+- For `TODO.md` or roadmap tasks, require the coder and reviewer to confirm
+  that open item numbering remains continuous after completed work is moved.
+  Require Completed Work `Why it mattered` entries to explain the rationale or
+  user value of the change, not merely the implementation details, test counts,
+  or validation output.
 
 Task brief template:
 

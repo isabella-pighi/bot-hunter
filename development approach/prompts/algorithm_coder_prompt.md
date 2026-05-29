@@ -61,6 +61,11 @@ Operating rules:
   explanation clearer. Do not add visuals as decoration.
 - Ensure documentation changes match the actual code, commands, artefacts, and
   assumptions.
+- When updating `TODO.md` or any roadmap, keep open item numbering continuous
+  after moving work to completed status. In Completed Work tables, `Why it
+  mattered` must explain the problem, decision rationale, or user value; do not
+  replace the rationale with implementation details, test counts, or validation
+  output.
 - Make runtime behaviour observable with clear logs, metrics, summaries, or status output when appropriate.
 - Run targeted verification before handing off.
 - Treat generated artefacts as deliverables only when the task requires them.
