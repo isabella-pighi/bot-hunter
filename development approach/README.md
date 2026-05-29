@@ -1,67 +1,102 @@
 # Development Approach
 
-This folder contains the documentation for the local agentic development team.
+This folder documents the local agentic development team used for Bot Hunter.
+The team is intentionally small: one human owner, one orchestrator, and two
+specialist coder/reviewer pairs. The purpose is not to automate judgement away.
+The purpose is to make work traceable, reviewed, and easy to challenge.
 
-- `team_instructions.md`: canonical consolidated instructions for the team.
-- `community_cheat_sheet.md`: shareable summary of the local agentic development team pattern.
-- `agentic_development_architecture.md`: architecture, roles, handoff protocol, review checklist, and Bot Hunter-specific workflow.
-- `prompts/algorithm_coder_prompt.md`: Codex algorithm and engineering coder role prompt.
-- `prompts/algorithm_reviewer_prompt.md`: Claude algorithm and engineering reviewer role prompt.
-- `prompts/ux_coder_prompt.md`: Codex UX, report, and documentation coder role prompt.
-- `prompts/ux_reviewer_prompt.md`: Claude UX, report, and documentation reviewer role prompt.
-- `prompts/orchestrator_prompt.md`: orchestrator role prompt.
+Bot Hunter is a good use case for this pattern because it combines software
+engineering, data-science judgement, user-facing explanation, and generated
+deliverables. A change to a threshold, for example, is not just a code change.
+It may alter `submission.tsv`, the dashboard, the report, and the probability
+story told to the reader. The team structure is designed to keep those concerns
+visible.
 
-The executable helper scripts remain in `scripts/` because they are operational project tooling, not documentation. They load these prompts from this folder when starting HCOM agents.
+## Folder Map
 
-Claude Code uses the project-scoped MCP config in `.mcp.json`. Codex CLI uses its user-level MCP registry, which can be configured with `./scripts/setup-memory-mcp`. Both point at the same local storage under `.mcp-memory/`. The storage files are intentionally ignored by git so team memory can persist locally without leaking private notes into the repository.
+| File | Purpose |
+|---|---|
+| `README.md` | Narrative entry point for the development approach |
+| `team_instructions.md` | Canonical operating instructions for the team |
+| `agentic_development_architecture.md` | Architecture, rationale, and workflow design |
+| `community_cheat_sheet.md` | Short shareable summary of the pattern |
+| `prompts/` | Role prompts loaded by the HCOM launch scripts |
 
-## Team Setup And HCOM
+The executable helper scripts remain in `../scripts/` because they are project
+tooling rather than documentation. They load the prompts from this folder when
+starting HCOM agents.
 
-### Development Model
+## Team Model
 
-This repository is also used to document and exercise a local agentic
-development workflow. The aim is disciplined collaboration, not uncontrolled
-autonomy.
-
-The team has five roles:
+The team has six responsibilities across five active roles:
 
 | Role | Default tool | Responsibility |
 |---|---|---|
-| Human owner | Human | Sets goals, approves trade-offs, owns final judgement |
-| Orchestrator | Codex CLI | Routes work, waits for review, owns commits and pushes |
-| Algorithm coder | Codex CLI | Pipeline, features, classifiers, tests, runtime supportability |
-| Algorithm reviewer | Claude Code | Independent engineering and data-science review |
-| UX coder | Codex CLI | Dashboard, report, documentation, user-facing explanations |
-| UX reviewer | Claude Code | Independent UX, report, accessibility, and documentation review |
+| Human owner | Human | Sets goals, approves trade-offs, and owns final decisions |
+| Orchestrator | Codex CLI | Routes work, enforces review gates, commits, and pushes |
+| Algorithm coder | Codex CLI | Pipeline, features, classifiers, tests, and supportability |
+| Algorithm reviewer | Claude Code | Engineering quality, methodology, and probability critique |
+| UX coder | Codex CLI | Dashboard, reports, documentation, and user-facing language |
+| UX reviewer | Claude Code | UX clarity, accessibility, report quality, and documentation accuracy |
 
-The orchestrator must not implement code, write tests, edit documentation, or
-perform review work itself. It sends tasks to the relevant specialist pair over
-HCOM, waits for the reviewer response, checks the evidence, and only then
-commits and pushes accepted work.
+The orchestrator is deliberately not a coder. It must not edit application
+files, write tests, rewrite documentation, or resolve reviewer findings itself.
+It delegates task work through HCOM, waits for reviewer responses, checks the
+evidence, and then owns the git commit and push once the work is accepted.
 
-### Why HCOM Is Used
+## Why This Structure Exists
 
-HCOM gives the local team a lightweight communication layer for CLI agents. It
-provides:
+Bot Hunter has two different kinds of risk.
 
-- agent launch and tagging
-- direct messages by role tag
-- conversation transcripts
-- event awareness
-- a practical way to separate implementation, review, and orchestration
+The first is technical risk. The parser, feature engineering, anomaly scoring,
+and generated artefacts must remain reproducible. A small implementation error
+can produce a plausible-looking `submission.tsv` that is still wrong.
 
-This matters because Bot Hunter mixes code, data-science judgement, reports,
-and business-facing explanation. Separate specialist pairs reduce the chance
-that one agent both creates and uncritically accepts its own assumptions.
+The second is interpretation risk. The dataset is unlabelled, so the project
+cannot honestly claim measured precision or recall. Probability statements are
+operational confidence estimates unless future labels are added. A reviewer
+must therefore challenge wording that sounds more certain than the evidence
+allows.
 
-### Team Setup
+The two specialist pairs reflect those risks:
 
-Install and configure memory support:
+- The algorithm pair focuses on correctness, data-science method, runtime
+  behaviour, and engineering standards.
+- The UX pair focuses on whether the dashboard, report, and documentation are
+  clear to a wide technical audience, including readers who are not fluent in
+  data science.
+
+This split keeps implementation and review independent while avoiding a large
+or heavy process.
+
+## HCOM In This Repo
+
+HCOM is the local communication and launch layer. Each agent runs as a CLI
+session, and HCOM provides:
+
+- role tags such as `@algorithm-coder-` and `@ux-reviewer-`
+- direct messages between agents
+- event awareness for agent activity
+- transcript access for handoffs and review history
+- a practical way to separate coding, review, and orchestration
+
+Claude Code uses the project-scoped MCP config in `.mcp.json`. Codex CLI uses
+its user-level MCP registry, which can be configured with
+`./scripts/setup-memory-mcp`. Both point at local storage under `.mcp-memory/`.
+The memory files are ignored by git so private working notes do not leak into
+the repository. Durable decisions belong in committed documentation.
+
+## Setup
+
+Run these commands from the repository root:
 
 ```bash
 ./scripts/setup-memory-mcp
 ./scripts/check-agent-team
 ```
+
+The check should confirm that HCOM, Codex CLI, Claude Code, `bunx`, git, and
+MCP memory are available.
 
 Start the specialist pairs:
 
@@ -75,71 +110,68 @@ Start the orchestrator:
 ./scripts/start-orchestrator
 ```
 
-Check the active team:
+Check the active agents:
 
 ```bash
 hcom list
 ```
 
-Stop all agents:
+Stop the team:
 
 ```bash
 hcom kill all
 ```
 
-Role prompts and deeper operating instructions live in:
+## Working Pattern
+
+The orchestrator converts the human request into a compact task brief and sends
+it to the relevant pair.
+
+For algorithm or engineering work:
 
 ```text
-development approach/
+@algorithm-coder- @algorithm-reviewer- TASK bot-hunter-<id>
+Goal: <one sentence>
+Scope: <files or feature area>
+Acceptance: <observable success criteria>
+Constraints: <runtime, dependencies, style, data assumptions>
+Review mode: blocking findings first, then residual risks
 ```
 
-Key files:
+For dashboard, report, or documentation work:
 
-| File | Purpose |
-|---|---|
-| `development approach/team_instructions.md` | Canonical team operating model |
-| `development approach/agentic_development_architecture.md` | Architecture and rationale |
-| `development approach/community_cheat_sheet.md` | Shareable summary |
-| `development approach/prompts/` | Role prompts used by HCOM launch scripts |
+```text
+@ux-coder- @ux-reviewer- TASK bot-hunter-<id>
+Goal: <one sentence>
+Scope: <dashboard, report, copy, docs, or user journey>
+Acceptance: <observable success criteria>
+Constraints: <audience, accessibility, evidence, style>
+Review mode: blocking findings first, then residual risks
+```
 
-### Working Pattern
+For cross-domain work, both pairs are involved. For example, changing a bot
+threshold and explaining it in the report needs algorithm review for classifier
+impact and UX review for clarity.
 
-For algorithm work, the orchestrator sends the task to `@algorithm-coder-`.
-The coder inspects the code, implements a focused change, runs targeted
-verification, and sends a handoff. The orchestrator then asks
-`@algorithm-reviewer-` to review the diff and evidence. The task does not move
-to commit until blocking findings are resolved or explicitly waived by the
-human owner.
+## Quality Bar
 
-For report, dashboard, and documentation work, the same pattern uses
-`@ux-coder-` and `@ux-reviewer-`.
+The engineering quality bar is intentionally high. Python changes should follow
+Google-style expectations: clear names, type hints, focused functions, explicit
+resource management, no bare `except:`, no mutable default arguments, readable
+control flow, hermetic tests, and executable logic behind a `main(argv)` entry
+point where relevant.
 
-For cross-cutting changes, both specialist pairs are used. For example, changing
-the anomaly threshold and explaining it in the report requires algorithm review
-for the classifier impact and UX review for whether the explanation is clear to
-a technical reader who may not be fluent in data science.
-
-### Quality Bar
-
-The coders are expected to follow Google-style Python engineering standards:
-
-- no bare `except:`
-- no mutable default arguments
-- explicit context managers for resources
-- absolute imports only
-- type hints throughout
-- 80-character line target
-- Google-style docstrings for public modules, classes, and functions
-- executable scripts structured around `main(argv)`
-- hermetic tests for new behaviour
-- no `assert` for runtime validation
-- readable code over clever code
-- small, atomic changes
+The UX and documentation quality bar is equally explicit. Outputs should use
+plain British English, define specialist terms, include concrete examples, and
+use tables, diagrams, charts, or other visual elements where they make the work
+easier to understand.
 
 New packages must not be installed without approval from the human owner or
-orchestrator. This keeps dependency growth intentional and reviewable.
+orchestrator. This keeps the dependency surface intentional.
 
-The UX and documentation specialists are expected to write in clear British
-English for a wide technical audience. They should use examples, tables,
-diagrams, charts, and plain definitions where those make the result easier to
-understand.
+## Source Of Truth
+
+The role prompts in `prompts/` are operational inputs for agents. The canonical
+human-readable operating model is `team_instructions.md`. The architecture guide
+explains why the model exists. The cheat sheet is the compact version to share
+with others.

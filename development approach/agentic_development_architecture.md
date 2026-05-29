@@ -1,178 +1,171 @@
 # Agentic Development Architecture
 
-This project can be developed with a multi-agent workflow where one coding agent implements changes and a second agent reviews the work before it is accepted. The recommended local setup uses Claude Code and Codex CLI as separate command-line agents connected through HCOM.
+This document explains the architecture behind the Bot Hunter development team.
+It is written for technical readers who want to understand why the team is
+structured this way, how HCOM is used, and where the review gates sit.
 
-HCOM is used as the coordination layer: each agent runs in its own terminal, but HCOM gives them a shared message bus, activity log, file-edit awareness, transcript access, and the ability to notify or wake each other when work changes state.
+## Architectural Intent
 
-## Goals
+The architecture is a local, CLI-based agent team. It is not a fully autonomous
+software factory. The human owner remains accountable for product direction and
+final judgement. The agents provide implementation, review, coordination, and
+evidence gathering.
 
-- Use different model families for independent implementation and review judgement.
-- Split implementation and review into two specialist pairs: algorithm/engineering and UX/report/documentation.
-- Keep engineering work traceable through explicit handoff messages.
-- Reduce self-review bias by ensuring the reviewer is not the same agent that wrote the code.
-- Preserve human control over scope, merges, pushes, and final product decisions.
-- Make the workflow reproducible for future Bot Hunter changes.
+The model is deliberately conservative:
 
-## Fit for Bot Hunter
+- implementation and review are separate
+- the orchestrator coordinates but does not code
+- commits and pushes happen only after review approval or explicit human waiver
+- durable decisions are written to the repository, not left only in memory
 
-This approach is a strong fit for Bot Hunter because the project combines implementation work with judgement-heavy analysis. The code needs to parse data, run classifiers, generate `submission.tsv`, and serve a local dashboard, but the deliverable also depends on methodology, probability claims, business recommendations, and a written explanation. Those are exactly the places where an independent reviewer can catch weak assumptions.
+This matters for Bot Hunter because the project blends code and interpretation.
+The classifier can run successfully while the explanation is still misleading,
+or the report can read well while the underlying artefacts are stale. The team
+structure creates checkpoints for both risks.
 
-Using different model families is valuable here. A single agent can overfit to its own explanation of why a classifier, threshold, or probability estimate is reasonable. Having one agent implement and another review creates a second pass on questions such as:
+## System Overview
 
-- Are the anomaly signals actually supported by the data?
-- Does the report overstate confidence in the absence of labels?
-- Does `submission.tsv` match the current classifier logic?
-- Are generated artifacts reproducible from the source code?
-- Are threshold choices and false-positive tradeoffs clearly stated?
-- Does the dashboard communicate results to a business user without requiring data science context?
+```text
+Human owner
+    |
+    v
+Orchestrator (Codex CLI)
+    |
+    +--> Algorithm coder (Codex CLI)
+    |        |
+    |        v
+    |    Algorithm reviewer (Claude Code)
+    |
+    +--> UX coder (Codex CLI)
+             |
+             v
+         UX reviewer (Claude Code)
+```
 
-The recommended default is Codex CLI as the coder and Claude Code as the reviewer. Codex is well suited to terminal-driven implementation, local edits, test runs, and commits. Claude is well suited to broad critique of methodology, report clarity, probability reasoning, and business-facing recommendations. This pairing can be reversed when the task is mainly architecture or long-context design exploration.
+HCOM provides the message bus and agent tags. The repository provides the shared
+working state. Git provides the durable change history.
 
-HCOM is appropriate because the goal is not a large autonomous platform. The useful property is lightweight local coordination: tagged agents, explicit messages, activity awareness, and review handoffs inside the same repository. The value comes from disciplined communication, not from having more agents for its own sake.
+## Role Boundaries
 
-The main risk is process overhead. A full orchestrator, coder, and reviewer loop is worthwhile for changes that affect predictions, probability estimates, report conclusions, or generated deliverables. It is probably unnecessary for small copy edits or low-risk documentation changes.
+| Role | Does | Does not do |
+|---|---|---|
+| Human owner | Sets priorities and approves trade-offs | Delegate final accountability |
+| Orchestrator | Routes tasks, waits for review, commits, pushes | Implement, test, edit, or self-review |
+| Algorithm coder | Changes pipeline, features, classifiers, tests | Push directly in normal flow |
+| Algorithm reviewer | Reviews correctness, method, probability claims | Edit files by default |
+| UX coder | Changes dashboard, report, docs, and copy | Push directly in normal flow |
+| UX reviewer | Reviews clarity, accessibility, and documentation truth | Edit files by default |
 
-The second risk is false confidence. Agreement between two agents is not statistical validation. For this project, the reviewer should explicitly challenge any claim that sounds measured but is not label-calibrated. In particular, fraud probability estimates should be treated as operational confidence estimates unless future work adds ground truth labels, chargeback evidence, or manual review outcomes.
+The orchestrator boundary is the most important control. If the orchestrator
+starts making code or documentation changes, it becomes an unreviewed
+implementer. That breaks the review model.
 
-The practical recommendation is to keep this workflow lightweight and gated. Use HCOM for communication and state, but require concrete evidence at every review point: the diff, commands run, artifact changes, reviewer findings, and either resolution or explicit human waiver. The human owner remains responsible for the final product decision.
+## Why Two Specialist Pairs
 
-## Roles
+Bot Hunter has two natural domains.
 
-### Human Owner
+The algorithm and engineering domain covers parsing, feature engineering,
+heuristics, anomaly scoring, output generation, tests, runtime behaviour, and
+supportability. This pair asks questions such as:
 
-The human owner defines the task, accepts or rejects tradeoffs, approves external actions, and decides when work is complete. The human also chooses which agent is the coder and which agent is the reviewer for a given task.
+- Does the feature mean what the report says it means?
+- Does the model choice match the evidence available?
+- Are unlabelled probability claims carefully framed?
+- Can the run be reproduced from source?
+- Are tests and logs sufficient for a future maintainer?
 
-### Orchestrator
+The UX, report, and documentation domain covers the local dashboard, generated
+reports, README content, diagrams, examples, accessibility, and business-facing
+explanation. This pair asks questions such as:
 
-The orchestrator is the process owner. It may be a human, a lightweight script, or a dedicated agent session. Its responsibilities are:
+- Can a technical reader understand the result without being a data scientist?
+- Are assumptions and limitations visible near the claims they affect?
+- Do tables, charts, and examples clarify rather than decorate?
+- Does the documentation match the current commands and scripts?
+- Is the dashboard useful for repeated review rather than just a demo?
 
-- Convert the user request into a compact task brief.
-- Select the coder and reviewer model pairing.
-- Create or identify the working branch.
-- Start agents under HCOM with stable tags.
-- Track task state: planned, coding, review, revision, verification, ready.
-- Ensure review findings are resolved or explicitly waived.
-- Run final verification commands before merge or push.
-
-The orchestrator should not silently overwrite either agent's work. It coordinates and records decisions.
-
-### Algorithm and Engineering Pair
-
-The algorithm and engineering coder owns detection-pipeline, classifier, test, runtime observability, and supportability changes. Codex is the default coder. The algorithm and engineering reviewer is Claude and applies Google-style engineering standards around readability, simplicity, maintainability, testability, observability, and explicit assumptions.
-
-### UX, Report, and Documentation Pair
-
-The UX, report, and documentation coder owns dashboard, report, copy, README, and development-doc changes. Codex is the default coder. The UX reviewer is Claude and applies UX industry standards around clarity, hierarchy, accessibility, responsive behavior, readable visualizations, and business-user comprehension.
-
-Coder responsibilities:
-
-- Inspect the repo before changing files.
-- Make focused edits on the assigned task.
-- Run targeted tests or smoke checks.
-- Publish a handoff message containing changed files, commands run, known risks, and review request.
-- Wait for reviewer feedback before declaring the task complete.
-
-### Reviewer Responsibilities
-
-Reviewer agents own critique within their specialty. Claude Code is a strong default reviewer because it is useful for broad reasoning, architectural critique, UX critique, and bug-risk analysis.
-
-Reviewer responsibilities:
-
-- Review the diff, not only the coder's summary.
-- Prioritize correctness, security, maintainability, test coverage, and brief alignment.
-- Return actionable findings with file and line references where possible.
-- Distinguish blocking issues from optional improvements.
-- Re-review revisions until no blocking issues remain.
-
-The reviewer should be read-only by default. If the reviewer proposes code, the coder should apply it unless the orchestrator explicitly changes the workflow.
+Cross-domain changes should go through both pairs. For example, a change to the
+bot threshold affects classifier behaviour and also how the result must be
+explained to the reader.
 
 ## HCOM Runtime Pattern
 
-Run each agent from the project root so they share the same repository context:
-
-```bash
-cd <repo-root>
-```
-
-Check local prerequisites:
+Run the team from the repository root.
 
 ```bash
 ./scripts/check-agent-team
-```
-
-Start the algorithm and engineering coder:
-
-```bash
-./scripts/start-algorithm-coder
-```
-
-Start the algorithm and engineering reviewer:
-
-```bash
-./scripts/start-algorithm-reviewer
-```
-
-Start the UX, report, and documentation coder:
-
-```bash
-./scripts/start-ux-coder
-```
-
-Start the UX, report, and documentation reviewer:
-
-```bash
-./scripts/start-ux-reviewer
-```
-
-Start both specialist pairs:
-
-```bash
 ./scripts/start-agent-team
-```
-
-Optional orchestrator:
-
-```bash
 ./scripts/start-orchestrator
 ```
 
-For headless review, the reviewer can be started with a standing instruction:
-
-```bash
-uvx hcom claude --help
-```
-
-Prefer the `scripts/start-*-reviewer` helpers for normal reviewer launches. Exact direct-launch command flags may vary by local HCOM, Claude Code, and Codex CLI versions, so check `uvx hcom claude --help` before bypassing the scripts. The stable requirements are the tags, shared working directory, and explicit handoff messages.
-
-This folder also includes role prompts in `development approach/prompts/`. The helper scripts pass these prompts to HCOM with `--hcom-system-prompt`, so each agent starts with the expected role and handoff discipline.
-
-Claude Code has access to a project-scoped MCP memory server through `.mcp.json`. Codex CLI has a separate MCP registry, so run `./scripts/setup-memory-mcp` once on a development machine to configure Codex to use the same memory server. Both configurations use `@modelcontextprotocol/server-memory` and store the local knowledge graph in `.mcp-memory/claude-memory.jsonl`. That file is ignored by git; use it for working memory, not for durable project documentation that should be shared through the repository.
-
-## Handoff Protocol
-
-Each handoff message should be short and structured. This keeps transcripts useful and avoids forcing the reviewer to infer state.
-
-### Task Brief
-
-Sent by the orchestrator to the coder and reviewer:
+The expected active tags are:
 
 ```text
-@algorithm-coder- @algorithm-reviewer- TASK bot-hunter-<id>
+orchestrator-<name>
+algorithm-coder-<name>
+algorithm-reviewer-<name>
+ux-coder-<name>
+ux-reviewer-<name>
+```
+
+Messages are routed by tag prefix:
+
+```bash
+hcom send @algorithm-coder- "TASK bot-hunter-001 ..."
+hcom send @ux-reviewer- "Please review ..."
+```
+
+Use the helper scripts for normal launches because they load the role prompts
+from `development approach/prompts/` and set the working directory correctly.
+
+## MCP Memory
+
+The team uses `@modelcontextprotocol/server-memory` as local working memory.
+Claude Code reads `.mcp.json`. Codex CLI uses its own registry, configured by:
+
+```bash
+./scripts/setup-memory-mcp
+```
+
+Memory is useful for continuity across local agent sessions. It is not the
+source of truth. Any decision that another contributor should rely on must be
+committed in the repository.
+
+## Workflow
+
+1. The human owner states the goal.
+2. The orchestrator writes a compact task brief.
+3. The orchestrator routes the task to the relevant coder and reviewer tags.
+4. The coder inspects the repo, makes focused changes, and runs verification.
+5. The coder sends a structured review request.
+6. The reviewer inspects the diff and evidence directly.
+7. The reviewer approves or requests changes.
+8. The coder revises until blocking findings are resolved.
+9. The orchestrator checks status, stages only intentional changes, commits,
+   and pushes.
+10. The orchestrator announces the closeout with the commit SHA.
+
+The work should stay lightweight for low-risk changes. Full review gates are
+most valuable when work affects predictions, generated artefacts, probability
+claims, reports, dashboard behaviour, or the team process itself.
+
+## Handoff Messages
+
+Task brief:
+
+```text
+@<coder-tag>- @<reviewer-tag>- TASK bot-hunter-<id>
 Goal: <one sentence>
 Scope: <files or feature area>
 Acceptance: <observable success criteria>
-Constraints: <runtime, dependencies, style, data assumptions>
-Review mode: blocking findings only, then residual risks
+Constraints: <dependencies, runtime, style, data assumptions>
+Review mode: blocking findings first, then residual risks
 ```
 
-Use `@ux-coder- @ux-reviewer-` for UX, report, and documentation work. Use both specialist pairs for cross-domain work.
-
-### Coder Ready for Review
-
-Sent by the coder:
+Coder handoff:
 
 ```text
-@<specialist-reviewer-tag>- REVIEW_REQUEST bot-hunter-<id>
+@<reviewer-tag>- REVIEW_REQUEST bot-hunter-<id>
 Summary: <what changed>
 Files: <main files>
 Verification: <commands run and results>
@@ -180,12 +173,10 @@ Known risks: <risks or "none known">
 Diff base: <branch or commit>
 ```
 
-### Reviewer Findings
-
-Sent by the reviewer:
+Reviewer response:
 
 ```text
-@<specialist-coder-tag>- REVIEW_RESULT bot-hunter-<id>
+@<coder-tag>- REVIEW_RESULT bot-hunter-<id>
 Decision: changes_requested | approved
 Findings:
 - Severity: <blocker|major|minor>
@@ -195,21 +186,7 @@ Findings:
 Residual risk: <remaining concern or "none">
 ```
 
-### Revision Handoff
-
-Sent by the coder after fixes:
-
-```text
-@<specialist-reviewer-tag>- REVISION_READY bot-hunter-<id>
-Resolved:
-- <finding and fix>
-Verification: <commands run>
-Open: <anything intentionally not fixed>
-```
-
-### Final Decision
-
-Sent by the orchestrator:
+Task closeout:
 
 ```text
 @<assigned-team-tags> TASK_CLOSED bot-hunter-<id>
@@ -218,70 +195,42 @@ Commit: <sha>
 Reason: <short rationale>
 ```
 
-## Branch and Commit Policy
+## Review Gates
 
-For small tasks, the orchestrator can allow work directly on `main` if the repo owner approves. For larger changes, use a task branch:
+The reviewer should inspect the actual repository diff, not only the coder's
+summary. A good review leads with blocking issues and then states residual risk.
 
-```bash
-git switch -c agent/<task-id>
-```
+Algorithm review should cover:
 
-Commit only after:
+- parser and feature correctness
+- data assumptions and edge cases
+- anomaly model fit and threshold reasoning
+- reproducibility of `submission.tsv` and reports
+- test coverage and runtime supportability
+- unsupported fraud or probability claims
 
-- The working tree contains only intentional changes.
-- The pipeline or targeted tests have run.
-- The reviewer has approved or the human owner has waived open findings.
-- Generated artifacts are included only when they are part of the requested deliverable.
+UX review should cover:
 
-## Review Checklist
+- clarity for a wide technical audience
+- British English, plain definitions, and concrete examples
+- use of tables, diagrams, charts, or visual aids where helpful
+- accessibility and readable hierarchy
+- consistency between documentation, scripts, and generated output
+- avoidance of unnecessary implementation detail in user-facing copy
 
-The reviewer should check:
-
-- Does the implementation satisfy the stated task?
-- Are data assumptions explicit?
-- Are false positives, false negatives, or probability claims justified?
-- Is the HTTP interface still runnable locally?
-- Are generated outputs reproducible from source?
-- Are dependency choices minimal and documented?
-- Are tests or smoke checks proportional to the change?
-- Are secrets, credentials, raw private data, and local-only files excluded?
-
-## Bot Hunter Specific Workflow
-
-For classifier or dashboard changes:
-
-1. Orchestrator defines the expected behavior and artifact changes.
-2. Coder updates parser, classifier, report, dashboard, or docs.
-3. Coder runs:
-
-```bash
-uv run --extra eif python -m py_compile bot_hunter/*.py
-uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
-```
-
-4. Reviewer inspects:
-
-```bash
-git diff --stat
-git diff
-```
-
-5. Reviewer verifies that `submission.tsv`, `artifacts/summary.json`, and report files are consistent with the changed logic.
-6. Orchestrator approves commit and push.
-
-## Failure Modes and Controls
+## Failure Modes And Controls
 
 | Risk | Control |
-| --- | --- |
-| Agents edit the same file at the same time | Use HCOM event awareness and require coder ownership of edits. |
-| Reviewer rubber-stamps coder work | Require diff-based findings and explicit residual risk. |
-| Agents optimize for passing tests while missing the brief | Keep acceptance criteria in every task handoff. |
-| Generated artifacts drift from source logic | Re-run the pipeline before commit. |
-| Credentials or raw data leak into git | Review `git diff --cached` and `.gitignore` before commit. |
-| Infinite review loops | Orchestrator limits review cycles, then asks the human owner to decide. |
+|---|---|
+| Agents edit the same file concurrently | Orchestrator sequences work and checks git status |
+| Reviewer rubber-stamps work | Require diff-based findings and residual-risk notes |
+| Orchestrator becomes an implementer | Restate boundary: orchestrator coordinates only |
+| Artefacts drift from code | Re-run the pipeline when outputs are affected |
+| Agent agreement creates false confidence | Require evidence and human judgement |
+| Hidden memory becomes undocumented policy | Commit durable decisions to the repo |
+| Process becomes too heavy | Use the full loop only when risk justifies it |
 
-## Recommended Default Pairing
+## Design Principle
 
-Use Codex CLI as coder and Claude Code as reviewer for implementation-heavy work. Reverse the pairing when the task is mostly design exploration or long-context architecture analysis, with Claude drafting the approach and Codex reviewing operational feasibility.
-
-The important property is independence: the reviewer should not be asked to defend the coder's earlier reasoning. It should inspect the repository state and produce its own judgement.
+The team is useful when it improves evidence, review quality, and decision
+clarity. It is not useful when it adds ceremony without reducing risk.

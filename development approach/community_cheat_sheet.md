@@ -1,42 +1,35 @@
 # Community Cheat Sheet: Local Agentic Development Team
 
-This repo was built with a local multi-agent workflow for Bot Hunter: a Python app that detects likely bot clicks, generates `submission.tsv`, serves a local dashboard, and produces analysis reports.
+This is the short version of the Bot Hunter development approach. It describes
+how to run a small local team of CLI agents with HCOM, Codex, Claude, and MCP
+memory.
 
-The useful pattern is not "more agents". It is clear ownership, independent review, observable evidence, and human control.
+The central idea is simple: one agent writes, another reviews, and an
+orchestrator manages the handoff and git history. The human owner remains in
+control of scope and final decisions.
 
 ## Team Shape
 
-Use two specialist coder/reviewer pairs plus one orchestrator.
+| Role | Tool | Owns |
+|---|---|---|
+| Orchestrator | Codex CLI | Task routing, review gates, commits, pushes |
+| Algorithm coder | Codex CLI | Data parsing, features, classifiers, tests |
+| Algorithm reviewer | Claude Code | Correctness, method, engineering quality |
+| UX coder | Codex CLI | Dashboard, reports, README, documentation |
+| UX reviewer | Claude Code | Clarity, accessibility, report quality |
 
-| Role | Model/tool | Owns |
-| --- | --- | --- |
-| Orchestrator | Codex CLI | Task routing, acceptance criteria, review gates, commits, pushes |
-| Algorithm coder | Codex CLI | Data parsing, features, classifiers, tests, runtime supportability |
-| Algorithm reviewer | Claude Code | Correctness, methodology, engineering quality, probability claims |
-| UX/docs coder | Codex CLI | Dashboard, report, copy, README, developer docs |
-| UX/docs reviewer | Claude Code | UX quality, report clarity, documentation accuracy |
+The orchestrator does not code. It coordinates and integrates reviewed work.
 
-The orchestrator does not code. It coordinates, checks evidence, and owns git operations after review approval or explicit human waiver.
+## Setup
 
-## Tooling
-
-- HCOM: local communication and launch layer for CLI agents.
-- Codex CLI: implementation-oriented coding agent and orchestrator.
-- Claude Code: independent reviewer for engineering and UX critique.
-- MCP memory: `@modelcontextprotocol/server-memory` for shared local working memory.
-
-Memory is local and ignored by git. Anything that must be durable or community-shareable should be committed as docs.
-
-## Setup Commands
-
-From the repo root:
+From the repository root:
 
 ```bash
 ./scripts/setup-memory-mcp
 ./scripts/check-agent-team
 ```
 
-The check should confirm:
+Expected checks:
 
 ```text
 ok: hcom
@@ -48,7 +41,7 @@ ok: Claude memory MCP connected
 ok: Codex memory MCP configured
 ```
 
-## Start the Team
+## Start And Stop
 
 Start both specialist pairs:
 
@@ -68,23 +61,13 @@ Check status:
 hcom list
 ```
 
-Expected shape:
-
-```text
-orchestrator-<name>
-algorithm-coder-<name>
-algorithm-reviewer-<name>
-ux-coder-<name>
-ux-reviewer-<name>
-```
-
-## Stop the Team
+Stop everything:
 
 ```bash
 hcom kill all
 ```
 
-Stop a specific role:
+Stop one role:
 
 ```bash
 hcom kill tag:algorithm-coder
@@ -96,7 +79,7 @@ hcom kill tag:orchestrator
 
 ## Route Work
 
-Algorithm and engineering work:
+Algorithm and engineering task:
 
 ```text
 @algorithm-coder- @algorithm-reviewer- TASK bot-hunter-<id>
@@ -106,7 +89,7 @@ Acceptance: <observable success criteria>
 Review mode: blocking findings first, then residual risks
 ```
 
-UX, report, and documentation work:
+UX, report, or documentation task:
 
 ```text
 @ux-coder- @ux-reviewer- TASK bot-hunter-<id>
@@ -116,7 +99,8 @@ Acceptance: <observable success criteria>
 Review mode: blocking findings first, then residual risks
 ```
 
-Cross-domain work should involve both pairs. The orchestrator should sequence edits to avoid conflicts and require the relevant reviewers to approve.
+Use both pairs for cross-domain changes, such as changing classifier behaviour
+and updating the report that explains it.
 
 ## Handoff Template
 
@@ -155,36 +139,40 @@ Reason: <short rationale>
 
 ## Quality Bars
 
-Algorithm and engineering pair:
+Algorithm and engineering:
 
-- Readable Python with simple design and clear names.
-- Explicit assumptions and useful errors.
-- Tests proportional to risk.
-- Observable runtime behavior: logs, status, metrics, summaries, or debuggable output.
-- Probability and fraud claims are challenged unless supported by labels or clear evidence.
+- readable, typed Python
+- Google-style safety rules
+- tests proportional to risk
+- observable runtime behaviour
+- explicit data assumptions
+- careful probability language for unlabelled data
 
-UX, report, and documentation pair:
+UX, report, and documentation:
 
-- Business-user comprehension comes first.
-- Reports and dashboards need clear hierarchy, labels, assumptions, and limitations.
-- Documentation must match the actual code and commands.
-- Avoid exposing internal implementation details in user-facing UI copy.
+- clear British English
+- definitions for specialist terms
+- examples that make the result concrete
+- tables, diagrams, charts, or visual elements where helpful
+- documentation that matches the code and commands
+- accessible, scannable dashboard and report surfaces
 
 ## Git Rules
 
 - Normal flow: only the orchestrator commits and pushes.
-- Coder implements; reviewer reviews; orchestrator integrates.
-- Orchestrator must inspect:
+- Coder implements.
+- Reviewer reviews.
+- Orchestrator stages only intentional files.
+- Rejected work is not committed unless the human owner explicitly waives the
+  finding.
+
+Before committing, the orchestrator checks:
 
 ```bash
 git status --short --branch
 git diff
 git diff --cached
 ```
-
-- Never include unrelated dirty files.
-- Never commit rejected code unless the human owner explicitly waives the finding.
-- Generated artifacts are committed only when they are deliverables.
 
 ## Bot Hunter Verification
 
@@ -195,14 +183,11 @@ uv run --extra eif python -m py_compile bot_hunter/*.py
 uv run --extra eif python -m bot_hunter.cli run --input data/bot-hunter-dataset.tsv
 ```
 
-For web/report changes:
+For web or report changes:
 
 ```bash
 uv run --extra eif python -m bot_hunter.web --host 127.0.0.1 --port 8000
 ```
-
-Use `--host 0.0.0.0` only when you intentionally want the dashboard reachable from
-other machines on the network.
 
 If port `8000` is blocked:
 
@@ -211,25 +196,13 @@ lsof -nP -iTCP:8000 -sTCP:LISTEN
 kill <pid>
 ```
 
-## What Worked
+## What To Share
 
-- Separate model families reduce self-review bias.
-- Specialist pairs make review sharper: methodology bugs and UX/report issues are different kinds of risk.
-- HCOM tags make routing practical: `@algorithm-coder-`, `@ux-reviewer-`, etc.
-- MCP memory is useful for local continuity, but repo docs remain the source of truth.
-- A strict orchestrator boundary prevents the coordinator from becoming an unreviewed implementer.
+The pattern is worth sharing when the work benefits from independent review:
+data science, generated artefacts, dashboards, documentation, and user-facing
+claims. It is less useful for tiny edits where the process costs more than the
+risk reduction.
 
-## Main Risks
-
-| Risk | Control |
-| --- | --- |
-| Process overhead | Use full team only for meaningful changes |
-| False confidence from agent agreement | Require evidence and human judgement |
-| Conflicting edits | Orchestrator sequences work by domain |
-| Reviewer rubber-stamping | Require diff-based findings and residual-risk notes |
-| Dirty working tree commits | Orchestrator owns staging and checks `git status` |
-| Local memory becoming hidden documentation | Commit durable decisions to the repo |
-
-## Principle
-
-The workflow is useful when it creates better evidence and better review. It is not useful when it adds ceremony without improving the code, report, or product decision.
+The practical lesson is that multi-agent development works best when the roles
+are narrow, the handoffs are explicit, and the human owner keeps final
+judgement.
