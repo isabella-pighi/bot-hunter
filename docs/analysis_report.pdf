@@ -3,13 +3,13 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R] /Count 5 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R] /Count 6 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
 endobj
 4 0 obj
-<< /Length 3156 >>
+<< /Length 1800 >>
 stream
 BT
 /F1 10 Tf
@@ -19,102 +19,77 @@ BT
 T*
 () Tj
 T*
-( 1. Project context) Tj
+( 1. Executive Summary) Tj
 T*
 () Tj
 T*
-(Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer readable,) Tj
+(Bot Hunter analysed 149,239 click events and selected 3,731 as likely bot traffic. That) Tj
 T*
-(lets the anomaly model add statistical coverage, and treats all score outputs as) Tj
-T*
-(unlabeled operational evidence rather than measured ground truth. That matters because) Tj
-T*
-(the dataset does not include labels, so precision is reported as an operational) Tj
-T*
-(confidence estimate instead of a calibrated metric. All event counts in this report are) Tj
-T*
-(run-specific and will change if the pipeline is re-run on updated data.) Tj
+(is 2.50% of the run.) Tj
 T*
 () Tj
 T*
-( 2. Classifiers) Tj
+(This report should be read as evidence for review, not as proof of fraud for) Tj
+T*
+(every individual event. The dataset does not include ground-truth labels, so the) Tj
+T*
+(probability figures are operational confidence estimates rather than measured) Tj
+T*
+(precision or recall.) Tj
 T*
 () Tj
 T*
-(The application implements two classifiers. The first is a rules-based classifier that) Tj
+(The submitted output is submission.tsv. It keeps the required binary) Tj
 T*
-(scores repeated query/domain pairs, repeated queries, confirmed query repetition, high-) Tj
+(is_bot decision and adds an operational tier so the same prediction can be) Tj
 T*
-(volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second) Tj
-T*
-(bursts, dense burst repetition clusters, concentrated ct context paired with repetition) Tj
-T*
-(and clustering, implausibly fast clicks, moderately long time-to-click values, extreme) Tj
-T*
-(time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-) Tj
-T*
-(click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an) Tj
-T*
-(absolute floor so the rule can adapt to timer reuse patterns without letting low-count) Tj
-T*
-(coincidences fire. Confirmed query repetition is intentionally conjunctive: it requires) Tj
-T*
-(the query/domain pair to repeat and the query to be widely repeated. Dense burst) Tj
-T*
-(repetition is also conjunctive: it requires a heavy region/browser/OS cluster, at least) Tj
-T*
-(five same-second clicks, and a repeated query or query/domain pattern on the same event.) Tj
-T*
-(The ct rule is also conjunctive and low weight: it adds supporting evidence only when) Tj
-T*
-(country-like concentration appears with repeated query behaviour and either device) Tj
-T*
-(clustering or a same-second burst. The second classifier is an Extended Isolation Forest) Tj
-T*
-(anomaly model over all 14 engineered behavioral features as ML inputs, including) Tj
-T*
-(region/browser/OS frequency, global ct country frequency, explicit mechanical features) Tj
-T*
-(for sub-200ms clicks, local burst density, and query entropy. Query length, query word) Tj
-T*
-(count, and uncertain URL flags are no longer engineered features. High-volume domain) Tj
-T*
-(frequency and global country frequency remain available but are down-weighted to 0.50) Tj
-T*
-(and 0.50, respectively, in the standardized ML matrix. Repetition and timing features) Tj
-T*
-(that can dominate standalone EIF tail evidence are also down-weighted to 0.50:) Tj
-T*
-(query/domain repetition, query repetition, log-scaled time-to-click magnitude, sub-200ms) Tj
-T*
-(click flags, and query entropy. Events isolated quickly by random hyperplane splits) Tj
-T*
-(receive higher anomaly scores. EIF is the only production anomaly model; alternate ML) Tj
-T*
-(backends and supervised pilots have been removed.) Tj
+(used more carefully in business workflows.) Tj
 T*
 () Tj
 T*
-( 3. Anomalies found) Tj
+( 2. What The System Does) Tj
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-5 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
-endobj
-6 0 obj
-<< /Length 2300 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(The run analyzed 149,239 events and flagged 3,731 events as bots \(2.50%\). The strongest) Tj
+(Bot Hunter combines two complementary classifiers.) Tj
 T*
-(explainable patterns were:) Tj
+() Tj
+T*
+(- Rules-based classifier: transparent rules that identify repeated,) Tj
+T*
+(  mechanically timed, or tightly clustered click patterns.) Tj
+T*
+(- Machine-learning classifier: an Extended Isolation Forest anomaly model over 14) Tj
+T*
+(engineered behavioural features.) Tj
+T*
+() Tj
+T*
+(The final score is a weighted blend:) Tj
+T*
+() Tj
+T*
+(text) Tj
+T*
+(combined_score = \(0.58 * heuristic_score\) + \(0.42 * ml_score\)) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(The rules layer is weighted slightly higher because it is easier to explain and) Tj
+T*
+(audit. The anomaly model still matters because it can identify unusual) Tj
+T*
+(combinations that a small rule set may not capture.) Tj
+T*
+() Tj
+T*
+( 3. Main Results) Tj
+T*
+() Tj
+T*
+(The strongest explainable patterns in this run were:) Tj
 T*
 () Tj
 T*
@@ -124,9 +99,22 @@ T*
 T*
 (- confirmed query repetition: 2,023 events) Tj
 T*
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 2089 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- same-second click burst: 1,876 events) Tj
 T*
-(- heavy region/browser/os cluster: 1,868 events) Tj
+(- heavy region/browser/OS cluster: 1,868 events) Tj
 T*
 (- very short query: 1,835 events) Tj
 T*
@@ -140,61 +128,73 @@ T*
 T*
 () Tj
 T*
-(The dashboard exposes these same signals with sample events so a business user can) Tj
+(Example interpretation: a single repeated query is not enough to prove bot) Tj
 T*
-(inspect the likely automated behavior without reading model internals.) Tj
+(traffic. It becomes more concerning when it appears with a repeated clicked) Tj
 T*
-() Tj
+(domain, dense same-second activity, reused time-to-click values, or a narrow) Tj
 T*
-( 4. Filtering options) Tj
-T*
-() Tj
-T*
-(Practical filters for similar datasets include dropping or quarantining traffic from) Tj
-T*
-(repeated query/domain pairs, repeated exact ttc values, dense same-second bursts, and) Tj
-T*
-(events above the combined anomaly threshold. Bot Hunter assigns operational tiers) Tj
-T*
-(without changing the binary is_bot prediction:) Tj
+(region/browser/OS footprint.) Tj
 T*
 () Tj
 T*
-(- suppress: 1,966 events) Tj
+(The new concentrated ct rule is deliberately cautious. It adds low-weight) Tj
 T*
-(- quarantine: 1,765 events) Tj
+(support only when country-like concentration appears with repeated query) Tj
 T*
-(- monitor: 145,508 events) Tj
+(behaviour and either a heavy device cluster or a same-second burst. Country-like) Tj
 T*
-() Tj
+(concentration alone is not treated as bot evidence because legitimate campaigns) Tj
 T*
-(Use suppress for high-confidence bot traffic after policy approval, quarantine for bot) Tj
-T*
-(traffic that should be held for review, and monitor for traffic that is not selected for) Tj
-T*
-(bot action but should remain available for trend analysis and future labels.) Tj
+(can be country-specific.) Tj
 T*
 () Tj
 T*
-( 5. Method disagreement) Tj
+( 4. Classifier Details) Tj
 T*
 () Tj
 T*
-(The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more) Tj
-T*
-(directly explainable and should remain slightly dominant, while ML still has enough) Tj
-T*
-(weight to move borderline cases and catch multivariate oddities. The thresholds are) Tj
-T*
-(conservative guardrails, not learned cutoffs. Bot Hunter reports one method disagreement) Tj
-T*
-(view using the rules threshold \(heuristic_score >= 0.62\) and the ML agreement threshold) Tj
-T*
-(\(ml_score >= 0.975\). This agreement view is review evidence for an unlabeled dataset; it) Tj
-T*
-(should not be read as measured accuracy.) Tj
+(The rules layer currently scores:) Tj
 T*
 () Tj
+T*
+(- repeated query/domain pairs) Tj
+T*
+(- repeated queries) Tj
+T*
+(- confirmed query repetition) Tj
+T*
+(- high-volume clicked domains) Tj
+T*
+(- dense region/browser/OS clusters) Tj
+T*
+(- exact time-to-click reuse) Tj
+T*
+(- same-second bursts) Tj
+T*
+(- dense burst repetition clusters) Tj
+T*
+(- concentrated ct context paired with repetition and clustering) Tj
+T*
+(- implausibly fast clicks) Tj
+T*
+(- moderately long or extreme time-to-click values) Tj
+T*
+(- regular pseudo-session inter-arrival timing) Tj
+T*
+() Tj
+T*
+(The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold) Tj
+T*
+(with an absolute floor. This lets the rule adapt to the observed timer reuse in) Tj
+T*
+(the batch while avoiding weak duplicate counts.) Tj
+T*
+() Tj
+T*
+(The ct rule, confirmed query repetition, and dense burst repetition rules are) Tj
+T*
+(conjunctive. In practical terms, they require multiple signals to be present) Tj
 T*
 ET
 endstream
@@ -203,18 +203,109 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 2930 >>
+<< /Length 2022 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(before adding score. This is safer than treating broad context, such as) Tj
+T*
+(country-like concentration, as a standalone bot indicator.) Tj
+T*
+() Tj
+T*
+(The anomaly classifier uses the engineered feature matrix, including) Tj
+T*
+(region/browser/OS frequency, global ct country frequency, sub-200 ms click) Tj
+T*
+(flags, local burst density, query entropy, repetition counts, and timing) Tj
+T*
+(features. High-volume domain frequency and global country frequency are down-weighted to) Tj
+T*
+(0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive) Tj
+T*
+(higher anomaly scores. EIF is the only production anomaly model; alternate ML backends) Tj
+T*
+(and supervised pilots have been removed.) Tj
+T*
+() Tj
+T*
+( 5. Thresholds And Decision Logic) Tj
+T*
+() Tj
+T*
+(An event is selected as a bot when either condition is true:) Tj
+T*
+() Tj
+T*
+(text) Tj
+T*
+(combined_score > 0.606846) Tj
+T*
+(or heuristic_score >= 0.62) Tj
+T*
+() Tj
+T*
+() Tj
+T*
+(The combined-score threshold is the run-specific 97.5th-percentile cutoff. It) Tj
+T*
+(keeps the selected volume stable for an unlabelled dataset while letting the ML) Tj
+T*
+(model influence borderline cases.) Tj
+T*
+() Tj
+T*
+(The heuristic override protects high-confidence, explainable rule hits. For) Tj
+T*
+(example, a strongly repeated query/domain pattern with mechanical timing should) Tj
+T*
+(not be missed only because the anomaly ranking moved after a feature change.) Tj
+T*
+() Tj
+T*
+(In this run:) Tj
+T*
+() Tj
+T*
+(- heuristic-only flag rate: 1.40%) Tj
+T*
+(- ML agreement-tail reference rate: 2.50%) Tj
+T*
+(- operational confidence estimate: 73%) Tj
+T*
+() Tj
+T*
+( 6. Method Agreement And Disagreement) Tj
+T*
+() Tj
+T*
+(Agreement between the rules layer and the anomaly model is useful review) Tj
+T*
+(evidence. It is not statistical validation, because there are no labels.) Tj
+T*
+() Tj
+T*
 (At the ML agreement threshold, this run has 1,478 Heuristic + ML events and 2,253 ML) Tj
 T*
 (only events.) Tj
 T*
 () Tj
 T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 1833 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (Method disagreement \(ml_score >= 0.975\):) Tj
 T*
 () Tj
@@ -229,166 +320,75 @@ T*
 T*
 () Tj
 T*
-( 6. Threshold rationale) Tj
+(Example interpretation:) Tj
 T*
 () Tj
 T*
-(The binary decision uses the stronger of two conservative gates: the event is selected) Tj
+(- Heuristic + ML events are usually the strongest review candidates.) Tj
 T*
-(when its combined score is at or above the run-specific 97.5th-percentile cutoff) Tj
+(- Heuristic only events may be explainable rule hits that are not unusual in) Tj
 T*
-(\(0.606846 in this run\), or when the rules-only heuristic score reaches 0.62 on its own.) Tj
+(  the wider feature space.) Tj
 T*
-(The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset) Tj
+(- ML only events may contain multivariate anomalies, but they need careful) Tj
 T*
-(while still letting the anomaly model influence which borderline events enter the review) Tj
-T*
-(set. The heuristic override prevents high-confidence, explainable rule hits from being) Tj
-T*
-(missed just because the anomaly ranking moved around after a feature or backend change.) Tj
+(  review because unusual legitimate behaviour can also be anomalous.) Tj
 T*
 () Tj
 T*
-(The threshold is not a learned probability boundary. It is an operational cutoff for a) Tj
-T*
-(review-first workflow where false positives and false negatives are treated as roughly) Tj
-T*
-(comparable. In this run, the heuristic-only flag rate was 1.40%, while the ML agreement-) Tj
-T*
-(tail reference rate was 2.50%; those rates are reported separately so reviewers can see) Tj
-T*
-(how much each method contributes before the combined decision is applied.) Tj
+( 7. Operational Actions) Tj
 T*
 () Tj
 T*
-( 7. Rationale and generalization) Tj
+(Bot Hunter separates prediction from action by assigning operational tiers:) Tj
 T*
 () Tj
 T*
-(The heuristic model is transparent and easy to convert into policy. Only exact time-to-) Tj
+(- suppress: 1,966 events) Tj
 T*
-(click reuse uses percentile calibration because it is a global duplicate-count signal) Tj
+(- quarantine: 1,765 events) Tj
 T*
-(whose suspiciousness depends on the dataset's observed timer granularity and reuse) Tj
-T*
-(distribution; the absolute floor protects against weak duplicate counts in smaller or) Tj
-T*
-(smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they) Tj
-T*
-(represent separate behavioral concepts. The confirmed query repetition rule reuses the) Tj
-T*
-(repeated query/domain and repeated query thresholds and adds weight only when both fire) Tj
-T*
-(on the same event. The dense burst repetition rule reuses those existing component) Tj
-T*
-(thresholds and adds weight only when all three are present together, which targets many) Tj
-T*
-(clicks from the same device cluster in the same second with repeated query patterns. The) Tj
-T*
-(concentrated ct rule is intentionally supporting evidence, not a standalone country) Tj
-T*
-(rule, because legitimate campaigns can be country-specific. It fires only when ct) Tj
-T*
-(concentration appears with repeated query patterns and either a device cluster or same-) Tj
-T*
-(second burst. The time-to-click timing bands are intentionally tiered: clicks from 0 to) Tj
-T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 3089 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(250 ms are treated as implausibly fast direct evidence, clicks from 20 to 60 seconds add) Tj
-T*
-(low-weight support for delayed or mechanical click patterns, and clicks above 120) Tj
-T*
-(seconds remain a separate extreme timing signal. The regular inter-arrival rule is) Tj
-T*
-(intentionally narrow because the dataset has no explicit user or session identifier: it) Tj
-T*
-(only compares clicks with the same region, browser, OS, query, and clicked domain,) Tj
-T*
-(requires at least eight events, and adds low-weight supporting evidence rather than a) Tj
-T*
-(standalone bot decision. Structured rule contributions include threshold_mode, with) Tj
-T*
-(fixed rules reported as absolute and adaptive exact-ttc reuse reported as) Tj
-T*
-(adaptive_percentile when present. The Extended Isolation Forest model catches) Tj
-T*
-(multivariate oddities that a small rule set may miss. Both should generalize when bot) Tj
-T*
-(traffic is repetitive or mechanically timed, but they may miss human-like bots and may) Tj
-T*
-(over-flag legitimate campaigns that naturally produce high repetition. The thresholds) Tj
-T*
-(should be recalibrated when traffic mix, geography, or ad inventory changes materially.) Tj
+(- monitor: 145,508 events) Tj
 T*
 () Tj
 T*
-( 8. Probability assessment) Tj
+(Recommended use:) Tj
 T*
 () Tj
 T*
-(Operational confidence estimate: 73% of flagged events are likely fraudulent. This is) Tj
+(- suppress: high-confidence traffic that can be excluded from billing or) Tj
 T*
-(not label-calibrated precision; it is a reasoned, run-specific estimate based on) Tj
+(  downstream metrics after policy approval.) Tj
 T*
-(agreement between independent signals. Events flagged by both the heuristic model and) Tj
+(- quarantine: suspicious traffic that should be reviewed, sampled, or delayed) Tj
 T*
-(the upper tail of the ML anomaly score are more likely to be fraudulent than events) Tj
+(  before suppression.) Tj
 T*
-(flagged by only one weak signal. This estimate uses the ml_score >= 0.975 agreement) Tj
+(- monitor: traffic not selected for bot action, retained for trend analysis) Tj
 T*
-(threshold; the value is higher than estimates computed at 0.995 because the agreement) Tj
-T*
-(definition broadened, not because detection quality improved. The report therefore) Tj
-T*
-(treats probability as an operational confidence estimate, not a measured ground truth) Tj
-T*
-(metric.) Tj
+(  and future labels.) Tj
 T*
 () Tj
 T*
-( 9. Known limitations) Tj
+(The binary is_bot field is the compatibility output. The tier is the safer) Tj
+T*
+(business-control layer.) Tj
 T*
 () Tj
 T*
-(- The dataset has no ground-truth bot labels, so Bot Hunter cannot report measured) Tj
-T*
-(precision, recall, or calibration.) Tj
-T*
-(- The rules intentionally favor interpretable repetition and timing signals. Human-like) Tj
-T*
-(automation, slow distributed bot traffic, or attacks spread across many query/domain) Tj
-T*
-(combinations may be under-detected.) Tj
-T*
-(- Legitimate campaigns can create high repetition, dense device clusters, or) Tj
-T*
-(synchronized bursts. The suppress tier should therefore be policy-approved and) Tj
-T*
-(periodically sampled.) Tj
-T*
-(- The regular inter-arrival rule uses narrow pseudo-session groups because there is no) Tj
-T*
-(user or session identifier. It is supporting evidence rather than proof of automation.) Tj
-T*
-(- The anomaly score is relative to the current traffic mix. Material changes in) Tj
-T*
-(geography, inventory, campaign volume, browser mix, or feature extraction should trigger) Tj
-T*
-(a fresh threshold and review calibration.) Tj
+( 8. Probability Perspective) Tj
 T*
 () Tj
+T*
+(The estimated probability that a flagged event is fraudulent is 73%. This is an) Tj
+T*
+(operational estimate based on signal agreement, not a calibrated probability.) Tj
+T*
+() Tj
+T*
+(The estimate is stronger when independent signals agree. For example, a click) Tj
+T*
+(with repeated query/domain replay, same-second burst evidence, and an upper-tail) Tj
 T*
 ET
 endstream
@@ -397,69 +397,95 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
 endobj
 12 0 obj
-<< /Length 1865 >>
+<< /Length 2133 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-( 10. Recommended actions) Tj
+(ML score is more likely to be fraudulent than a click selected only because one) Tj
+T*
+(feature is unusual.) Tj
 T*
 () Tj
 T*
-(Assuming false positives and false negatives are roughly equal in cost, the submitted) Tj
+(The estimate is weaker for isolated ML-only events, because unsupervised anomaly) Tj
 T*
-(binary prediction uses the combined score threshold rather than only the highest-) Tj
+(detection can also surface legitimate edge cases such as unusual campaigns,) Tj
 T*
-(confidence intersection. For business action, use three tiers: suppress bot events with) Tj
-T*
-(the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the) Tj
-T*
-(remaining bot events for review; and monitor traffic that is not selected for bot action) Tj
-T*
-(while retaining it for drift checks and future labels.) Tj
+(regional spikes, testing traffic, or rare but valid user behaviour.) Tj
 T*
 () Tj
 T*
-( 11. Future work) Tj
+( 9. Generalisation And Trade-Offs) Tj
 T*
 () Tj
 T*
-(With more time, I would add labeled validation data, campaign-level normalization,) Tj
+(The approach should generalise when bot traffic is repetitive, mechanically) Tj
 T*
-(browser/user-agent fingerprinting if available, time-series burst detection by inventory) Tj
+(timed, or concentrated in narrow device and query patterns. It may miss bots) Tj
 T*
-(beyond the current pseudo-session burst feature, calibrated probabilities, and a) Tj
+(that deliberately randomise timing, distribute across many query/domain pairs,) Tj
 T*
-(feedback loop from manual review decisions.) Tj
-T*
-() Tj
-T*
-( 12. Submission and decision summary) Tj
+(or imitate human behaviour closely.) Tj
 T*
 () Tj
 T*
-(The repository includes submission.tsv with event_id, is_bot, and operational_tier,) Tj
+(The main trade-off is explainability versus coverage. Rules are easier to) Tj
 T*
-(preserving the final binary prediction while adding a workflow tier. This run selected) Tj
+(defend but can miss novel patterns. The anomaly model broadens coverage but) Tj
 T*
-(3,731 of 149,239 events as likely bots \(2.50%\). The operational split is 1,966 suppress,) Tj
+(needs careful interpretation because it finds unusual events, not necessarily) Tj
 T*
-(1,765 quarantine, and 145,508 monitor events.) Tj
+(fraudulent events.) Tj
 T*
 () Tj
 T*
-(Use the binary is_bot field as the compatibility output for downstream systems. Use) Tj
+(Material changes in geography, campaign volume, inventory, browser mix, or) Tj
 T*
-(operational_tier to decide handling: suppress high-confidence bot traffic after policy) Tj
+(feature extraction should trigger fresh threshold review.) Tj
 T*
-(approval, quarantine lower-confidence bot traffic for review or delayed action, and) Tj
+() Tj
 T*
-(monitor the remaining traffic for drift checks and future labels. The report and) Tj
+( 10. Known Limitations) Tj
 T*
-(dashboard should be read as review aids, not as proof of fraud for every individual) Tj
+() Tj
 T*
-(event.) Tj
+(- There are no ground-truth labels, so measured precision, recall, and) Tj
+T*
+(  calibration cannot be reported.) Tj
+T*
+(- Legitimate campaigns can create high repetition, dense clusters, or regional) Tj
+T*
+(  concentration.) Tj
+T*
+(- The ct rule is supporting evidence only; it should not be used as a) Tj
+T*
+(  country-level blocking rule.) Tj
+T*
+(- The regular inter-arrival rule uses pseudo-session groups because there is no) Tj
+T*
+(  explicit user or session identifier.) Tj
+T*
+(- The anomaly score is relative to the current batch and should be monitored) Tj
+T*
+(  for drift across future runs.) Tj
+T*
+() Tj
+T*
+( 11. Future Work) Tj
+T*
+() Tj
+T*
+(The next useful improvements are:) Tj
+T*
+() Tj
+T*
+(- labelled validation from manual review, chargebacks, or confirmed invalid) Tj
+T*
+(  traffic feedback) Tj
+T*
+(- campaign-level or inventory-level normalisation) Tj
 T*
 ET
 endstream
@@ -467,23 +493,82 @@ endobj
 13 0 obj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
 endobj
+14 0 obj
+<< /Length 923 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(- stronger browser or user-agent fingerprinting if those fields become) Tj
+T*
+(  available) Tj
+T*
+(- historical drift monitoring for score distributions and flagged rates) Tj
+T*
+(- calibrated probabilities once trusted labels exist) Tj
+T*
+(- a feedback loop from reviewed suppress and quarantine decisions) Tj
+T*
+() Tj
+T*
+( 12. Submission Summary) Tj
+T*
+() Tj
+T*
+(The repository includes submission.tsv with event_id, is_bot, and) Tj
+T*
+(operational_tier.) Tj
+T*
+() Tj
+T*
+(This run selected 3,731 of 149,239 events as likely bots \(2.50%\).) Tj
+T*
+() Tj
+T*
+(Operational split:) Tj
+T*
+() Tj
+T*
+(- suppress: 1,966) Tj
+T*
+(- quarantine: 1,765) Tj
+T*
+(- monitor: 145,508) Tj
+T*
+() Tj
+T*
+(Use the report and dashboard as review aids. They explain why traffic was) Tj
+T*
+(selected and where the evidence is strongest, but they do not replace labelled) Tj
+T*
+(validation or policy approval.) Tj
+T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
 xref
-0 14
+0 16
 0000000000 65535 f
 0000000009 00000 n
 0000000058 00000 n
-0000000141 00000 n
-0000000211 00000 n
-0000003419 00000 n
-0000003545 00000 n
-0000005897 00000 n
-0000006023 00000 n
-0000009005 00000 n
-0000009131 00000 n
-0000012273 00000 n
-0000012401 00000 n
-0000014319 00000 n
-trailer << /Size 14 /Root 1 0 R >>
+0000000148 00000 n
+0000000218 00000 n
+0000002070 00000 n
+0000002196 00000 n
+0000004337 00000 n
+0000004463 00000 n
+0000006537 00000 n
+0000006663 00000 n
+0000008549 00000 n
+0000008677 00000 n
+0000010863 00000 n
+0000010991 00000 n
+0000011966 00000 n
+trailer << /Size 16 /Root 1 0 R >>
 startxref
-14447
+12094
 %%EOF

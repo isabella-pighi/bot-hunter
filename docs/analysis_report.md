@@ -1,43 +1,120 @@
 # Bot Hunter Analysis Report
 
-## 1. Project context
+## 1. Executive Summary
 
-Bot Hunter is a review-first bot detection pipeline. It keeps the rules layer readable, lets the anomaly model add statistical coverage, and treats all score outputs as unlabeled operational evidence rather than measured ground truth. That matters because the dataset does not include labels, so precision is reported as an operational confidence estimate instead of a calibrated metric. All event counts in this report are run-specific and will change if the pipeline is re-run on updated data.
+Bot Hunter analysed 149,239 click events and selected 3,731 as likely bot traffic. That is 2.50% of the run.
 
-## 2. Classifiers
+This report should be read as evidence for review, not as proof of fraud for
+every individual event. The dataset does not include ground-truth labels, so the
+probability figures are operational confidence estimates rather than measured
+precision or recall.
 
-The application implements two classifiers. The first is a rules-based classifier that scores repeated query/domain pairs, repeated queries, confirmed query repetition, high-volume domains, dense region/browser/OS clusters, exact time-to-click reuse, same-second bursts, dense burst repetition clusters, concentrated `ct` context paired with repetition and clustering, implausibly fast clicks, moderately long time-to-click values, extreme time-to-click values, and regular pseudo-session inter-arrival timing. Exact time-to-click reuse is selectively calibrated with a 99th-percentile reuse-count cutoff and an absolute floor so the rule can adapt to timer reuse patterns without letting low-count coincidences fire. Confirmed query repetition is intentionally conjunctive: it requires the query/domain pair to repeat and the query to be widely repeated. Dense burst repetition is also conjunctive: it requires a heavy region/browser/OS cluster, at least five same-second clicks, and a repeated query or query/domain pattern on the same event. The `ct` rule is also conjunctive and low weight: it adds supporting evidence only when country-like concentration appears with repeated query behaviour and either device clustering or a same-second burst. The second classifier is an Extended Isolation Forest anomaly model over all 14 engineered behavioral features as ML inputs, including region/browser/OS frequency, global `ct` country frequency, explicit mechanical features for sub-200ms clicks, local burst density, and query entropy. Query length, query word count, and uncertain URL flags are no longer engineered features. High-volume domain frequency and global country frequency remain available but are down-weighted to 0.50 and 0.50, respectively, in the standardized ML matrix. Repetition and timing features that can dominate standalone EIF tail evidence are also down-weighted to 0.50: query/domain repetition, query repetition, log-scaled time-to-click magnitude, sub-200ms click flags, and query entropy. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
+The submitted output is `submission.tsv`. It keeps the required binary
+`is_bot` decision and adds an operational tier so the same prediction can be
+used more carefully in business workflows.
 
-## 3. Anomalies found
+## 2. What The System Does
 
-The run analyzed 149,239 events and flagged 3,731 events as bots (2.50%). The strongest explainable patterns were:
+Bot Hunter combines two complementary classifiers.
+
+- Rules-based classifier: transparent rules that identify repeated,
+  mechanically timed, or tightly clustered click patterns.
+- Machine-learning classifier: an Extended Isolation Forest anomaly model over 14 engineered behavioural features.
+
+The final score is a weighted blend:
+
+```text
+combined_score = (0.58 * heuristic_score) + (0.42 * ml_score)
+```
+
+The rules layer is weighted slightly higher because it is easier to explain and
+audit. The anomaly model still matters because it can identify unusual
+combinations that a small rule set may not capture.
+
+## 3. Main Results
+
+The strongest explainable patterns in this run were:
 
 - repeated query: 3,476 events
 - repeated query/domain pair: 2,091 events
 - confirmed query repetition: 2,023 events
 - same-second click burst: 1,876 events
-- heavy region/browser/os cluster: 1,868 events
+- heavy region/browser/OS cluster: 1,868 events
 - very short query: 1,835 events
 - high-volume clicked domain: 1,726 events
 - concentrated ct context: 1,154 events
 - dense burst repetition cluster: 526 events
 - moderately long time-to-click: 472 events
 
-The dashboard exposes these same signals with sample events so a business user can inspect the likely automated behavior without reading model internals.
+Example interpretation: a single repeated query is not enough to prove bot
+traffic. It becomes more concerning when it appears with a repeated clicked
+domain, dense same-second activity, reused time-to-click values, or a narrow
+region/browser/OS footprint.
 
-## 4. Filtering options
+The new concentrated `ct` rule is deliberately cautious. It adds low-weight
+support only when country-like concentration appears with repeated query
+behaviour and either a heavy device cluster or a same-second burst. Country-like
+concentration alone is not treated as bot evidence because legitimate campaigns
+can be country-specific.
 
-Practical filters for similar datasets include dropping or quarantining traffic from repeated query/domain pairs, repeated exact `ttc` values, dense same-second bursts, and events above the combined anomaly threshold. Bot Hunter assigns operational tiers without changing the binary `is_bot` prediction:
+## 4. Classifier Details
 
-- suppress: 1,966 events
-- quarantine: 1,765 events
-- monitor: 145,508 events
+The rules layer currently scores:
 
-Use `suppress` for high-confidence bot traffic after policy approval, `quarantine` for bot traffic that should be held for review, and `monitor` for traffic that is not selected for bot action but should remain available for trend analysis and future labels.
+- repeated query/domain pairs
+- repeated queries
+- confirmed query repetition
+- high-volume clicked domains
+- dense region/browser/OS clusters
+- exact time-to-click reuse
+- same-second bursts
+- dense burst repetition clusters
+- concentrated `ct` context paired with repetition and clustering
+- implausibly fast clicks
+- moderately long or extreme time-to-click values
+- regular pseudo-session inter-arrival timing
 
-## 5. Method disagreement
+The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold
+with an absolute floor. This lets the rule adapt to the observed timer reuse in
+the batch while avoiding weak duplicate counts.
 
-The combined score uses a 0.58/0.42 heuristic/ML split because the rules layer is more directly explainable and should remain slightly dominant, while ML still has enough weight to move borderline cases and catch multivariate oddities. The thresholds are conservative guardrails, not learned cutoffs. Bot Hunter reports one method disagreement view using the rules threshold (`heuristic_score >= 0.62`) and the ML agreement threshold (`ml_score >= 0.975`). This agreement view is review evidence for an unlabeled dataset; it should not be read as measured accuracy.
+The `ct` rule, confirmed query repetition, and dense burst repetition rules are
+conjunctive. In practical terms, they require multiple signals to be present
+before adding score. This is safer than treating broad context, such as
+country-like concentration, as a standalone bot indicator.
+
+The anomaly classifier uses the engineered feature matrix, including
+region/browser/OS frequency, global `ct` country frequency, sub-200 ms click
+flags, local burst density, query entropy, repetition counts, and timing
+features. High-volume domain frequency and global country frequency are down-weighted to 0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
+
+## 5. Thresholds And Decision Logic
+
+An event is selected as a bot when either condition is true:
+
+```text
+combined_score > 0.606846
+or heuristic_score >= 0.62
+```
+
+The combined-score threshold is the run-specific 97.5th-percentile cutoff. It
+keeps the selected volume stable for an unlabelled dataset while letting the ML
+model influence borderline cases.
+
+The heuristic override protects high-confidence, explainable rule hits. For
+example, a strongly repeated query/domain pattern with mechanical timing should
+not be missed only because the anomaly ranking moved after a feature change.
+
+In this run:
+
+- heuristic-only flag rate: 1.40%
+- ML agreement-tail reference rate: 2.50%
+- operational confidence estimate: 73%
+
+## 6. Method Agreement And Disagreement
+
+Agreement between the rules layer and the anomaly model is useful review
+evidence. It is not statistical validation, because there are no labels.
 
 At the ML agreement threshold, this run has 1,478 `Heuristic + ML` events and 2,253 `ML only` events.
 
@@ -48,38 +125,101 @@ Method disagreement (`ml_score >= 0.975`):
 - ML only: 2,253 events
 - Neither strong: 144,896 events
 
-## 6. Threshold rationale
+Example interpretation:
 
-The binary decision uses the stronger of two conservative gates: the event is selected when its combined score is at or above the run-specific 97.5th-percentile cutoff (0.606846 in this run), or when the rules-only heuristic score reaches 0.62 on its own. The percentile cutoff keeps the submitted bot volume stable for an unlabeled dataset while still letting the anomaly model influence which borderline events enter the review set. The heuristic override prevents high-confidence, explainable rule hits from being missed just because the anomaly ranking moved around after a feature or backend change.
+- `Heuristic + ML` events are usually the strongest review candidates.
+- `Heuristic only` events may be explainable rule hits that are not unusual in
+  the wider feature space.
+- `ML only` events may contain multivariate anomalies, but they need careful
+  review because unusual legitimate behaviour can also be anomalous.
 
-The threshold is not a learned probability boundary. It is an operational cutoff for a review-first workflow where false positives and false negatives are treated as roughly comparable. In this run, the heuristic-only flag rate was 1.40%, while the ML agreement-tail reference rate was 2.50%; those rates are reported separately so reviewers can see how much each method contributes before the combined decision is applied.
+## 7. Operational Actions
 
-## 7. Rationale and generalization
+Bot Hunter separates prediction from action by assigning operational tiers:
 
-The heuristic model is transparent and easy to convert into policy. Only exact time-to-click reuse uses percentile calibration because it is a global duplicate-count signal whose suspiciousness depends on the dataset's observed timer granularity and reuse distribution; the absolute floor protects against weak duplicate counts in smaller or smoother datasets. Other heuristic cutoffs remain fixed or total-rate based because they represent separate behavioral concepts. The confirmed query repetition rule reuses the repeated query/domain and repeated query thresholds and adds weight only when both fire on the same event. The dense burst repetition rule reuses those existing component thresholds and adds weight only when all three are present together, which targets many clicks from the same device cluster in the same second with repeated query patterns. The concentrated `ct` rule is intentionally supporting evidence, not a standalone country rule, because legitimate campaigns can be country-specific. It fires only when `ct` concentration appears with repeated query patterns and either a device cluster or same-second burst. The time-to-click timing bands are intentionally tiered: clicks from 0 to 250 ms are treated as implausibly fast direct evidence, clicks from 20 to 60 seconds add low-weight support for delayed or mechanical click patterns, and clicks above 120 seconds remain a separate extreme timing signal. The regular inter-arrival rule is intentionally narrow because the dataset has no explicit user or session identifier: it only compares clicks with the same region, browser, OS, query, and clicked domain, requires at least eight events, and adds low-weight supporting evidence rather than a standalone bot decision. Structured rule contributions include `threshold_mode`, with fixed rules reported as `absolute` and adaptive exact-ttc reuse reported as `adaptive_percentile` when present. The Extended Isolation Forest model catches multivariate oddities that a small rule set may miss. Both should generalize when bot traffic is repetitive or mechanically timed, but they may miss human-like bots and may over-flag legitimate campaigns that naturally produce high repetition. The thresholds should be recalibrated when traffic mix, geography, or ad inventory changes materially.
+- suppress: 1,966 events
+- quarantine: 1,765 events
+- monitor: 145,508 events
 
-## 8. Probability assessment
+Recommended use:
 
-Operational confidence estimate: 73% of flagged events are likely fraudulent. This is not label-calibrated precision; it is a reasoned, run-specific estimate based on agreement between independent signals. Events flagged by both the heuristic model and the upper tail of the ML anomaly score are more likely to be fraudulent than events flagged by only one weak signal. This estimate uses the `ml_score >= 0.975` agreement threshold; the value is higher than estimates computed at 0.995 because the agreement definition broadened, not because detection quality improved. The report therefore treats probability as an operational confidence estimate, not a measured ground truth metric.
+- `suppress`: high-confidence traffic that can be excluded from billing or
+  downstream metrics after policy approval.
+- `quarantine`: suspicious traffic that should be reviewed, sampled, or delayed
+  before suppression.
+- `monitor`: traffic not selected for bot action, retained for trend analysis
+  and future labels.
 
-## 9. Known limitations
+The binary `is_bot` field is the compatibility output. The tier is the safer
+business-control layer.
 
-- The dataset has no ground-truth bot labels, so Bot Hunter cannot report measured precision, recall, or calibration.
-- The rules intentionally favor interpretable repetition and timing signals. Human-like automation, slow distributed bot traffic, or attacks spread across many query/domain combinations may be under-detected.
-- Legitimate campaigns can create high repetition, dense device clusters, or synchronized bursts. The suppress tier should therefore be policy-approved and periodically sampled.
-- The regular inter-arrival rule uses narrow pseudo-session groups because there is no user or session identifier. It is supporting evidence rather than proof of automation.
-- The anomaly score is relative to the current traffic mix. Material changes in geography, inventory, campaign volume, browser mix, or feature extraction should trigger a fresh threshold and review calibration.
+## 8. Probability Perspective
 
-## 10. Recommended actions
+The estimated probability that a flagged event is fraudulent is 73%. This is an operational estimate based on signal agreement, not a calibrated probability.
 
-Assuming false positives and false negatives are roughly equal in cost, the submitted binary prediction uses the combined score threshold rather than only the highest-confidence intersection. For business action, use three tiers: suppress bot events with the strongest combined, heuristic, or heuristic/ML agreement signals; quarantine the remaining bot events for review; and monitor traffic that is not selected for bot action while retaining it for drift checks and future labels.
+The estimate is stronger when independent signals agree. For example, a click
+with repeated query/domain replay, same-second burst evidence, and an upper-tail
+ML score is more likely to be fraudulent than a click selected only because one
+feature is unusual.
 
-## 11. Future work
+The estimate is weaker for isolated ML-only events, because unsupervised anomaly
+detection can also surface legitimate edge cases such as unusual campaigns,
+regional spikes, testing traffic, or rare but valid user behaviour.
 
-With more time, I would add labeled validation data, campaign-level normalization, browser/user-agent fingerprinting if available, time-series burst detection by inventory beyond the current pseudo-session burst feature, calibrated probabilities, and a feedback loop from manual review decisions.
+## 9. Generalisation And Trade-Offs
 
-## 12. Submission and decision summary
+The approach should generalise when bot traffic is repetitive, mechanically
+timed, or concentrated in narrow device and query patterns. It may miss bots
+that deliberately randomise timing, distribute across many query/domain pairs,
+or imitate human behaviour closely.
 
-The repository includes `submission.tsv` with `event_id`, `is_bot`, and `operational_tier`, preserving the final binary prediction while adding a workflow tier. This run selected 3,731 of 149,239 events as likely bots (2.50%). The operational split is 1,966 suppress, 1,765 quarantine, and 145,508 monitor events.
+The main trade-off is explainability versus coverage. Rules are easier to
+defend but can miss novel patterns. The anomaly model broadens coverage but
+needs careful interpretation because it finds unusual events, not necessarily
+fraudulent events.
 
-Use the binary `is_bot` field as the compatibility output for downstream systems. Use `operational_tier` to decide handling: suppress high-confidence bot traffic after policy approval, quarantine lower-confidence bot traffic for review or delayed action, and monitor the remaining traffic for drift checks and future labels. The report and dashboard should be read as review aids, not as proof of fraud for every individual event.
+Material changes in geography, campaign volume, inventory, browser mix, or
+feature extraction should trigger fresh threshold review.
+
+## 10. Known Limitations
+
+- There are no ground-truth labels, so measured precision, recall, and
+  calibration cannot be reported.
+- Legitimate campaigns can create high repetition, dense clusters, or regional
+  concentration.
+- The `ct` rule is supporting evidence only; it should not be used as a
+  country-level blocking rule.
+- The regular inter-arrival rule uses pseudo-session groups because there is no
+  explicit user or session identifier.
+- The anomaly score is relative to the current batch and should be monitored
+  for drift across future runs.
+
+## 11. Future Work
+
+The next useful improvements are:
+
+- labelled validation from manual review, chargebacks, or confirmed invalid
+  traffic feedback
+- campaign-level or inventory-level normalisation
+- stronger browser or user-agent fingerprinting if those fields become
+  available
+- historical drift monitoring for score distributions and flagged rates
+- calibrated probabilities once trusted labels exist
+- a feedback loop from reviewed `suppress` and `quarantine` decisions
+
+## 12. Submission Summary
+
+The repository includes `submission.tsv` with `event_id`, `is_bot`, and
+`operational_tier`.
+
+This run selected 3,731 of 149,239 events as likely bots (2.50%).
+
+Operational split:
+
+- suppress: 1,966
+- quarantine: 1,765
+- monitor: 145,508
+
+Use the report and dashboard as review aids. They explain why traffic was
+selected and where the evidence is strongest, but they do not replace labelled
+validation or policy approval.
