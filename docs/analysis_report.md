@@ -83,10 +83,19 @@ conjunctive. In practical terms, they require multiple signals to be present
 before adding score. This is safer than treating broad context, such as
 country-like concentration, as a standalone bot indicator.
 
-The anomaly classifier uses the engineered feature matrix, including
-region/browser/OS frequency, global `ct` country frequency, sub-200 ms click
-flags, local burst density, query entropy, repetition counts, and timing
-features. High-volume domain frequency and global country frequency are down-weighted to 0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
+The anomaly classifier uses the engineered feature matrix. The main feature
+families are:
+
+- region/browser/OS frequency
+- global `ct` country frequency
+- sub-200 ms click flags
+- local burst density
+- query entropy
+- query, domain, and query/domain repetition counts
+- same-second and exact time-to-click reuse counts
+- timing magnitude after log transformation
+
+High-volume domain frequency and global country frequency are down-weighted to 0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
 
 ## 5. Thresholds And Decision Logic
 

@@ -203,7 +203,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 2022 >>
+<< /Length 1871 >>
 stream
 BT
 /F1 10 Tf
@@ -215,19 +215,37 @@ T*
 T*
 () Tj
 T*
-(The anomaly classifier uses the engineered feature matrix, including) Tj
+(The anomaly classifier uses the engineered feature matrix. The main feature) Tj
 T*
-(region/browser/OS frequency, global ct country frequency, sub-200 ms click) Tj
+(families are:) Tj
 T*
-(flags, local burst density, query entropy, repetition counts, and timing) Tj
+() Tj
 T*
-(features. High-volume domain frequency and global country frequency are down-weighted to) Tj
+(- region/browser/OS frequency) Tj
 T*
-(0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive) Tj
+(- global ct country frequency) Tj
 T*
-(higher anomaly scores. EIF is the only production anomaly model; alternate ML backends) Tj
+(- sub-200 ms click flags) Tj
 T*
-(and supervised pilots have been removed.) Tj
+(- local burst density) Tj
+T*
+(- query entropy) Tj
+T*
+(- query, domain, and query/domain repetition counts) Tj
+T*
+(- same-second and exact time-to-click reuse counts) Tj
+T*
+(- timing magnitude after log transformation) Tj
+T*
+() Tj
+T*
+(High-volume domain frequency and global country frequency are down-weighted to 0.50 and) Tj
+T*
+(0.50, respectively. Events isolated quickly by random hyperplane splits receive higher) Tj
+T*
+(anomaly scores. EIF is the only production anomaly model; alternate ML backends and) Tj
+T*
+(supervised pilots have been removed.) Tj
 T*
 () Tj
 T*
@@ -275,6 +293,19 @@ T*
 T*
 (- operational confidence estimate: 73%) Tj
 T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 1747 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 ( 6. Method Agreement And Disagreement) Tj
@@ -293,19 +324,6 @@ T*
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 1833 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (Method disagreement \(ml_score >= 0.975\):) Tj
 T*
 () Tj
@@ -372,6 +390,19 @@ T*
 T*
 (The binary is_bot field is the compatibility output. The tier is the safer) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2274 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (business-control layer.) Tj
 T*
 () Tj
@@ -390,19 +421,6 @@ T*
 T*
 (with repeated query/domain replay, same-second burst evidence, and an upper-tail) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 2133 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (ML score is more likely to be fraudulent than a click selected only because one) Tj
 T*
 (feature is unusual.) Tj
@@ -469,6 +487,19 @@ T*
 T*
 (- The anomaly score is relative to the current batch and should be monitored) Tj
 T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 1226 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (  for drift across future runs.) Tj
 T*
 () Tj
@@ -487,19 +518,6 @@ T*
 T*
 (- campaign-level or inventory-level normalisation) Tj
 T*
-ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
-endobj
-14 0 obj
-<< /Length 923 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (- stronger browser or user-agent fingerprinting if those fields become) Tj
 T*
 (  available) Tj
@@ -561,14 +579,14 @@ xref
 0000002196 00000 n
 0000004337 00000 n
 0000004463 00000 n
-0000006537 00000 n
-0000006663 00000 n
-0000008549 00000 n
-0000008677 00000 n
-0000010863 00000 n
-0000010991 00000 n
-0000011966 00000 n
+0000006386 00000 n
+0000006512 00000 n
+0000008312 00000 n
+0000008440 00000 n
+0000010767 00000 n
+0000010895 00000 n
+0000012174 00000 n
 trailer << /Size 16 /Root 1 0 R >>
 startxref
-12094
+12302
 %%EOF

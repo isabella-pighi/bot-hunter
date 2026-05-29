@@ -47,6 +47,8 @@ def _markdown(summary: dict[str, object]) -> str:
     threshold = float(summary.get("threshold", 0.0))
     heuristic_flag_rate = float(summary.get("heuristic_flag_rate", 0.0))
     ml_tail_rate = float(summary.get("ml_tail_rate", 0.0))
+    domain_weight = float(ml_feature_weights.get("log_domain_count", 1.0))
+    country_weight = float(ml_feature_weights.get("log_country_count", 1.0))
 
     return f"""# Bot Hunter Analysis Report
 
@@ -124,10 +126,19 @@ conjunctive. In practical terms, they require multiple signals to be present
 before adding score. This is safer than treating broad context, such as
 country-like concentration, as a standalone bot indicator.
 
-The anomaly classifier uses the engineered feature matrix, including
-region/browser/OS frequency, global `ct` country frequency, sub-200 ms click
-flags, local burst density, query entropy, repetition counts, and timing
-features. High-volume domain frequency and global country frequency are down-weighted to {float(ml_feature_weights.get("log_domain_count", 1.0)):.2f} and {float(ml_feature_weights.get("log_country_count", 1.0)):.2f}, respectively. {model_detail}
+The anomaly classifier uses the engineered feature matrix. The main feature
+families are:
+
+- region/browser/OS frequency
+- global `ct` country frequency
+- sub-200 ms click flags
+- local burst density
+- query entropy
+- query, domain, and query/domain repetition counts
+- same-second and exact time-to-click reuse counts
+- timing magnitude after log transformation
+
+High-volume domain frequency and global country frequency are down-weighted to {domain_weight:.2f} and {country_weight:.2f}, respectively. {model_detail}
 
 ## 5. Thresholds And Decision Logic
 
