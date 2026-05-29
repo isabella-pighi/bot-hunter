@@ -58,7 +58,56 @@ behaviour and either a heavy device cluster or a same-second burst. Country-like
 concentration alone is not treated as bot evidence because legitimate campaigns
 can be country-specific.
 
-## 4. Classifier Details
+## 4. Operational Anomaly Classes
+
+Operational anomaly classes derived from the current unlabelled run; these are not proven fraud labels.
+
+The classes below group the 3,731 selected events from this run.
+The grouping is backed by full-run rule contributions, rule strength and family
+fields, heuristic and ML scores, method-agreement buckets, operational tiers,
+and the run-specific thresholds described later in this report.
+
+| Class | Selected events | Data backing | Suggested handling |
+|---|---:|---|---|
+| Repetition with supporting context | 1,877 | tiers: suppress 1,327, quarantine 550; methods: Heuristic + ML 1,198, Heuristic only 186, Combined tail 493; top rules: repeat_query (1,877), repeat_query_domain (1,384), confirmed_query_repetition (1,384) | Review as replay-like traffic. Suppress only when the event is already in the suppress tier; otherwise quarantine or sample. |
+| Compound burst/replay | 562 | tiers: suppress 154, quarantine 408; methods: Heuristic + ML 150, Heuristic only 11, Combined tail 401; top rules: repeat_query (558), same_second_burst (441), short_query (285) | Treat suppress-tier events as strong operational candidates; quarantine the rest for timing-pattern review. |
+| ML-tail multivariate anomaly | 509 | tiers: quarantine 509; methods: ML only 509; This class is grouped by anomaly-model agreement, not by rule explanations. Low-weight rules may be present, but they do not cross the heuristic override threshold. | Quarantine or sample. Do not suppress automatically without feature-deviation review or labels. |
+| Repetition with timing anomaly | 355 | tiers: suppress 199, quarantine 156; methods: Heuristic + ML 195, Heuristic only 4, Combined tail 156; top rules: repeat_query (355), moderate_long_ttc (283), repeat_query_domain (199) | Prioritise when suppress-tier or when timing evidence is strong; otherwise quarantine for sampling. |
+| Repetition dominated | 350 | tiers: suppress 183, quarantine 167; methods: Heuristic + ML 183, Heuristic only 110, Combined tail 57; top rules: repeat_query_domain (350), repeat_query (293), confirmed_query_repetition (293) | Use as an explainable replay candidate. Quarantine lower-score cases when ML agreement is absent. |
+| Supporting context plus combined tail | 77 | tiers: quarantine 77; methods: Combined tail 77; top rules: same_second_burst (74), high_volume_domain (62), heavy_device_cluster (62) | Monitor or quarantine. These are useful for trend review, not standalone suppression. |
+| Other combined-tail anomaly | 1 | tiers: quarantine 1; methods: Combined tail 1; top rules: same_second_burst (1), fast_click (1) | Sample manually before taking action. |
+
+The ML-tail population contains 2,005 events with high anomaly
+scores and heuristic scores below the rule override threshold. Only the subset
+that also crossed the combined-score cutoff is counted as selected traffic in
+the class table. This keeps ML-only anomalies visible without describing them
+as rule-derived replay evidence.
+
+Concrete examples from the current run:
+
+- Repetition with supporting context: `evt_147679` clicked `www.amazon.de` for query `nomnem`; combined 0.9183, rules 0.8600, ML 0.9988, tier `suppress`, method `Heuristic + ML`; rules: repeat_query_domain, repeat_query, confirmed_query_repetition, high_volume_domain, heavy_device_cluster, concentrated_ct_context, short_query.
+- Compound burst/replay: `evt_097085` clicked `duckduckgo.com` for query `vielle motoneuron`; combined 0.9982, rules 1.0000, ML 0.9957, tier `suppress`, method `Heuristic + ML`; rules: repeat_query_domain, repeat_query, confirmed_query_repetition, heavy_device_cluster, same_second_burst, dense_burst_repetition_cluster, concentrated_ct_context, moderate_long_ttc.
+- ML-tail multivariate anomaly (2,005 events in the wider population): `evt_082067` clicked `www.firefold.com` for query `splenocyte`; combined 0.7637, rules 0.6000, ML 0.9896, tier `quarantine`, method `ML only`.
+- Repetition with timing anomaly: `evt_004943` clicked `www.amazon.ca` for query `nomnem`; combined 0.9184, rules 0.8600, ML 0.9991, tier `suppress`, method `Heuristic + ML`; rules: repeat_query_domain, repeat_query, confirmed_query_repetition, high_volume_domain, heavy_device_cluster, extreme_ttc, short_query.
+- Repetition dominated: `evt_009777` clicked `www.overstock.com` for query `fuzz sulphid`; combined 0.7781, rules 0.6200, ML 0.9964, tier `suppress`, method `Heuristic + ML`; rules: repeat_query_domain, repeat_query, confirmed_query_repetition.
+- Supporting context plus combined tail: `evt_089535` clicked `www.amazon.co.uk` for query `aw`; combined 0.6109, rules 0.3600, ML 0.9574, tier `quarantine`, method `Combined tail`; rules: high_volume_domain, heavy_device_cluster, same_second_burst, moderate_long_ttc, short_query.
+- Other combined-tail anomaly: `evt_032590` clicked `find.gmx.com` for query `balm thyrohyal youre eight`; combined 0.5687, rules 0.3000, ML 0.9396, tier `quarantine`, method `Combined tail`; rules: same_second_burst, fast_click.
+
+Practical filtering options for similar unlabelled datasets:
+
+| Filter | Use | Caveat |
+|---|---|---|
+| Conservative suppression review: `operational_tier == 'suppress'` | Start here for the strongest operational candidates. Still requires policy approval because labels are unavailable. | Check policy, billing, and customer-impact rules before action. |
+| Quarantine for manual review: `operational_tier == 'quarantine'` | Hold, sample, or delay action on suspicious traffic that is not strong enough for direct suppression. | Use sampling to estimate likely false positives before suppression. |
+| Explainable replay review: `anomaly_class in repetition_with_supporting_context, compound_burst_replay, repetition_with_timing, repetition_dominated` | Focus reviewer time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-pattern assumptions against campaign context. |
+| ML-tail sampling: `ml_score >= 0.975 and heuristic_score < 0.62` | Sample for future feature-deviation work; do not treat as proven fraud without labels. | Needs feature-deviation review because rule evidence is below override. |
+
+Use these filters as review controls. `suppress` is the strongest operational
+tier, `quarantine` is the safer default for ambiguous or ML-only traffic, and
+`monitor` keeps non-selected traffic available for drift checks and future
+labels.
+
+## 5. Classifier Details
 
 The rules layer currently scores:
 
@@ -127,13 +176,13 @@ Threshold-change validation used the regenerated `submission.tsv`,
 `artifacts/sample_events.json`, and report files under `docs`. Targeted
 heuristic, pipeline, and dashboard tests passed (`uv run pytest
 tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py`, 42 passed),
-the full test suite passed (`uv run pytest`, 48 passed), and Black passed for
+the full test suite passed (`uv run pytest`, 49 passed), and Black passed for
 the touched Python files with the existing Python 3.12 target-version warning.
 Each generated report reflects the current run's artefacts; fixed before/after
 comparison metrics are kept in the static README task history rather than
 repeated in this template.
 
-## 5. Thresholds And Decision Logic
+## 6. Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
@@ -168,7 +217,7 @@ In this run:
 - ML agreement-tail reference rate: 2.50%
 - operational confidence estimate: 74%
 
-## 6. Method Agreement And Disagreement
+## 7. Method Agreement And Disagreement
 
 Agreement between the rules layer and the anomaly model is useful review
 evidence. It is not statistical validation, because there are no labels.
@@ -190,7 +239,7 @@ Example interpretation:
 - `ML only` events may contain multivariate anomalies, but they need careful
   review because unusual legitimate behaviour can also be anomalous.
 
-## 7. Operational Actions
+## 8. Operational Actions
 
 Bot Hunter separates prediction from action by assigning operational tiers:
 
@@ -210,7 +259,7 @@ Recommended use:
 The binary `is_bot` field is the compatibility output. The tier is the safer
 business-control layer.
 
-## 8. Probability Perspective
+## 9. Probability Perspective
 
 The estimated probability that a flagged event is fraudulent is 74%. This is an operational estimate based on signal agreement, not a calibrated probability.
 
@@ -223,7 +272,7 @@ The estimate is weaker for isolated ML-only events, because unsupervised anomaly
 detection can also surface legitimate edge cases such as unusual campaigns,
 regional spikes, testing traffic, or rare but valid user behaviour.
 
-## 9. Generalisation And Trade-Offs
+## 10. Generalisation And Trade-Offs
 
 The approach should generalise when bot traffic is repetitive, mechanically
 timed, or concentrated in narrow device and query patterns. It may miss bots
@@ -238,7 +287,7 @@ fraudulent events.
 Material changes in geography, campaign volume, inventory, browser mix, or
 feature extraction should trigger fresh threshold review.
 
-## 10. Known Limitations
+## 11. Known Limitations
 
 - There are no ground-truth labels, so measured precision, recall, and
   calibration cannot be reported.
@@ -251,7 +300,7 @@ feature extraction should trigger fresh threshold review.
 - The anomaly score is relative to the current batch and should be monitored
   for drift across future runs.
 
-## 11. Future Work
+## 12. Future Work
 
 The next useful improvements are:
 
@@ -264,7 +313,7 @@ The next useful improvements are:
 - calibrated probabilities once trusted labels exist
 - a feedback loop from reviewed `suppress` and `quarantine` decisions
 
-## 12. Submission Summary
+## 13. Submission Summary
 
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and
 `operational_tier`.

@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R] /Count 10 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -106,7 +106,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2136 >>
+<< /Length 2651 >>
 stream
 BT
 /F1 10 Tf
@@ -150,7 +150,229 @@ T*
 T*
 () Tj
 T*
-( 4. Classifier Details) Tj
+( 4. Operational Anomaly Classes) Tj
+T*
+() Tj
+T*
+(Operational anomaly classes derived from the current unlabelled run; these are not) Tj
+T*
+(proven fraud labels.) Tj
+T*
+() Tj
+T*
+(The classes below group the 3,731 selected events from this run.) Tj
+T*
+(The grouping is backed by full-run rule contributions, rule strength and family) Tj
+T*
+(fields, heuristic and ML scores, method-agreement buckets, operational tiers,) Tj
+T*
+(and the run-specific thresholds described later in this report.) Tj
+T*
+() Tj
+T*
+(| Class | Selected events | Data backing | Suggested handling |) Tj
+T*
+(|---|---:|---|---|) Tj
+T*
+(| Repetition with supporting context | 1,877 | tiers: suppress 1,327, quarantine 550;) Tj
+T*
+(methods: Heuristic + ML 1,198, Heuristic only 186, Combined tail 493; top rules:) Tj
+T*
+(repeat_query \(1,877\), repeat_query_domain \(1,384\), confirmed_query_repetition \(1,384\) |) Tj
+T*
+(Review as replay-like traffic. Suppress only when the event is already in the suppress) Tj
+T*
+(tier; otherwise quarantine or sample. |) Tj
+T*
+(| Compound burst/replay | 562 | tiers: suppress 154, quarantine 408; methods: Heuristic) Tj
+T*
+(+ ML 150, Heuristic only 11, Combined tail 401; top rules: repeat_query \(558\),) Tj
+T*
+(same_second_burst \(441\), short_query \(285\) | Treat suppress-tier events as strong) Tj
+T*
+(operational candidates; quarantine the rest for timing-pattern review. |) Tj
+T*
+(| ML-tail multivariate anomaly | 509 | tiers: quarantine 509; methods: ML only 509; This) Tj
+T*
+(class is grouped by anomaly-model agreement, not by rule explanations. Low-weight rules) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 3307 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(may be present, but they do not cross the heuristic override threshold. | Quarantine or) Tj
+T*
+(sample. Do not suppress automatically without feature-deviation review or labels. |) Tj
+T*
+(| Repetition with timing anomaly | 355 | tiers: suppress 199, quarantine 156; methods:) Tj
+T*
+(Heuristic + ML 195, Heuristic only 4, Combined tail 156; top rules: repeat_query \(355\),) Tj
+T*
+(moderate_long_ttc \(283\), repeat_query_domain \(199\) | Prioritise when suppress-tier or) Tj
+T*
+(when timing evidence is strong; otherwise quarantine for sampling. |) Tj
+T*
+(| Repetition dominated | 350 | tiers: suppress 183, quarantine 167; methods: Heuristic +) Tj
+T*
+(ML 183, Heuristic only 110, Combined tail 57; top rules: repeat_query_domain \(350\),) Tj
+T*
+(repeat_query \(293\), confirmed_query_repetition \(293\) | Use as an explainable replay) Tj
+T*
+(candidate. Quarantine lower-score cases when ML agreement is absent. |) Tj
+T*
+(| Supporting context plus combined tail | 77 | tiers: quarantine 77; methods: Combined) Tj
+T*
+(tail 77; top rules: same_second_burst \(74\), high_volume_domain \(62\),) Tj
+T*
+(heavy_device_cluster \(62\) | Monitor or quarantine. These are useful for trend review,) Tj
+T*
+(not standalone suppression. |) Tj
+T*
+(| Other combined-tail anomaly | 1 | tiers: quarantine 1; methods: Combined tail 1; top) Tj
+T*
+(rules: same_second_burst \(1\), fast_click \(1\) | Sample manually before taking action. |) Tj
+T*
+() Tj
+T*
+(The ML-tail population contains 2,005 events with high anomaly) Tj
+T*
+(scores and heuristic scores below the rule override threshold. Only the subset) Tj
+T*
+(that also crossed the combined-score cutoff is counted as selected traffic in) Tj
+T*
+(the class table. This keeps ML-only anomalies visible without describing them) Tj
+T*
+(as rule-derived replay evidence.) Tj
+T*
+() Tj
+T*
+(Concrete examples from the current run:) Tj
+T*
+() Tj
+T*
+(- Repetition with supporting context: evt_147679 clicked www.amazon.de for query nomnem;) Tj
+T*
+(combined 0.9183, rules 0.8600, ML 0.9988, tier suppress, method Heuristic + ML; rules:) Tj
+T*
+(repeat_query_domain, repeat_query, confirmed_query_repetition, high_volume_domain,) Tj
+T*
+(heavy_device_cluster, concentrated_ct_context, short_query.) Tj
+T*
+(- Compound burst/replay: evt_097085 clicked duckduckgo.com for query vielle motoneuron;) Tj
+T*
+(combined 0.9982, rules 1.0000, ML 0.9957, tier suppress, method Heuristic + ML; rules:) Tj
+T*
+(repeat_query_domain, repeat_query, confirmed_query_repetition, heavy_device_cluster,) Tj
+T*
+(same_second_burst, dense_burst_repetition_cluster, concentrated_ct_context,) Tj
+T*
+(moderate_long_ttc.) Tj
+T*
+(- ML-tail multivariate anomaly \(2,005 events in the wider population\): evt_082067) Tj
+T*
+(clicked www.firefold.com for query splenocyte; combined 0.7637, rules 0.6000, ML 0.9896,) Tj
+T*
+(tier quarantine, method ML only.) Tj
+T*
+(- Repetition with timing anomaly: evt_004943 clicked www.amazon.ca for query nomnem;) Tj
+T*
+(combined 0.9184, rules 0.8600, ML 0.9991, tier suppress, method Heuristic + ML; rules:) Tj
+T*
+(repeat_query_domain, repeat_query, confirmed_query_repetition, high_volume_domain,) Tj
+T*
+(heavy_device_cluster, extreme_ttc, short_query.) Tj
+T*
+(- Repetition dominated: evt_009777 clicked www.overstock.com for query fuzz sulphid;) Tj
+T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2575 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(combined 0.7781, rules 0.6200, ML 0.9964, tier suppress, method Heuristic + ML; rules:) Tj
+T*
+(repeat_query_domain, repeat_query, confirmed_query_repetition.) Tj
+T*
+(- Supporting context plus combined tail: evt_089535 clicked www.amazon.co.uk for query) Tj
+T*
+(aw; combined 0.6109, rules 0.3600, ML 0.9574, tier quarantine, method Combined tail;) Tj
+T*
+(rules: high_volume_domain, heavy_device_cluster, same_second_burst, moderate_long_ttc,) Tj
+T*
+(short_query.) Tj
+T*
+(- Other combined-tail anomaly: evt_032590 clicked find.gmx.com for query balm thyrohyal) Tj
+T*
+(youre eight; combined 0.5687, rules 0.3000, ML 0.9396, tier quarantine, method Combined) Tj
+T*
+(tail; rules: same_second_burst, fast_click.) Tj
+T*
+() Tj
+T*
+(Practical filtering options for similar unlabelled datasets:) Tj
+T*
+() Tj
+T*
+(| Filter | Use | Caveat |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Conservative suppression review: operational_tier == 'suppress' | Start here for the) Tj
+T*
+(strongest operational candidates. Still requires policy approval because labels are) Tj
+T*
+(unavailable. | Check policy, billing, and customer-impact rules before action. |) Tj
+T*
+(| Quarantine for manual review: operational_tier == 'quarantine' | Hold, sample, or) Tj
+T*
+(delay action on suspicious traffic that is not strong enough for direct suppression. |) Tj
+T*
+(Use sampling to estimate likely false positives before suppression. |) Tj
+T*
+(| Explainable replay review: anomaly_class in repetition_with_supporting_context,) Tj
+T*
+(compound_burst_replay, repetition_with_timing, repetition_dominated | Focus reviewer) Tj
+T*
+(time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-) Tj
+T*
+(pattern assumptions against campaign context. |) Tj
+T*
+(| ML-tail sampling: ml_score >= 0.975 and heuristic_score < 0.62 | Sample for future) Tj
+T*
+(feature-deviation work; do not treat as proven fraud without labels. | Needs feature-) Tj
+T*
+(deviation review because rule evidence is below override. |) Tj
+T*
+() Tj
+T*
+(Use these filters as review controls. suppress is the strongest operational) Tj
+T*
+(tier, quarantine is the safer default for ambiguous or ML-only traffic, and) Tj
+T*
+(monitor keeps non-selected traffic available for drift checks and future) Tj
+T*
+(labels.) Tj
+T*
+() Tj
+T*
+( 5. Classifier Details) Tj
 T*
 () Tj
 T*
@@ -168,6 +390,19 @@ T*
 T*
 (- dense region/browser/OS clusters) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2289 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- exact time-to-click reuse) Tj
 T*
 (- same-second bursts) Tj
@@ -196,19 +431,6 @@ T*
 T*
 (strong bot signal on their own.) Tj
 T*
-ET
-endstream
-endobj
-7 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
-endobj
-8 0 obj
-<< /Length 2387 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 (| Rule strength | Meaning | Score treatment |) Tj
@@ -265,6 +487,19 @@ T*
 T*
 (- timing magnitude after log transformation) Tj
 T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 2397 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- low-cardinality kp and sld value frequencies) Tj
 T*
 () Tj
@@ -293,19 +528,6 @@ T*
 T*
 (The raw values are excluded from ml_feature_names.) Tj
 T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 2280 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 (Threshold-change validation used the regenerated submission.tsv,) Tj
@@ -318,7 +540,7 @@ T*
 T*
 (tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py, 42 passed\),) Tj
 T*
-(the full test suite passed \(uv run pytest, 48 passed\), and Black passed for) Tj
+(the full test suite passed \(uv run pytest, 49 passed\), and Black passed for) Tj
 T*
 (the touched Python files with the existing Python 3.12 target-version warning.) Tj
 T*
@@ -330,7 +552,7 @@ T*
 T*
 () Tj
 T*
-( 5. Thresholds And Decision Logic) Tj
+( 6. Thresholds And Decision Logic) Tj
 T*
 () Tj
 T*
@@ -362,6 +584,19 @@ T*
 T*
 (not be missed only because the anomaly ranking moved after a feature change.) Tj
 T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 1914 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (Adaptive heuristic thresholds used in this run:) Tj
@@ -390,19 +625,6 @@ T*
 T*
 (| Repeated query/domain pair \(repeat_query_domain\) | 37 | 99th-percentile threshold,) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 1695 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (floor 4, rate guardrail 37 |) Tj
 T*
 (| Reused exact time-to-click \(reused_ttc\) | 40 | 99th-percentile threshold, floor 40 |) Tj
@@ -423,7 +645,7 @@ T*
 T*
 () Tj
 T*
-( 6. Method Agreement And Disagreement) Tj
+( 7. Method Agreement And Disagreement) Tj
 T*
 () Tj
 T*
@@ -459,6 +681,19 @@ T*
 T*
 (- Heuristic + ML events are usually the strongest review candidates.) Tj
 T*
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 2016 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- Heuristic only events may be explainable rule hits that are not unusual in) Tj
 T*
 (  the wider feature space.) Tj
@@ -469,7 +704,7 @@ T*
 T*
 () Tj
 T*
-( 7. Operational Actions) Tj
+( 8. Operational Actions) Tj
 T*
 () Tj
 T*
@@ -487,19 +722,6 @@ T*
 T*
 (Recommended use:) Tj
 T*
-ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
-endobj
-14 0 obj
-<< /Length 2167 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 (- suppress: high-confidence traffic that can be excluded from billing or) Tj
@@ -522,7 +744,7 @@ T*
 T*
 () Tj
 T*
-( 8. Probability Perspective) Tj
+( 9. Probability Perspective) Tj
 T*
 () Tj
 T*
@@ -550,12 +772,25 @@ T*
 T*
 () Tj
 T*
-( 9. Generalisation And Trade-Offs) Tj
+( 10. Generalisation And Trade-Offs) Tj
 T*
 () Tj
 T*
 (The approach should generalise when bot traffic is repetitive, mechanically) Tj
 T*
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 2079 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (timed, or concentrated in narrow device and query patterns. It may miss bots) Tj
 T*
 (that deliberately randomise timing, distribute across many query/domain pairs,) Tj
@@ -580,23 +815,10 @@ T*
 T*
 () Tj
 T*
-( 10. Known Limitations) Tj
+( 11. Known Limitations) Tj
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-15 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
-endobj
-16 0 obj
-<< /Length 1820 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (- There are no ground-truth labels, so measured precision, recall, and) Tj
 T*
 (  calibration cannot be reported.) Tj
@@ -619,7 +841,7 @@ T*
 T*
 () Tj
 T*
-( 11. Future Work) Tj
+( 12. Future Work) Tj
 T*
 () Tj
 T*
@@ -645,7 +867,7 @@ T*
 T*
 () Tj
 T*
-( 12. Submission Summary) Tj
+( 13. Submission Summary) Tj
 T*
 () Tj
 T*
@@ -653,6 +875,19 @@ T*
 T*
 (operational_tier.) Tj
 T*
+ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
+endobj
+22 0 obj
+<< /Length 483 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (This run selected 3,731 of 149,239 events as likely bots.) Tj
@@ -682,30 +917,36 @@ T*
 ET
 endstream
 endobj
-17 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+23 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 22 0 R >>
 endobj
 xref
-0 18
+0 24
 0000000000 65535 f
 0000000009 00000 n
 0000000058 00000 n
-0000000155 00000 n
-0000000225 00000 n
-0000002078 00000 n
-0000002204 00000 n
-0000004392 00000 n
-0000004518 00000 n
-0000006957 00000 n
-0000007083 00000 n
-0000009416 00000 n
-0000009544 00000 n
-0000011292 00000 n
-0000011420 00000 n
-0000013640 00000 n
-0000013768 00000 n
-0000015641 00000 n
-trailer << /Size 18 /Root 1 0 R >>
+0000000177 00000 n
+0000000247 00000 n
+0000002100 00000 n
+0000002226 00000 n
+0000004929 00000 n
+0000005055 00000 n
+0000008414 00000 n
+0000008540 00000 n
+0000011168 00000 n
+0000011296 00000 n
+0000013638 00000 n
+0000013766 00000 n
+0000016216 00000 n
+0000016344 00000 n
+0000018311 00000 n
+0000018439 00000 n
+0000020508 00000 n
+0000020636 00000 n
+0000022768 00000 n
+0000022896 00000 n
+0000023431 00000 n
+trailer << /Size 24 /Root 1 0 R >>
 startxref
-15769
+23559
 %%EOF

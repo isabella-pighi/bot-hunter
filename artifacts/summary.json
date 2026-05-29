@@ -82,6 +82,631 @@
       145197
     ]
   ],
+  "anomaly_classes": {
+    "scope": "Operational anomaly classes derived from the current unlabelled run; these are not proven fraud labels.",
+    "selected_event_count": 3731,
+    "classified_selected_event_count": 3731,
+    "ml_only_population_count": 2005,
+    "classes": [
+      {
+        "class_id": "repetition_with_supporting_context",
+        "label": "Repetition with supporting context",
+        "description": "Repeated query or query/domain behaviour with contextual evidence such as high-volume domains, device clusters, country-like concentration, or very short queries.",
+        "filter": "is_bot == 1, heuristic_score >= 0.62 or combined_score above the run cutoff, repeated query evidence present, no stronger burst or timing class matched first.",
+        "review_action": "Review as replay-like traffic. Suppress only when the event is already in the suppress tier; otherwise quarantine or sample.",
+        "count": 1877,
+        "tier_counts": {
+          "suppress": 1327,
+          "quarantine": 550
+        },
+        "method_counts": {
+          "Heuristic + ML": 1198,
+          "Heuristic only": 186,
+          "Combined tail": 493
+        },
+        "dominant_rules": [
+          {
+            "rule_id": "repeat_query",
+            "count": 1877
+          },
+          {
+            "rule_id": "repeat_query_domain",
+            "count": 1384
+          },
+          {
+            "rule_id": "confirmed_query_repetition",
+            "count": 1384
+          },
+          {
+            "rule_id": "high_volume_domain",
+            "count": 1188
+          },
+          {
+            "rule_id": "short_query",
+            "count": 1031
+          },
+          {
+            "rule_id": "heavy_device_cluster",
+            "count": 567
+          },
+          {
+            "rule_id": "concentrated_ct_context",
+            "count": 518
+          }
+        ],
+        "examples": [
+          {
+            "event_id": "evt_147679",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.de",
+            "query": "nomnem",
+            "heuristic_score": 0.86,
+            "ml_score": 0.9988,
+            "combined_score": 0.9183,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "concentrated_ct_context",
+              "short_query"
+            ]
+          },
+          {
+            "event_id": "evt_128699",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.co.uk",
+            "query": "nomnem",
+            "heuristic_score": 0.86,
+            "ml_score": 0.9946,
+            "combined_score": 0.9165,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "concentrated_ct_context",
+              "short_query"
+            ]
+          },
+          {
+            "event_id": "evt_111171",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.co.uk",
+            "query": "nomnem",
+            "heuristic_score": 0.86,
+            "ml_score": 0.9942,
+            "combined_score": 0.9164,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "concentrated_ct_context",
+              "short_query"
+            ]
+          }
+        ]
+      },
+      {
+        "class_id": "compound_burst_replay",
+        "label": "Compound burst/replay",
+        "description": "Repeated query evidence paired with same-second bursts or the dense burst repetition rule.",
+        "filter": "is_bot == 1 with repeated query evidence and same_second_burst or dense_burst_repetition_cluster.",
+        "review_action": "Treat suppress-tier events as strong operational candidates; quarantine the rest for timing-pattern review.",
+        "count": 562,
+        "tier_counts": {
+          "suppress": 154,
+          "quarantine": 408
+        },
+        "method_counts": {
+          "Heuristic + ML": 150,
+          "Heuristic only": 11,
+          "Combined tail": 401
+        },
+        "dominant_rules": [
+          {
+            "rule_id": "repeat_query",
+            "count": 558
+          },
+          {
+            "rule_id": "same_second_burst",
+            "count": 441
+          },
+          {
+            "rule_id": "short_query",
+            "count": 285
+          },
+          {
+            "rule_id": "concentrated_ct_context",
+            "count": 259
+          },
+          {
+            "rule_id": "heavy_device_cluster",
+            "count": 213
+          },
+          {
+            "rule_id": "dense_burst_repetition_cluster",
+            "count": 213
+          },
+          {
+            "rule_id": "high_volume_domain",
+            "count": 165
+          },
+          {
+            "rule_id": "repeat_query_domain",
+            "count": 151
+          }
+        ],
+        "examples": [
+          {
+            "event_id": "evt_097085",
+            "operational_tier": "suppress",
+            "domain": "duckduckgo.com",
+            "query": "vielle motoneuron",
+            "heuristic_score": 1.0,
+            "ml_score": 0.9957,
+            "combined_score": 0.9982,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "heavy_device_cluster",
+              "same_second_burst",
+              "dense_burst_repetition_cluster",
+              "concentrated_ct_context",
+              "moderate_long_ttc"
+            ]
+          },
+          {
+            "event_id": "evt_120121",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.co.uk",
+            "query": "nomnem",
+            "heuristic_score": 1.0,
+            "ml_score": 0.9957,
+            "combined_score": 0.9982,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "same_second_burst",
+              "dense_burst_repetition_cluster",
+              "concentrated_ct_context",
+              "short_query"
+            ]
+          },
+          {
+            "event_id": "evt_007787",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.co.uk",
+            "query": "nomnem",
+            "heuristic_score": 1.0,
+            "ml_score": 0.9956,
+            "combined_score": 0.9982,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "same_second_burst",
+              "dense_burst_repetition_cluster",
+              "concentrated_ct_context",
+              "short_query"
+            ]
+          }
+        ]
+      },
+      {
+        "class_id": "ml_tail_multivariate",
+        "label": "ML-tail multivariate anomaly",
+        "description": "Events in the anomaly-model tail without enough heuristic evidence to cross the rule override threshold.",
+        "filter": "ml_score >= 0.975 and heuristic_score < 0.62. Some events are selected when combined_score exceeds the run cutoff.",
+        "review_action": "Quarantine or sample. Do not suppress automatically without feature-deviation review or labels.",
+        "count": 509,
+        "tier_counts": {
+          "quarantine": 509
+        },
+        "method_counts": {
+          "ML only": 509
+        },
+        "dominant_rules": [],
+        "examples": [
+          {
+            "event_id": "evt_082067",
+            "operational_tier": "quarantine",
+            "domain": "www.firefold.com",
+            "query": "splenocyte",
+            "heuristic_score": 0.6,
+            "ml_score": 0.9896,
+            "combined_score": 0.7637,
+            "method_bucket": "ML only"
+          },
+          {
+            "event_id": "evt_071487",
+            "operational_tier": "quarantine",
+            "domain": "www.dominos.co.uk",
+            "query": "nomnem",
+            "heuristic_score": 0.6,
+            "ml_score": 0.9891,
+            "combined_score": 0.7634,
+            "method_bucket": "ML only"
+          },
+          {
+            "event_id": "evt_124853",
+            "operational_tier": "quarantine",
+            "domain": "www.vodafone.co.uk",
+            "query": "nomnem",
+            "heuristic_score": 0.6,
+            "ml_score": 0.9885,
+            "combined_score": 0.7632,
+            "method_bucket": "ML only"
+          }
+        ],
+        "population_count": 2005,
+        "population_scope": "All events where ml_score >= 0.975 and heuristic_score < 0.62.",
+        "rule_evidence_note": "This class is grouped by anomaly-model agreement, not by rule explanations. Low-weight rules may be present, but they do not cross the heuristic override threshold."
+      },
+      {
+        "class_id": "repetition_with_timing",
+        "label": "Repetition with timing anomaly",
+        "description": "Repeated query evidence paired with timing evidence such as moderately long, extreme, fast, exact-reuse, or regular inter-arrival timing.",
+        "filter": "is_bot == 1 with repeated query evidence and timing-family rules, no compound burst/replay class matched first.",
+        "review_action": "Prioritise when suppress-tier or when timing evidence is strong; otherwise quarantine for sampling.",
+        "count": 355,
+        "tier_counts": {
+          "suppress": 199,
+          "quarantine": 156
+        },
+        "method_counts": {
+          "Heuristic + ML": 195,
+          "Heuristic only": 4,
+          "Combined tail": 156
+        },
+        "dominant_rules": [
+          {
+            "rule_id": "repeat_query",
+            "count": 355
+          },
+          {
+            "rule_id": "moderate_long_ttc",
+            "count": 283
+          },
+          {
+            "rule_id": "repeat_query_domain",
+            "count": 199
+          },
+          {
+            "rule_id": "confirmed_query_repetition",
+            "count": 199
+          },
+          {
+            "rule_id": "short_query",
+            "count": 179
+          },
+          {
+            "rule_id": "high_volume_domain",
+            "count": 158
+          },
+          {
+            "rule_id": "heavy_device_cluster",
+            "count": 104
+          },
+          {
+            "rule_id": "concentrated_ct_context",
+            "count": 73
+          }
+        ],
+        "examples": [
+          {
+            "event_id": "evt_004943",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.ca",
+            "query": "nomnem",
+            "heuristic_score": 0.86,
+            "ml_score": 0.9991,
+            "combined_score": 0.9184,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "extreme_ttc",
+              "short_query"
+            ]
+          },
+          {
+            "event_id": "evt_105119",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.de",
+            "query": "nomnem",
+            "heuristic_score": 0.86,
+            "ml_score": 0.9986,
+            "combined_score": 0.9182,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "concentrated_ct_context",
+              "extreme_ttc",
+              "short_query"
+            ]
+          },
+          {
+            "event_id": "evt_001163",
+            "operational_tier": "suppress",
+            "domain": "www.amazon.de",
+            "query": "nomnem",
+            "heuristic_score": 0.86,
+            "ml_score": 0.9959,
+            "combined_score": 0.9171,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition",
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "moderate_long_ttc",
+              "short_query"
+            ]
+          }
+        ]
+      },
+      {
+        "class_id": "repetition_dominated",
+        "label": "Repetition dominated",
+        "description": "Events selected mainly by repeated query/domain and confirmed query repetition without additional burst, timing, or broad supporting context.",
+        "filter": "is_bot == 1 with repeated query evidence and no stronger context, burst, or timing class matched first.",
+        "review_action": "Use as an explainable replay candidate. Quarantine lower-score cases when ML agreement is absent.",
+        "count": 350,
+        "tier_counts": {
+          "suppress": 183,
+          "quarantine": 167
+        },
+        "method_counts": {
+          "Heuristic + ML": 183,
+          "Heuristic only": 110,
+          "Combined tail": 57
+        },
+        "dominant_rules": [
+          {
+            "rule_id": "repeat_query_domain",
+            "count": 350
+          },
+          {
+            "rule_id": "repeat_query",
+            "count": 293
+          },
+          {
+            "rule_id": "confirmed_query_repetition",
+            "count": 293
+          }
+        ],
+        "examples": [
+          {
+            "event_id": "evt_009777",
+            "operational_tier": "suppress",
+            "domain": "www.overstock.com",
+            "query": "fuzz sulphid",
+            "heuristic_score": 0.62,
+            "ml_score": 0.9964,
+            "combined_score": 0.7781,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition"
+            ]
+          },
+          {
+            "event_id": "evt_038893",
+            "operational_tier": "suppress",
+            "domain": "sofatutor.com",
+            "query": "starn noonmeat",
+            "heuristic_score": 0.62,
+            "ml_score": 0.9964,
+            "combined_score": 0.7781,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition"
+            ]
+          },
+          {
+            "event_id": "evt_009162",
+            "operational_tier": "suppress",
+            "domain": "www.overstock.com",
+            "query": "fuzz sulphid",
+            "heuristic_score": 0.62,
+            "ml_score": 0.9961,
+            "combined_score": 0.778,
+            "method_bucket": "Heuristic + ML",
+            "rule_ids": [
+              "repeat_query_domain",
+              "repeat_query",
+              "confirmed_query_repetition"
+            ]
+          }
+        ]
+      },
+      {
+        "class_id": "supporting_context_combined_tail",
+        "label": "Supporting context plus combined tail",
+        "description": "Events with supporting rule context and enough anomaly-model score to pass the combined cutoff, but without the ML-only agreement threshold.",
+        "filter": "is_bot == 1, heuristic_score < 0.62, ml_score < 0.975, and supporting rule context present.",
+        "review_action": "Monitor or quarantine. These are useful for trend review, not standalone suppression.",
+        "count": 77,
+        "tier_counts": {
+          "quarantine": 77
+        },
+        "method_counts": {
+          "Combined tail": 77
+        },
+        "dominant_rules": [
+          {
+            "rule_id": "same_second_burst",
+            "count": 74
+          },
+          {
+            "rule_id": "high_volume_domain",
+            "count": 62
+          },
+          {
+            "rule_id": "heavy_device_cluster",
+            "count": 62
+          },
+          {
+            "rule_id": "short_query",
+            "count": 39
+          },
+          {
+            "rule_id": "moderate_long_ttc",
+            "count": 35
+          },
+          {
+            "rule_id": "extreme_ttc",
+            "count": 20
+          },
+          {
+            "rule_id": "fast_click",
+            "count": 3
+          }
+        ],
+        "examples": [
+          {
+            "event_id": "evt_089535",
+            "operational_tier": "quarantine",
+            "domain": "www.amazon.co.uk",
+            "query": "aw",
+            "heuristic_score": 0.36,
+            "ml_score": 0.9574,
+            "combined_score": 0.6109,
+            "method_bucket": "Combined tail",
+            "rule_ids": [
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "same_second_burst",
+              "moderate_long_ttc",
+              "short_query"
+            ]
+          },
+          {
+            "event_id": "evt_088008",
+            "operational_tier": "quarantine",
+            "domain": "www.amazon.co.uk",
+            "query": "fra s tivy c 9",
+            "heuristic_score": 0.36,
+            "ml_score": 0.9491,
+            "combined_score": 0.6074,
+            "method_bucket": "Combined tail",
+            "rule_ids": [
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "same_second_burst",
+              "extreme_ttc"
+            ]
+          },
+          {
+            "event_id": "evt_086419",
+            "operational_tier": "quarantine",
+            "domain": "www.booking.com",
+            "query": "gr",
+            "heuristic_score": 0.34,
+            "ml_score": 0.9698,
+            "combined_score": 0.6045,
+            "method_bucket": "Combined tail",
+            "rule_ids": [
+              "high_volume_domain",
+              "heavy_device_cluster",
+              "same_second_burst",
+              "short_query"
+            ]
+          }
+        ]
+      },
+      {
+        "class_id": "other_combined_tail",
+        "label": "Other combined-tail anomaly",
+        "description": "Selected events that do not fit the main operational classes.",
+        "filter": "is_bot == 1 and no primary repetition, ML-only, or supporting context class matched.",
+        "review_action": "Sample manually before taking action.",
+        "count": 1,
+        "tier_counts": {
+          "quarantine": 1
+        },
+        "method_counts": {
+          "Combined tail": 1
+        },
+        "dominant_rules": [
+          {
+            "rule_id": "same_second_burst",
+            "count": 1
+          },
+          {
+            "rule_id": "fast_click",
+            "count": 1
+          }
+        ],
+        "examples": [
+          {
+            "event_id": "evt_032590",
+            "operational_tier": "quarantine",
+            "domain": "find.gmx.com",
+            "query": "balm thyrohyal youre eight",
+            "heuristic_score": 0.3,
+            "ml_score": 0.9396,
+            "combined_score": 0.5687,
+            "method_bucket": "Combined tail",
+            "rule_ids": [
+              "same_second_burst",
+              "fast_click"
+            ]
+          }
+        ]
+      }
+    ],
+    "filtering_options": [
+      {
+        "name": "Conservative suppression review",
+        "filter": "operational_tier == 'suppress'",
+        "use": "Start here for the strongest operational candidates. Still requires policy approval because labels are unavailable."
+      },
+      {
+        "name": "Quarantine for manual review",
+        "filter": "operational_tier == 'quarantine'",
+        "use": "Hold, sample, or delay action on suspicious traffic that is not strong enough for direct suppression."
+      },
+      {
+        "name": "Explainable replay review",
+        "filter": "anomaly_class in repetition_with_supporting_context, compound_burst_replay, repetition_with_timing, repetition_dominated",
+        "use": "Focus reviewer time on repeated query/domain behaviour with clear rule evidence."
+      },
+      {
+        "name": "ML-tail sampling",
+        "filter": "ml_score >= 0.975 and heuristic_score < 0.62",
+        "use": "Sample for future feature-deviation work; do not treat as proven fraud without labels."
+      }
+    ]
+  },
   "tier_thresholds": {
     "suppress_combined_score": 0.8,
     "suppress_heuristic_score": 0.8,

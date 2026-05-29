@@ -6,9 +6,10 @@ from types import ModuleType
 
 import pytest
 
-from bot_hunter.data import ClickEvent
+from bot_hunter.data import ClickEvent, RuleContribution
 from bot_hunter.ml import _assign_rank_scores
 from bot_hunter.pipeline import (
+    _anomaly_classes,
     _assign_operational_tier,
     _method_disagreement,
     _normalize_reason,
@@ -59,6 +60,44 @@ def hide_isotree(monkeypatch) -> None:
     monkeypatch.setitem(sys.modules, "isotree", None)
 
 
+def _classified_event(
+    event_id: str,
+    *,
+    heuristic_score: float,
+    ml_score: float,
+    combined_score: float,
+    is_bot: int,
+    tier: str,
+    rule_ids: list[str],
+) -> ClickEvent:
+    event = ClickEvent(
+        event_id=event_id,
+        event_time=datetime(2019, 12, 2, 0, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="iOS",
+        url="/ad_click?d=a.com&ttc=3000&q=human%20search",
+        params={"d": "a.com", "ttc": "3000", "q": "human search"},
+        heuristic_score=heuristic_score,
+        ml_score=ml_score,
+        combined_score=combined_score,
+        is_bot=is_bot,
+        operational_tier=tier,
+    )
+    event.rule_contributions = [
+        RuleContribution(
+            rule_id=rule_id,
+            label=rule_id.replace("_", " ").title(),
+            reason=rule_id,
+            weight=0.10,
+            applied_weight=0.10,
+            observed=1,
+        )
+        for rule_id in rule_ids
+    ]
+    return event
+
+
 def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     install_fake_isotree(monkeypatch)
     raw = tmp_path / "clicks.tsv"
@@ -104,6 +143,16 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert summary["heuristic_thresholds"]["repeat_query_domain"]["absolute_floor"] == 4
     assert "rule_strengths" in summary
     assert summary["rule_strengths"]["supporting_cap"] == 0.24
+    assert "anomaly_classes" in summary
+    assert summary["anomaly_classes"]["selected_event_count"] == 0
+    assert summary["anomaly_classes"]["classified_selected_event_count"] == 0
+    assert summary["anomaly_classes"]["ml_only_population_count"] == 1
+    assert summary["anomaly_classes"]["classes"][0]["class_id"] == (
+        "repetition_with_supporting_context"
+    )
+    assert summary["anomaly_classes"]["filtering_options"][0]["name"] == (
+        "Conservative suppression review"
+    )
     assert "_".join(["ml", "support", "score"]) not in summary["tier_thresholds"]
     assert (
         "_".join(["suppress", "agreement", "ml", "score"])
@@ -111,6 +160,11 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     )
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
+    assert "Operational Anomaly Classes" in report
+    assert "these are not proven fraud labels" in report
+    assert "Practical filtering options for similar unlabelled datasets" in report
+    assert "Conservative suppression review" in report
+    assert "ML-tail sampling" in report
     assert "Adaptive heuristic thresholds used in this run" in report
     assert (
         "Rule contributions are separated into strong and supporting evidence" in report
@@ -127,6 +181,8 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "<table><thead><tr>" in html_report
     assert "</thead><tbody>" in html_report
     assert "<th>Rule</th>" in html_report
+    assert "<h2>4. Operational Anomaly Classes</h2>" in html_report
+    assert "<th>Class</th>" in html_report
     assert "Repeated query/domain pair" in html_report
     features = (
         (tmp_path / "artifacts" / "features.tsv")
@@ -184,6 +240,65 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         "1.098612",
         "2.521641",
     ]
+
+
+def test_anomaly_classes_use_selected_counts_and_ml_only_population() -> None:
+    events = [
+        _classified_event(
+            "evt_replay_context",
+            heuristic_score=0.86,
+            ml_score=0.99,
+            combined_score=0.91,
+            is_bot=1,
+            tier="suppress",
+            rule_ids=[
+                "repeat_query_domain",
+                "repeat_query",
+                "confirmed_query_repetition",
+                "high_volume_domain",
+            ],
+        ),
+        _classified_event(
+            "evt_ml_selected",
+            heuristic_score=0.40,
+            ml_score=0.99,
+            combined_score=0.65,
+            is_bot=1,
+            tier="quarantine",
+            rule_ids=["fast_click"],
+        ),
+        _classified_event(
+            "evt_ml_monitor",
+            heuristic_score=0.10,
+            ml_score=0.98,
+            combined_score=0.47,
+            is_bot=0,
+            tier="monitor",
+            rule_ids=[],
+        ),
+    ]
+
+    classes = _anomaly_classes(events)
+    by_id = {item["class_id"]: item for item in classes["classes"]}
+
+    assert classes["selected_event_count"] == 2
+    assert classes["classified_selected_event_count"] == 2
+    assert classes["ml_only_population_count"] == 2
+    assert by_id["repetition_with_supporting_context"]["count"] == 1
+    assert by_id["repetition_with_supporting_context"]["tier_counts"] == {"suppress": 1}
+    assert by_id["repetition_with_supporting_context"]["method_counts"] == {
+        "Heuristic + ML": 1
+    }
+    assert (
+        by_id["repetition_with_supporting_context"]["examples"][0]["event_id"]
+        == "evt_replay_context"
+    )
+    assert by_id["ml_tail_multivariate"]["count"] == 1
+    assert by_id["ml_tail_multivariate"]["population_count"] == 2
+    assert by_id["ml_tail_multivariate"]["method_counts"] == {"ML only": 1}
+    assert by_id["ml_tail_multivariate"]["dominant_rules"] == []
+    assert "rule_ids" not in by_id["ml_tail_multivariate"]["examples"][0]
+    assert "not proven fraud labels" in classes["scope"]
 
 
 def test_single_event_pipeline_is_not_selected_by_percentile_gate(

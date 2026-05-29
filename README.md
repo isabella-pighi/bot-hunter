@@ -299,7 +299,7 @@ The current implementation was checked with the following commands:
 | Check | Result |
 |---|---|
 | `uv run pytest tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py` | 42 passed |
-| `uv run pytest` | 48 passed |
+| `uv run pytest` | 49 passed |
 | `uv run black --check bot_hunter/heuristics.py bot_hunter/pipeline.py bot_hunter/report.py bot_hunter/web.py tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py` | passed with the existing Python 3.12 target-version warning |
 
 The full EIF run regenerated `submission.tsv`, `artifacts/summary.json`,

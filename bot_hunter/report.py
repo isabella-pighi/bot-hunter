@@ -66,6 +66,7 @@ def _markdown(summary: dict[str, object]) -> str:
     country_weight = float(ml_feature_weights.get("log_country_count", 1.0))
     kp_weight = float(ml_feature_weights.get("log_kp_count", 1.0))
     sld_weight = float(ml_feature_weights.get("log_sld_count", 1.0))
+    anomaly_class_lines = _anomaly_class_lines(summary.get("anomaly_classes", {}))
 
     return f"""# Bot Hunter Analysis Report
 
@@ -118,7 +119,11 @@ behaviour and either a heavy device cluster or a same-second burst. Country-like
 concentration alone is not treated as bot evidence because legitimate campaigns
 can be country-specific.
 
-## 4. Classifier Details
+## 4. Operational Anomaly Classes
+
+{anomaly_class_lines}
+
+## 5. Classifier Details
 
 The rules layer currently scores:
 
@@ -184,13 +189,13 @@ Threshold-change validation used the regenerated `submission.tsv`,
 `artifacts/sample_events.json`, and report files under `docs`. Targeted
 heuristic, pipeline, and dashboard tests passed (`uv run pytest
 tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py`, 42 passed),
-the full test suite passed (`uv run pytest`, 48 passed), and Black passed for
+the full test suite passed (`uv run pytest`, 49 passed), and Black passed for
 the touched Python files with the existing Python 3.12 target-version warning.
 Each generated report reflects the current run's artefacts; fixed before/after
 comparison metrics are kept in the static README task history rather than
 repeated in this template.
 
-## 5. Thresholds And Decision Logic
+## 6. Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
@@ -217,7 +222,7 @@ In this run:
 - ML agreement-tail reference rate: {ml_tail_rate:.2%}
 - operational confidence estimate: {precision:.0%}
 
-## 6. Method Agreement And Disagreement
+## 7. Method Agreement And Disagreement
 
 Agreement between the rules layer and the anomaly model is useful review
 evidence. It is not statistical validation, because there are no labels.
@@ -236,7 +241,7 @@ Example interpretation:
 - `ML only` events may contain multivariate anomalies, but they need careful
   review because unusual legitimate behaviour can also be anomalous.
 
-## 7. Operational Actions
+## 8. Operational Actions
 
 Bot Hunter separates prediction from action by assigning operational tiers:
 
@@ -254,7 +259,7 @@ Recommended use:
 The binary `is_bot` field is the compatibility output. The tier is the safer
 business-control layer.
 
-## 8. Probability Perspective
+## 9. Probability Perspective
 
 The estimated probability that a flagged event is fraudulent is {precision:.0%}. This is an operational estimate based on signal agreement, not a calibrated probability.
 
@@ -267,7 +272,7 @@ The estimate is weaker for isolated ML-only events, because unsupervised anomaly
 detection can also surface legitimate edge cases such as unusual campaigns,
 regional spikes, testing traffic, or rare but valid user behaviour.
 
-## 9. Generalisation And Trade-Offs
+## 10. Generalisation And Trade-Offs
 
 The approach should generalise when bot traffic is repetitive, mechanically
 timed, or concentrated in narrow device and query patterns. It may miss bots
@@ -282,7 +287,7 @@ fraudulent events.
 Material changes in geography, campaign volume, inventory, browser mix, or
 feature extraction should trigger fresh threshold review.
 
-## 10. Known Limitations
+## 11. Known Limitations
 
 - There are no ground-truth labels, so measured precision, recall, and
   calibration cannot be reported.
@@ -295,7 +300,7 @@ feature extraction should trigger fresh threshold review.
 - The anomaly score is relative to the current batch and should be monitored
   for drift across future runs.
 
-## 11. Future Work
+## 12. Future Work
 
 The next useful improvements are:
 
@@ -308,7 +313,7 @@ The next useful improvements are:
 - calibrated probabilities once trusted labels exist
 - a feedback loop from reviewed `suppress` and `quarantine` decisions
 
-## 12. Submission Summary
+## 13. Submission Summary
 
 The repository includes `submission.tsv` with `event_id`, `is_bot`, and
 `operational_tier`.
@@ -373,6 +378,175 @@ def _heuristic_threshold_lines(thresholds: object) -> str:
             basis = f"{basis}, rate guardrail {rate_floor}"
         rows.append(f"| {label} (`{rule_id}`) | {threshold} | {basis} |")
     return "\n".join(rows)
+
+
+def _anomaly_class_lines(anomaly_classes: object) -> str:
+    if not isinstance(anomaly_classes, dict) or not anomaly_classes:
+        return "Operational anomaly classes are not available for this run."
+
+    scope = str(
+        anomaly_classes.get(
+            "scope",
+            (
+                "Operational anomaly classes derived from the current "
+                "unlabelled run; these are not proven fraud labels."
+            ),
+        )
+    )
+    classified_count = int(anomaly_classes.get("classified_selected_event_count", 0))
+    ml_only_population = int(anomaly_classes.get("ml_only_population_count", 0))
+    class_rows = _anomaly_class_table(anomaly_classes.get("classes", []))
+    example_lines = _anomaly_example_lines(anomaly_classes.get("classes", []))
+    filter_lines = _filtering_option_lines(anomaly_classes.get("filtering_options", []))
+
+    return f"""{scope}
+
+The classes below group the {classified_count:,} selected events from this run.
+The grouping is backed by full-run rule contributions, rule strength and family
+fields, heuristic and ML scores, method-agreement buckets, operational tiers,
+and the run-specific thresholds described later in this report.
+
+| Class | Selected events | Data backing | Suggested handling |
+|---|---:|---|---|
+{class_rows}
+
+The ML-tail population contains {ml_only_population:,} events with high anomaly
+scores and heuristic scores below the rule override threshold. Only the subset
+that also crossed the combined-score cutoff is counted as selected traffic in
+the class table. This keeps ML-only anomalies visible without describing them
+as rule-derived replay evidence.
+
+Concrete examples from the current run:
+
+{example_lines}
+
+Practical filtering options for similar unlabelled datasets:
+
+| Filter | Use | Caveat |
+|---|---|---|
+{filter_lines}
+
+Use these filters as review controls. `suppress` is the strongest operational
+tier, `quarantine` is the safer default for ambiguous or ML-only traffic, and
+`monitor` keeps non-selected traffic available for drift checks and future
+labels."""
+
+
+def _anomaly_class_table(classes: object) -> str:
+    if not isinstance(classes, list):
+        return "| Not available | 0 | No class data reported | Review manually |"
+    rows: list[str] = []
+    for item in classes:
+        if not isinstance(item, dict):
+            continue
+        label = _cell(str(item.get("label", item.get("class_id", "Unknown"))))
+        count = int(item.get("count", 0))
+        backing = _cell(_class_backing(item))
+        action = _cell(str(item.get("review_action", "Review manually.")))
+        rows.append(f"| {label} | {count:,} | {backing} | {action} |")
+    return (
+        "\n".join(rows)
+        or "| Not available | 0 | No class data reported | Review manually |"
+    )
+
+
+def _class_backing(item: dict[str, object]) -> str:
+    tier_counts = _count_dict(item.get("tier_counts", {}))
+    method_counts = _count_dict(item.get("method_counts", {}))
+    dominant_rules = item.get("dominant_rules", [])
+    rules = []
+    if isinstance(dominant_rules, list):
+        for rule in dominant_rules[:3]:
+            if isinstance(rule, dict):
+                rules.append(
+                    f"{rule.get('rule_id', 'unknown')} ({int(rule.get('count', 0)):,})"
+                )
+    parts = []
+    if tier_counts:
+        parts.append(f"tiers: {tier_counts}")
+    if method_counts:
+        parts.append(f"methods: {method_counts}")
+    if rules:
+        parts.append(f"top rules: {', '.join(rules)}")
+    note = item.get("rule_evidence_note")
+    if isinstance(note, str) and note:
+        parts.append(note)
+    return "; ".join(parts) or str(item.get("description", "No backing reported."))
+
+
+def _anomaly_example_lines(classes: object) -> str:
+    if not isinstance(classes, list):
+        return "- No anomaly class examples were reported."
+    lines: list[str] = []
+    for item in classes:
+        if not isinstance(item, dict):
+            continue
+        examples = item.get("examples", [])
+        if not isinstance(examples, list) or not examples:
+            continue
+        example = examples[0]
+        if not isinstance(example, dict):
+            continue
+        label = str(item.get("label", item.get("class_id", "Anomaly class")))
+        rules = example.get("rule_ids")
+        rule_text = ""
+        if isinstance(rules, list) and rules:
+            rule_text = f"; rules: {', '.join(str(rule) for rule in rules)}"
+        population = item.get("population_count")
+        population_text = ""
+        if population is not None:
+            population_text = f" ({int(population):,} events in the wider population)"
+        lines.append(
+            "- "
+            f"{label}{population_text}: `{example.get('event_id', 'unknown')}` "
+            f"clicked `{example.get('domain', '')}` for query "
+            f"`{example.get('query', '')}`; combined "
+            f"{float(example.get('combined_score', 0.0)):.4f}, rules "
+            f"{float(example.get('heuristic_score', 0.0)):.4f}, ML "
+            f"{float(example.get('ml_score', 0.0)):.4f}, tier "
+            f"`{example.get('operational_tier', '')}`, method "
+            f"`{example.get('method_bucket', '')}`{rule_text}."
+        )
+    return "\n".join(lines) or "- No anomaly class examples were reported."
+
+
+def _filtering_option_lines(options: object) -> str:
+    if not isinstance(options, list):
+        return "| No filter reported | Review manually | Needs local policy approval |"
+    rows: list[str] = []
+    for option in options:
+        if not isinstance(option, dict):
+            continue
+        name = _cell(str(option.get("name", "Unnamed filter")))
+        filter_text = _cell(f"`{option.get('filter', '')}`")
+        use = _cell(str(option.get("use", "")))
+        caveat = _filter_caveat(str(option.get("name", "")))
+        rows.append(f"| {name}: {filter_text} | {use} | {caveat} |")
+    return (
+        "\n".join(rows)
+        or "| No filter reported | Review manually | Needs local policy approval |"
+    )
+
+
+def _filter_caveat(name: str) -> str:
+    lowered = name.lower()
+    if "suppression" in lowered:
+        return "Check policy, billing, and customer-impact rules before action."
+    if "quarantine" in lowered:
+        return "Use sampling to estimate likely false positives before suppression."
+    if "ml" in lowered:
+        return "Needs feature-deviation review because rule evidence is below override."
+    return "Validate repeated-pattern assumptions against campaign context."
+
+
+def _count_dict(value: object) -> str:
+    if not isinstance(value, dict):
+        return ""
+    return ", ".join(f"{key} {int(count):,}" for key, count in value.items())
+
+
+def _cell(value: str) -> str:
+    return value.replace("|", "\\|").replace("\n", " ")
 
 
 def _rule_strength_lines(settings: object) -> str:
