@@ -245,8 +245,10 @@ The current production feature set includes:
 | `log_country_count` | `ct` country frequency |
 | `log_same_second_count` | Events with the same timestamp |
 | `log_ttc_count` | Exact time-to-click reuse |
-| `kp` | Low-cardinality categorical-style `kp` parameter |
-| `sld` | Low-cardinality categorical-style `sld` parameter |
+| `log_kp_count` | Frequency of the observed `kp` value |
+| `log_sld_count` | Frequency of the observed `sld` value |
+| `kp` | Raw `kp` parameter retained for audit |
+| `sld` | Raw `sld` parameter retained for audit |
 | `hour` | Event hour |
 | `log_ttc_seconds` | Log-scaled time-to-click |
 | `is_sub_200ms_click` | Mechanical sub-200 ms click indicator |
@@ -258,11 +260,42 @@ heavy-tailed. A small number of queries, domains, or device clusters may appear
 many times. Log transforms reduce the influence of extreme values so the model
 does not treat scale alone as the whole story.
 
-`kp` and `sld` currently appear as compact numeric codes, but the project treats
-them as categorical-style indicators because their observed cardinality is very
-low. The intended next feature change is to represent them as bounded
-categorical indicators rather than continuous values, and to down-weight them in
-the anomaly model: `kp` to `0.50` and `sld` to `0.25`.
+The raw `kp` and `sld` URL values appear as compact numeric codes, but the
+project treats them as categorical-style indicators because their observed
+cardinality is very low. The anomaly model therefore uses aggregate
+value-frequency features rather than raw numeric distances: `log_kp_count` is
+weighted at `0.50`, and `log_sld_count` is weighted at `0.25`. Raw `kp` and
+`sld` remain in `artifacts/features.tsv` for audit, but they are excluded from
+`ml_feature_names`.
+
+Other ML feature weights are recorded in each run's
+`artifacts/summary.json`. In the current run, the other down-weighted features
+are `log_domain_count`, `log_query_count`, `log_query_domain_count`,
+`log_country_count`, `log_ttc_seconds`, `is_sub_200ms_click`, and
+`query_entropy`, all at `0.50`; unlisted ML features use `1.00`.
+
+The implementation was checked with the same commands used for the feature
+change:
+
+| Check | Result |
+|---|---|
+| `uv run pytest tests/test_data.py tests/test_pipeline.py` | 20 passed |
+| `uv run pytest` | 44 passed |
+| `uv run black --check bot_hunter/data.py bot_hunter/report.py tests/test_data.py tests/test_pipeline.py` | passed with the existing Python 3.12 target-version warning |
+
+The full EIF run regenerated `submission.tsv`, `artifacts/summary.json`,
+`artifacts/features.tsv`, `artifacts/sample_events.json`, and the Markdown,
+HTML, and PDF reports under `docs/`. Compared with the previous raw `kp`/`sld`
+ML representation, the selected bot count stayed at `3,731`. The run-specific
+threshold moved from `0.6068` to `0.6105`, the operational precision estimate
+moved from `0.7253` to `0.7512`, and 206 `is_bot` decisions plus 261 operational tiers
+changed. These figures are comparison notes for this unlabelled batch, not
+measured fraud accuracy.
+
+| Comparison field | Before raw ML values | After aggregate counts |
+|---|---:|---:|
+| `suppress` / `quarantine` / `monitor` | 1,966 / 1,765 / 145,508 | 1,951 / 1,780 / 145,508 |
+| `Heuristic + ML` / `Heuristic only` / `ML only` / `Neither strong` | 1,478 / 612 / 2,253 / 144,896 | 1,738 / 352 / 1,993 / 145,156 |
 
 ### Probability Perspective
 

@@ -212,35 +212,6 @@ botnet command and control categories should usually matter more than a broad
 - Add an allowlist stage so legitimate domains can be protected from stale or
   overly broad reputation signals.
 
-### 10. Replace Raw `kp` And `sld` With Aggregate Count Features
-
-The current model already uses aggregate count features for categorical URL
-parameters such as `ct`. That treatment asks a useful question: "how common is
-this parameter value in the current batch?"
-
-`kp` and `sld` are currently parsed as raw numeric values, but their observed
-cardinality is very low. Treating them as continuous measurements may imply a
-distance or ordering that is not meaningful. A better representation is to treat
-them like other low-cardinality URL parameters and use aggregate count features:
-`log_kp_count` and `log_sld_count`.
-
-Example: if `kp=1` appears rarely but has a higher flagged-event rate, the
-model should learn that the value belongs to an unusual batch segment. It should
-not assume that the numeric distance between `kp=-2`, `kp=-1`, and `kp=1` is
-meaningful.
-
-**Proposed work:**
-
-- Add `kp` and `sld` counters during feature building.
-- Replace raw ML values for `kp` and `sld` with `log_kp_count` and
-  `log_sld_count`.
-- Keep raw `kp` and `sld` available for audit if useful, but do not treat them
-  as continuous ML features.
-- Down-weight the resulting aggregate features to `0.50` for `log_kp_count`
-  and `0.25` for `log_sld_count`, unless future validation shows they deserve
-  stronger influence.
-- Compare results before making the change production default.
-
 ### 11. Calibrate Thresholds Against Historical Batches
 
 Current thresholds are batch-relative. That is appropriate for a self-contained
@@ -300,6 +271,7 @@ pipeline looks the way it does.
 | Anomaly classifier | Added `is_sub_200ms_click` | Makes sub-human reaction timing explicit for ML, not only the rules layer. |
 | Anomaly classifier | Added 10-second pseudo-session burst density | Captures coordinated click patterns that exact same-second counts can miss. |
 | Anomaly classifier | Added query entropy | Helps distinguish natural-looking query text from synthetic or random strings. |
+| Anomaly classifier | Replaced raw `kp` and `sld` ML inputs with aggregate counts | Uses `log_kp_count` and `log_sld_count` for ML, weighted `0.50` and `0.25`, while retaining raw values in `artifacts/features.tsv` for audit. Validation: targeted tests 20 passed, full tests 44 passed, selected bot count unchanged at 3,731 on the full EIF run. |
 | Anomaly classifier | Consolidated production scoring on Extended Isolation Forest | Removes alternate backend drift and keeps output semantics consistent. |
 | Explainability | Added structured rule contributions | Gives stable rule IDs, labels, weights, observed values, and thresholds for audits. |
 | Rules classifier | Added concentrated `ct` context as supporting evidence | Lets the rules layer use country-like concentration only when paired with repeated query behaviour and clustering. |

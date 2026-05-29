@@ -11,12 +11,14 @@ from urllib.parse import parse_qs, urlsplit
 EXPECTED_FIELD_COUNT = 6
 EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 EPOCH = datetime(1970, 1, 1)
-EXCLUDED_ML_FEATURE_NAMES: set[str] = set()
+EXCLUDED_ML_FEATURE_NAMES: set[str] = {"kp", "sld"}
 ML_FEATURE_WEIGHTS = {
     "log_domain_count": 0.5,
     "log_country_count": 0.5,
     "log_query_domain_count": 0.5,
     "log_query_count": 0.5,
+    "log_kp_count": 0.5,
+    "log_sld_count": 0.25,
     "log_ttc_seconds": 0.5,
     "is_sub_200ms_click": 0.5,
     "query_entropy": 0.5,
@@ -85,7 +87,9 @@ def parse_clicks(path: str | Path) -> list[ClickEvent]:
             event_id, event_time, region, browser, os_name, url = parts
             parsed_url = urlsplit(url)
             raw_params = parse_qs(parsed_url.query, keep_blank_values=True)
-            params = {key: values[-1] if values else "" for key, values in raw_params.items()}
+            params = {
+                key: values[-1] if values else "" for key, values in raw_params.items()
+            }
             events.append(
                 ClickEvent(
                     event_id=event_id,
@@ -119,6 +123,8 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "ttc": Counter(event.ttc for event in events),
         "country": Counter(event.params.get("ct", "") for event in events),
         "landing": Counter(event.params.get("kl", "") for event in events),
+        "kp": Counter(event.params.get("kp", "") for event in events),
+        "sld": Counter(event.params.get("sld", "") for event in events),
     }
     names = [
         "log_domain_count",
@@ -128,6 +134,8 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "log_country_count",
         "log_same_second_count",
         "log_ttc_count",
+        "log_kp_count",
+        "log_sld_count",
         "kp",
         "sld",
         "hour",
@@ -150,6 +158,8 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             log1p(counters["country"][event.params.get("ct", "")]),
             log1p(counters["second"][event.event_time]),
             log1p(counters["ttc"][event.ttc]),
+            log1p(counters["kp"][event.params.get("kp", "")]),
+            log1p(counters["sld"][event.params.get("sld", "")]),
             kp,
             sld,
             float(event.event_time.hour),
@@ -168,17 +178,28 @@ def select_ml_feature_names(feature_names: list[str]) -> list[str]:
 
 
 def select_ml_feature_weights(feature_names: list[str]) -> list[float]:
-    return [ML_FEATURE_WEIGHTS.get(name, 1.0) for name in select_ml_feature_names(feature_names)]
+    return [
+        ML_FEATURE_WEIGHTS.get(name, 1.0)
+        for name in select_ml_feature_names(feature_names)
+    ]
 
 
 def _select_ml_features(feature_names: list[str], values: list[float]) -> list[float]:
-    return [value for name, value in zip(feature_names, values) if name not in EXCLUDED_ML_FEATURE_NAMES]
+    return [
+        value
+        for name, value in zip(feature_names, values)
+        if name not in EXCLUDED_ML_FEATURE_NAMES
+    ]
 
 
-def _pseudo_session_burst_counts(events: list[ClickEvent], window_seconds: int = 10) -> dict[int, int]:
+def _pseudo_session_burst_counts(
+    events: list[ClickEvent], window_seconds: int = 10
+) -> dict[int, int]:
     groups: dict[tuple[str, str, str, str, str], list[ClickEvent]] = defaultdict(list)
     for event in events:
-        groups[(event.region, event.browser, event.os, event.query, event.domain)].append(event)
+        groups[
+            (event.region, event.browser, event.os, event.query, event.domain)
+        ].append(event)
 
     counts: dict[int, int] = {}
     half_window = window_seconds / 2.0
@@ -190,7 +211,10 @@ def _pseudo_session_burst_counts(events: list[ClickEvent], window_seconds: int =
         for idx, timestamp in enumerate(timestamps):
             while timestamps[left] < timestamp - half_window:
                 left += 1
-            while right + 1 < len(timestamps) and timestamps[right + 1] <= timestamp + half_window:
+            while (
+                right + 1 < len(timestamps)
+                and timestamps[right + 1] <= timestamp + half_window
+            ):
                 right += 1
             counts[id(ordered[idx])] = right - left + 1
     return counts

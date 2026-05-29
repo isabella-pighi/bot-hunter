@@ -3,10 +3,10 @@
   "total_events": 149239,
   "bot_events": 3731,
   "bot_rate": 0.025000167516533882,
-  "threshold": 0.6068462027097655,
+  "threshold": 0.6104986290355003,
   "heuristic_flag_rate": 0.01400438223252635,
   "ml_tail_rate": 0.025000167516533882,
-  "estimated_precision": 0.7253095684803001,
+  "estimated_precision": 0.7512007504690431,
   "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
@@ -17,6 +17,8 @@
     "log_country_count",
     "log_same_second_count",
     "log_ttc_count",
+    "log_kp_count",
+    "log_sld_count",
     "kp",
     "sld",
     "hour",
@@ -33,8 +35,8 @@
     "log_country_count",
     "log_same_second_count",
     "log_ttc_count",
-    "kp",
-    "sld",
+    "log_kp_count",
+    "log_sld_count",
     "hour",
     "log_ttc_seconds",
     "is_sub_200ms_click",
@@ -49,8 +51,8 @@
     "log_country_count": 0.5,
     "log_same_second_count": 1.0,
     "log_ttc_count": 1.0,
-    "kp": 1.0,
-    "sld": 1.0,
+    "log_kp_count": 0.5,
+    "log_sld_count": 0.25,
     "hour": 1.0,
     "log_ttc_seconds": 0.5,
     "is_sub_200ms_click": 0.5,
@@ -65,19 +67,19 @@
   "method_disagreement": [
     [
       "Heuristic + ML",
-      1478
+      1738
     ],
     [
       "Heuristic only",
-      612
+      352
     ],
     [
       "ML only",
-      2253
+      1993
     ],
     [
       "Neither strong",
-      144896
+      145156
     ]
   ],
   "tier_thresholds": {
@@ -89,18 +91,18 @@
     "monitor": "is_bot == 0"
   },
   "tier_counts": {
-    "suppress": 1966,
-    "quarantine": 1765,
+    "suppress": 1951,
+    "quarantine": 1780,
     "monitor": 145508
   },
   "top_reasons": [
     [
       "repeated query",
-      3476
+      3467
     ],
     [
       "repeated query/domain pair",
-      2091
+      2093
     ],
     [
       "confirmed query repetition",
@@ -108,31 +110,31 @@
     ],
     [
       "same-second click burst",
-      1876
+      1904
     ],
     [
       "heavy region/browser/OS cluster",
-      1868
+      1866
     ],
     [
       "very short query",
-      1835
+      1816
     ],
     [
       "high-volume clicked domain",
-      1726
+      1742
     ],
     [
       "concentrated ct context",
-      1154
+      1142
     ],
     [
       "dense burst repetition cluster",
-      526
+      549
     ],
     [
       "moderately long time-to-click",
-      472
+      458
     ]
   ],
   "top_domains": [
@@ -238,15 +240,15 @@
   "bot_regions": [
     [
       "Earth",
-      1824
+      1826
     ],
     [
       "Mars",
-      1782
+      1789
     ],
     [
       "Mercury",
-      45
+      38
     ],
     [
       "Saturn",
@@ -254,11 +256,11 @@
     ],
     [
       "Venus",
-      29
+      28
     ],
     [
       "Jupiter",
-      20
+      19
     ]
   ]
 }

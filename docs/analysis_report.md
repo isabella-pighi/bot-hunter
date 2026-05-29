@@ -35,16 +35,16 @@ combinations that a small rule set may not capture.
 
 The strongest explainable patterns in this run were:
 
-- repeated query: 3,476 events
-- repeated query/domain pair: 2,091 events
+- repeated query: 3,467 events
+- repeated query/domain pair: 2,093 events
 - confirmed query repetition: 2,023 events
-- same-second click burst: 1,876 events
-- heavy region/browser/OS cluster: 1,868 events
-- very short query: 1,835 events
-- high-volume clicked domain: 1,726 events
-- concentrated ct context: 1,154 events
-- dense burst repetition cluster: 526 events
-- moderately long time-to-click: 472 events
+- same-second click burst: 1,904 events
+- heavy region/browser/OS cluster: 1,866 events
+- very short query: 1,816 events
+- high-volume clicked domain: 1,742 events
+- concentrated ct context: 1,142 events
+- dense burst repetition cluster: 549 events
+- moderately long time-to-click: 458 events
 
 Example interpretation: a single repeated query is not enough to prove bot
 traffic. It becomes more concerning when it appears with a repeated clicked
@@ -94,22 +94,35 @@ families are:
 - query, domain, and query/domain repetition counts
 - same-second and exact time-to-click reuse counts
 - timing magnitude after log transformation
-- low-cardinality `kp` and `sld` codes
+- low-cardinality `kp` and `sld` value frequencies
 
-High-volume domain frequency and global country frequency are down-weighted to 0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
+High-volume domain frequency and global country frequency are down-weighted to
+0.50 and 0.50, respectively. The low-cardinality
+`kp` and `sld` frequency features are down-weighted to 0.50 and
+0.25. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
 
 `kp` and `sld` are treated as categorical-style assumptions rather than true
-continuous measurements because their observed cardinality is very low. The
-next planned feature revision is to encode them as bounded categorical
-indicators and reduce their anomaly-model influence to `0.50` for `kp` and
-`0.25` for `sld`.
+continuous measurements because their observed cardinality is very low. Raw
+`kp` and `sld` values remain in the feature artefact for audit, but the anomaly
+model uses `log_kp_count` and `log_sld_count` instead of raw numeric distances.
+The raw values are excluded from `ml_feature_names`.
+
+Feature-change validation used the regenerated `submission.tsv`,
+`artifacts/summary.json`, `artifacts/features.tsv`,
+`artifacts/sample_events.json`, and report files under `docs/`. The targeted
+data and pipeline tests passed (`uv run pytest tests/test_data.py
+tests/test_pipeline.py`, 20 passed), the full test suite passed (`uv run
+pytest`, 44 passed), and Black passed for the touched Python files with the
+existing Python 3.12 target-version warning. Each generated report reflects the
+current run's artefacts; fixed before/after comparison metrics are kept in the
+static README task history rather than repeated in this template.
 
 ## 5. Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
 ```text
-combined_score > 0.606846
+combined_score > 0.610499
 or heuristic_score >= 0.62
 ```
 
@@ -125,21 +138,21 @@ In this run:
 
 - heuristic-only flag rate: 1.40%
 - ML agreement-tail reference rate: 2.50%
-- operational confidence estimate: 73%
+- operational confidence estimate: 75%
 
 ## 6. Method Agreement And Disagreement
 
 Agreement between the rules layer and the anomaly model is useful review
 evidence. It is not statistical validation, because there are no labels.
 
-At the ML agreement threshold, this run has 1,478 `Heuristic + ML` events and 2,253 `ML only` events.
+At the ML agreement threshold, this run has 1,738 `Heuristic + ML` events and 1,993 `ML only` events.
 
 Method disagreement (`ml_score >= 0.975`):
 
-- Heuristic + ML: 1,478 events
-- Heuristic only: 612 events
-- ML only: 2,253 events
-- Neither strong: 144,896 events
+- Heuristic + ML: 1,738 events
+- Heuristic only: 352 events
+- ML only: 1,993 events
+- Neither strong: 145,156 events
 
 Example interpretation:
 
@@ -153,8 +166,8 @@ Example interpretation:
 
 Bot Hunter separates prediction from action by assigning operational tiers:
 
-- suppress: 1,966 events
-- quarantine: 1,765 events
+- suppress: 1,951 events
+- quarantine: 1,780 events
 - monitor: 145,508 events
 
 Recommended use:
@@ -171,7 +184,7 @@ business-control layer.
 
 ## 8. Probability Perspective
 
-The estimated probability that a flagged event is fraudulent is 73%. This is an operational estimate based on signal agreement, not a calibrated probability.
+The estimated probability that a flagged event is fraudulent is 75%. This is an operational estimate based on signal agreement, not a calibrated probability.
 
 The estimate is stronger when independent signals agree. For example, a click
 with repeated query/domain replay, same-second burst evidence, and an upper-tail
@@ -232,8 +245,8 @@ This run selected 3,731 of 149,239 events as likely bots (2.50%).
 
 Operational split:
 
-- suppress: 1,966
-- quarantine: 1,765
+- suppress: 1,951
+- quarantine: 1,780
 - monitor: 145,508
 
 Use the report and dashboard as review aids. They explain why traffic was

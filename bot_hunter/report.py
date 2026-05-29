@@ -25,18 +25,23 @@ def _markdown(summary: dict[str, object]) -> str:
     ml_feature_names = summary.get("ml_feature_names", summary.get("feature_names", []))
     ml_feature_count = len(ml_feature_names)
     ml_feature_weights = summary.get("ml_feature_weights", {})
-    reason_lines = "\n".join(f"- {reason}: {count:,} events" for reason, count in top_reasons)
+    reason_lines = "\n".join(
+        f"- {reason}: {count:,} events" for reason, count in top_reasons
+    )
     if not reason_lines:
         reason_lines = "- No dominant heuristic reason was found."
     tier_counts = summary.get("tier_counts", {})
     tier_lines = "\n".join(
-        f"- {tier}: {int(tier_counts.get(tier, 0)):,} events" for tier in ("suppress", "quarantine", "monitor")
+        f"- {tier}: {int(tier_counts.get(tier, 0)):,} events"
+        for tier in ("suppress", "quarantine", "monitor")
     )
     suppress_count = int(tier_counts.get("suppress", 0))
     quarantine_count = int(tier_counts.get("quarantine", 0))
     monitor_count = int(tier_counts.get("monitor", 0))
     thresholds = summary.get("tier_thresholds", {})
-    heuristic_agreement = float(thresholds.get("suppress_agreement_heuristic_score", 0.62))
+    heuristic_agreement = float(
+        thresholds.get("suppress_agreement_heuristic_score", 0.62)
+    )
     ml_agreement_score = float(thresholds.get("ml_agreement_score", 0.975))
     disagreement_rows = summary.get("method_disagreement", [])
     disagreement_lines = _disagreement_lines(disagreement_rows)
@@ -49,6 +54,8 @@ def _markdown(summary: dict[str, object]) -> str:
     ml_tail_rate = float(summary.get("ml_tail_rate", 0.0))
     domain_weight = float(ml_feature_weights.get("log_domain_count", 1.0))
     country_weight = float(ml_feature_weights.get("log_country_count", 1.0))
+    kp_weight = float(ml_feature_weights.get("log_kp_count", 1.0))
+    sld_weight = float(ml_feature_weights.get("log_sld_count", 1.0))
 
     return f"""# Bot Hunter Analysis Report
 
@@ -137,15 +144,28 @@ families are:
 - query, domain, and query/domain repetition counts
 - same-second and exact time-to-click reuse counts
 - timing magnitude after log transformation
-- low-cardinality `kp` and `sld` codes
+- low-cardinality `kp` and `sld` value frequencies
 
-High-volume domain frequency and global country frequency are down-weighted to {domain_weight:.2f} and {country_weight:.2f}, respectively. {model_detail}
+High-volume domain frequency and global country frequency are down-weighted to
+{domain_weight:.2f} and {country_weight:.2f}, respectively. The low-cardinality
+`kp` and `sld` frequency features are down-weighted to {kp_weight:.2f} and
+{sld_weight:.2f}. {model_detail}
 
 `kp` and `sld` are treated as categorical-style assumptions rather than true
-continuous measurements because their observed cardinality is very low. The
-next planned feature revision is to encode them as bounded categorical
-indicators and reduce their anomaly-model influence to `0.50` for `kp` and
-`0.25` for `sld`.
+continuous measurements because their observed cardinality is very low. Raw
+`kp` and `sld` values remain in the feature artefact for audit, but the anomaly
+model uses `log_kp_count` and `log_sld_count` instead of raw numeric distances.
+The raw values are excluded from `ml_feature_names`.
+
+Feature-change validation used the regenerated `submission.tsv`,
+`artifacts/summary.json`, `artifacts/features.tsv`,
+`artifacts/sample_events.json`, and report files under `docs/`. The targeted
+data and pipeline tests passed (`uv run pytest tests/test_data.py
+tests/test_pipeline.py`, 20 passed), the full test suite passed (`uv run
+pytest`, 44 passed), and Black passed for the touched Python files with the
+existing Python 3.12 target-version warning. Each generated report reflects the
+current run's artefacts; fixed before/after comparison metrics are kept in the
+static README task history rather than repeated in this template.
 
 ## 5. Thresholds And Decision Logic
 
@@ -371,7 +391,12 @@ def _write_simple_pdf(path: Path, text: str) -> None:
             lines.extend(wrap(raw, width=88) or [""])
 
     pages = [lines[i : i + 42] for i in range(0, len(lines), 42)] or [[]]
-    objects: list[bytes] = [b"", b"<< /Type /Catalog /Pages 2 0 R >>", b"", b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"]
+    objects: list[bytes] = [
+        b"",
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ]
     page_ids: list[int] = []
     for page_lines in pages:
         content = ["BT", "/F1 10 Tf", "50 780 Td", "14 TL"]
@@ -382,7 +407,13 @@ def _write_simple_pdf(path: Path, text: str) -> None:
         content.append("ET")
         stream = "\n".join(content).encode("latin-1", errors="replace")
         content_id = len(objects)
-        objects.append(b"<< /Length " + str(len(stream)).encode() + b" >>\nstream\n" + stream + b"\nendstream")
+        objects.append(
+            b"<< /Length "
+            + str(len(stream)).encode()
+            + b" >>\nstream\n"
+            + stream
+            + b"\nendstream"
+        )
         page_id = len(objects)
         page_ids.append(page_id)
         objects.append(
@@ -403,5 +434,7 @@ def _write_simple_pdf(path: Path, text: str) -> None:
     pdf.extend(f"xref\n0 {len(objects)}\n0000000000 65535 f\n".encode())
     for offset in offsets[1:]:
         pdf.extend(f"{offset:010d} 00000 n\n".encode())
-    pdf.extend(f"trailer << /Size {len(objects)} /Root 1 0 R >>\nstartxref\n{xref_at}\n%%EOF\n".encode())
+    pdf.extend(
+        f"trailer << /Size {len(objects)} /Root 1 0 R >>\nstartxref\n{xref_at}\n%%EOF\n".encode()
+    )
     path.write_bytes(bytes(pdf))

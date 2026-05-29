@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R] /Count 6 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R] /Count 7 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -93,9 +93,9 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,476 events) Tj
+(- repeated query: 3,467 events) Tj
 T*
-(- repeated query/domain pair: 2,091 events) Tj
+(- repeated query/domain pair: 2,093 events) Tj
 T*
 (- confirmed query repetition: 2,023 events) Tj
 T*
@@ -112,19 +112,19 @@ BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(- same-second click burst: 1,876 events) Tj
+(- same-second click burst: 1,904 events) Tj
 T*
-(- heavy region/browser/OS cluster: 1,868 events) Tj
+(- heavy region/browser/OS cluster: 1,866 events) Tj
 T*
-(- very short query: 1,835 events) Tj
+(- very short query: 1,816 events) Tj
 T*
-(- high-volume clicked domain: 1,726 events) Tj
+(- high-volume clicked domain: 1,742 events) Tj
 T*
-(- concentrated ct context: 1,154 events) Tj
+(- concentrated ct context: 1,142 events) Tj
 T*
-(- dense burst repetition cluster: 526 events) Tj
+(- dense burst repetition cluster: 549 events) Tj
 T*
-(- moderately long time-to-click: 472 events) Tj
+(- moderately long time-to-click: 458 events) Tj
 T*
 () Tj
 T*
@@ -203,7 +203,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 2005 >>
+<< /Length 2365 >>
 stream
 BT
 /F1 10 Tf
@@ -237,29 +237,53 @@ T*
 T*
 (- timing magnitude after log transformation) Tj
 T*
-(- low-cardinality kp and sld codes) Tj
+(- low-cardinality kp and sld value frequencies) Tj
 T*
 () Tj
 T*
-(High-volume domain frequency and global country frequency are down-weighted to 0.50 and) Tj
+(High-volume domain frequency and global country frequency are down-weighted to) Tj
 T*
-(0.50, respectively. Events isolated quickly by random hyperplane splits receive higher) Tj
+(0.50 and 0.50, respectively. The low-cardinality) Tj
 T*
-(anomaly scores. EIF is the only production anomaly model; alternate ML backends and) Tj
+(kp and sld frequency features are down-weighted to 0.50 and) Tj
 T*
-(supervised pilots have been removed.) Tj
+(0.25. Events isolated quickly by random hyperplane splits receive higher anomaly scores.) Tj
+T*
+(EIF is the only production anomaly model; alternate ML backends and supervised pilots) Tj
+T*
+(have been removed.) Tj
 T*
 () Tj
 T*
 (kp and sld are treated as categorical-style assumptions rather than true) Tj
 T*
-(continuous measurements because their observed cardinality is very low. The) Tj
+(continuous measurements because their observed cardinality is very low. Raw) Tj
 T*
-(next planned feature revision is to encode them as bounded categorical) Tj
+(kp and sld values remain in the feature artefact for audit, but the anomaly) Tj
 T*
-(indicators and reduce their anomaly-model influence to 0.50 for kp and) Tj
+(model uses log_kp_count and log_sld_count instead of raw numeric distances.) Tj
 T*
-(0.25 for sld.) Tj
+(The raw values are excluded from ml_feature_names.) Tj
+T*
+() Tj
+T*
+(Feature-change validation used the regenerated submission.tsv,) Tj
+T*
+(artifacts/summary.json, artifacts/features.tsv,) Tj
+T*
+(artifacts/sample_events.json, and report files under docs/. The targeted) Tj
+T*
+(data and pipeline tests passed \(uv run pytest tests/test_data.py) Tj
+T*
+(tests/test_pipeline.py, 20 passed\), the full test suite passed \(uv run) Tj
+T*
+(pytest, 44 passed\), and Black passed for the touched Python files with the) Tj
+T*
+(existing Python 3.12 target-version warning. Each generated report reflects the) Tj
+T*
+(current run's artefacts; fixed before/after comparison metrics are kept in the) Tj
+T*
+(static README task history rather than repeated in this template.) Tj
 T*
 () Tj
 T*
@@ -269,11 +293,24 @@ T*
 T*
 (An event is selected as a bot when either condition is true:) Tj
 T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 1774 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (text) Tj
 T*
-(combined_score > 0.606846) Tj
+(combined_score > 0.610499) Tj
 T*
 (or heuristic_score >= 0.62) Tj
 T*
@@ -293,19 +330,6 @@ T*
 T*
 (example, a strongly repeated query/domain pattern with mechanical timing should) Tj
 T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 1637 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (not be missed only because the anomaly ranking moved after a feature change.) Tj
 T*
 () Tj
@@ -318,7 +342,7 @@ T*
 T*
 (- ML agreement-tail reference rate: 2.50%) Tj
 T*
-(- operational confidence estimate: 73%) Tj
+(- operational confidence estimate: 75%) Tj
 T*
 () Tj
 T*
@@ -332,7 +356,7 @@ T*
 T*
 () Tj
 T*
-(At the ML agreement threshold, this run has 1,478 Heuristic + ML events and 2,253 ML) Tj
+(At the ML agreement threshold, this run has 1,738 Heuristic + ML events and 1,993 ML) Tj
 T*
 (only events.) Tj
 T*
@@ -342,13 +366,13 @@ T*
 T*
 () Tj
 T*
-(- Heuristic + ML: 1,478 events) Tj
+(- Heuristic + ML: 1,738 events) Tj
 T*
-(- Heuristic only: 612 events) Tj
+(- Heuristic only: 352 events) Tj
 T*
-(- ML only: 2,253 events) Tj
+(- ML only: 1,993 events) Tj
 T*
-(- Neither strong: 144,896 events) Tj
+(- Neither strong: 145,156 events) Tj
 T*
 () Tj
 T*
@@ -366,6 +390,19 @@ T*
 T*
 (  review because unusual legitimate behaviour can also be anomalous.) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 1960 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 ( 7. Operational Actions) Tj
@@ -376,9 +413,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,966 events) Tj
+(- suppress: 1,951 events) Tj
 T*
-(- quarantine: 1,765 events) Tj
+(- quarantine: 1,780 events) Tj
 T*
 (- monitor: 145,508 events) Tj
 T*
@@ -390,19 +427,6 @@ T*
 T*
 (- suppress: high-confidence traffic that can be excluded from billing or) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 2198 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (  downstream metrics after policy approval.) Tj
 T*
 (- quarantine: suspicious traffic that should be reviewed, sampled, or delayed) Tj
@@ -425,7 +449,7 @@ T*
 T*
 () Tj
 T*
-(The estimated probability that a flagged event is fraudulent is 73%. This is an) Tj
+(The estimated probability that a flagged event is fraudulent is 75%. This is an) Tj
 T*
 (operational estimate based on signal agreement, not a calibrated probability.) Tj
 T*
@@ -463,6 +487,19 @@ T*
 T*
 () Tj
 T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 1975 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (The main trade-off is explainability versus coverage. Rules are easier to) Tj
 T*
 (defend but can miss novel patterns. The anomaly model broadens coverage but) Tj
@@ -487,19 +524,6 @@ T*
 T*
 (  calibration cannot be reported.) Tj
 T*
-ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
-endobj
-14 0 obj
-<< /Length 1675 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (- Legitimate campaigns can create high repetition, dense clusters, or regional) Tj
 T*
 (  concentration.) Tj
@@ -560,11 +584,24 @@ T*
 T*
 (Operational split:) Tj
 T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 338 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
-(- suppress: 1,966) Tj
+(- suppress: 1,951) Tj
 T*
-(- quarantine: 1,765) Tj
+(- quarantine: 1,780) Tj
 T*
 (- monitor: 145,508) Tj
 T*
@@ -579,28 +616,30 @@ T*
 ET
 endstream
 endobj
-15 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
 endobj
 xref
-0 16
+0 18
 0000000000 65535 f
 0000000009 00000 n
 0000000058 00000 n
-0000000148 00000 n
-0000000218 00000 n
-0000002070 00000 n
-0000002196 00000 n
-0000004337 00000 n
-0000004463 00000 n
-0000006520 00000 n
-0000006646 00000 n
-0000008336 00000 n
-0000008464 00000 n
-0000010715 00000 n
-0000010843 00000 n
-0000012571 00000 n
-trailer << /Size 16 /Root 1 0 R >>
+0000000155 00000 n
+0000000225 00000 n
+0000002077 00000 n
+0000002203 00000 n
+0000004344 00000 n
+0000004470 00000 n
+0000006887 00000 n
+0000007013 00000 n
+0000008840 00000 n
+0000008968 00000 n
+0000010981 00000 n
+0000011109 00000 n
+0000013137 00000 n
+0000013265 00000 n
+0000013655 00000 n
+trailer << /Size 18 /Root 1 0 R >>
 startxref
-12699
+13783
 %%EOF

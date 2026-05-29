@@ -2,10 +2,12 @@ from pathlib import Path
 
 import pytest
 
-from bot_hunter.data import build_features, parse_clicks
+from bot_hunter.data import build_features, parse_clicks, select_ml_feature_names
 
 
-def test_parse_clicks_accepts_header_blank_lines_and_repeated_params(tmp_path: Path) -> None:
+def test_parse_clicks_accepts_header_blank_lines_and_repeated_params(
+    tmp_path: Path,
+) -> None:
     raw = tmp_path / "clicks.tsv"
     raw.write_text(
         "\n".join(
@@ -77,3 +79,41 @@ def test_build_features_defaults_non_finite_kp_and_sld(tmp_path: Path) -> None:
 
     assert events[0].features[feature_names.index("kp")] == -9.0
     assert events[0].features[feature_names.index("sld")] == 0.0
+
+
+def test_build_features_uses_kp_and_sld_counts_for_ml(tmp_path: Path) -> None:
+    raw = tmp_path / "clicks.tsv"
+    raw.write_text(
+        "\n".join(
+            [
+                "evt_1\t2019-12-02 00:00:00\tMars\tChrome\tiOS\t"
+                "/ad_click?d=a.com&q=foo&ttc=1000&kp=1&sld=0",
+                "evt_2\t2019-12-02 00:00:01\tMars\tChrome\tiOS\t"
+                "/ad_click?d=b.com&q=bar&ttc=2000&kp=1&sld=1",
+                "evt_3\t2019-12-02 00:00:02\tMars\tChrome\tiOS\t"
+                "/ad_click?d=c.com&q=baz&ttc=3000&kp=2&sld=1",
+            ]
+        ),
+        encoding="utf-8",
+    )
+    events = parse_clicks(raw)
+
+    feature_names, _ = build_features(events)
+    ml_feature_names = select_ml_feature_names(feature_names)
+
+    assert events[0].features[feature_names.index("log_kp_count")] == pytest.approx(
+        1.098612
+    )
+    assert events[0].features[feature_names.index("log_sld_count")] == pytest.approx(
+        0.693147
+    )
+    assert events[1].features[feature_names.index("log_kp_count")] == pytest.approx(
+        1.098612
+    )
+    assert events[1].features[feature_names.index("log_sld_count")] == pytest.approx(
+        1.098612
+    )
+    assert "log_kp_count" in ml_feature_names
+    assert "log_sld_count" in ml_feature_names
+    assert "kp" not in ml_feature_names
+    assert "sld" not in ml_feature_names
