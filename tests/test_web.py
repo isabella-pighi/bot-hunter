@@ -7,6 +7,21 @@ from urllib.request import Request, urlopen
 
 from bot_hunter import web
 
+SIDEBAR_LABELS = [
+    "Overview",
+    "Method/Tier Breakdown",
+    "Traffic Explorer",
+    "Technical Evidence",
+    "Query Terms",
+    "Help",
+]
+
+
+def _sidebar_nav_markup(dashboard: str) -> str:
+    nav_start = dashboard.index('<nav class="sidebar-nav">')
+    nav_end = dashboard.index("</nav>", nav_start)
+    return dashboard[nav_start:nav_end]
+
 
 def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
     artifacts = tmp_path / "artifacts"
@@ -14,6 +29,14 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
     artifacts.mkdir()
     docs.mkdir()
     (artifacts / "summary.json").write_text('{"total_events": 1}', encoding="utf-8")
+    (artifacts / "selected_events.json").write_text(
+        (
+            '[{"event_id":"evt_selected","method_bucket":"Heuristic + ML",'
+            '"anomaly_class":"compound_burst_replay",'
+            '"operational_tier":"suppress"}]'
+        ),
+        encoding="utf-8",
+    )
     (artifacts / "sample_events.json").write_text("[]", encoding="utf-8")
     (artifacts / "features.tsv").write_text(
         "event_id\tlog_domain_count\tlog_ttc_seconds\n"
@@ -60,6 +83,9 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Enter a file path before running the pipeline." in dashboard
         assert 'id="mlBackend"' not in dashboard
         assert "Bot Hunter Business Dashboard" in dashboard
+        assert "html { overflow-x:hidden; }" in dashboard
+        assert "overflow-x:hidden" in dashboard
+        assert ".table-wrap { overflow:auto; contain:inline-size; }" in dashboard
         assert "What this run says" in dashboard
         assert "Business problem" in dashboard
         assert "What was analysed" in dashboard
@@ -69,9 +95,19 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Query Terms" in dashboard
         assert "Method/Tier Breakdown" in dashboard
         assert "Help" in dashboard
+        nav_markup = _sidebar_nav_markup(dashboard)
+        nav_positions = [
+            nav_markup.index(f">{label}</button>") for label in SIDEBAR_LABELS
+        ]
+        assert nav_positions == sorted(nav_positions)
+        assert 'data-page="classes"' not in nav_markup
         assert (
             '<button type="button" class="nav" data-page="overview" '
             'aria-current="page" onclick="showPage(\'overview\')">Overview' in dashboard
+        )
+        assert (
+            '<button type="button" class="nav" data-page="breakdown" '
+            "onclick=\"showPage('breakdown')\">Method/Tier Breakdown" in dashboard
         )
         assert (
             '<button type="button" class="nav" data-page="explorer" '
@@ -118,6 +154,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert (
             ".sidebar-nav button.nav { text-align:center; min-width:0; }" in dashboard
         )
+        assert "table { table-layout:fixed; font-size:11px; }" in dashboard
         assert "header { align-items:start; }" in dashboard
         assert "Operational tiers" in dashboard
         assert "Method buckets" in dashboard
@@ -141,21 +178,25 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Escape" in dashboard
         assert "event.key === 'Tab'" in dashboard
         assert "event.preventDefault()" in dashboard
-        assert "Country / ct" in dashboard
-        assert "Not available in sample_events.json" in dashboard
-        assert "Raw country/ct is not available in the row sample." in dashboard
+        assert "Country / ct" not in dashboard
+        assert "Not available in sample_events.json" not in dashboard
+        assert "Raw country/ct is not available in the row sample." not in dashboard
         assert "Country/ct: unavailable in row sample" not in dashboard
-        assert "Detected anomaly sample" in dashboard
-        assert "All traffic rows unavailable" in dashboard
-        assert "Device cluster (region/browser/OS sample)" in dashboard
-        assert "Explore detected anomaly sample" in dashboard
+        assert "Detected anomaly sample" not in dashboard
+        assert "All traffic rows unavailable" not in dashboard
+        assert "Device cluster (region/browser/OS sample)" not in dashboard
+        assert "Explore detected anomalies" in dashboard
         assert "Clear filters" in dashboard
         assert (
-            "Compact row-level controls for the top-250 suppress sample." in dashboard
+            "Compact row-level controls for the full selected anomaly set." in dashboard
         )
-        assert "View data" in dashboard
+        assert "View data" not in dashboard
         assert "Export CSV" in dashboard
-        assert 'id="sampleKpis"' in dashboard
+        assert 'id="sampleKpis"' not in dashboard
+        assert "renderSampleKpis" not in dashboard
+        assert "Filtered anomalies" not in dashboard
+        assert "Suppress rows" not in dashboard
+        assert "Unique domains" not in dashboard
         assert 'id="sampleTierChart"' in dashboard
         assert 'id="sampleMethodChart"' in dashboard
         assert 'id="sampleDomainChart"' in dashboard
@@ -173,20 +214,20 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "export_scope" in dashboard
         assert "))).join('\\n');" in dashboard
         assert "))).join('\n');" not in dashboard
-        assert "Filtered top-250 highest-risk suppress sample" in dashboard
+        assert "Filtered top-250 highest-risk suppress sample" not in dashboard
+        assert "Filtered detected anomaly set" in dashboard
         assert "full-run aggregate; not affected by explorer filters" in dashboard
         assert (
             "Full-run aggregate. Explorer filters do not change these KPI cards."
             in dashboard
         )
-        assert "sample filters do not change them" in dashboard
-        assert "Filtered sample domains" in dashboard
-        assert "Rows below come from `artifacts/sample_events.json`" in dashboard
-        assert "250-row highest-risk suppress sample" in dashboard
-        assert "quarantine/monitor rows" in dashboard
-        assert "ML-only event rows" in dashboard
-        assert "anomaly class per row" in dashboard
-        assert "Top query terms in anomaly sample" in dashboard
+        assert "sample filters do not change them" not in dashboard
+        assert "explorer filters do not change them" in dashboard
+        assert "Filtered anomaly domains" in dashboard
+        assert "Rows below come from `artifacts/selected_events.json`" in dashboard
+        assert "full selected detected-anomaly set" in dashboard
+        assert "not the full all-traffic population" in dashboard
+        assert "Top query terms in detected anomalies" in dashboard
         assert "Top query/domain combinations" in dashboard
         assert "Summary top queries" in dashboard
         assert 'id="activeFilters"' in dashboard
@@ -238,6 +279,8 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "function renderExplorer(rows)" in dashboard
         assert "arguments.length" not in dashboard
         assert "renderQueries(sampleEvents, summary)" not in dashboard
+        assert "fetch('/api/anomalies')" in dashboard
+        assert "fetch('/api/events')" not in dashboard
         assert "updateFilteredViews()" in dashboard
         assert "methodBucket(event)" in dashboard
         assert "deviceLabel(event)" in dashboard
@@ -246,6 +289,9 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "applyBarFilter" in dashboard
         assert "toggleFilterValue(name, value)" in dashboard
         assert "Anomaly class aggregate only:" not in dashboard
+        assert "filter-query" not in dashboard
+        assert "filter-device" not in dashboard
+        assert "filter-focus" not in dashboard
         assert 'class="method-bars" role="img"' in dashboard
         assert "Method buckets bar chart for review-relevant events" in dashboard
         assert "label !== 'Neither strong'" in dashboard
@@ -281,6 +327,16 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
             {"event_id": "evt_<script>", "features": [1.386294, 0.01]}
         ]
         assert payload["next_offset"] == 1
+
+        anomalies = json.loads(urlopen(base_url + "/api/anomalies", timeout=5).read())
+        assert anomalies == [
+            {
+                "event_id": "evt_selected",
+                "method_bucket": "Heuristic + ML",
+                "anomaly_class": "compound_burst_replay",
+                "operational_tier": "suppress",
+            }
+        ]
     finally:
         server.shutdown()
         server.server_close()

@@ -1,3 +1,4 @@
+import json
 import sys
 from datetime import datetime
 from importlib.machinery import ModuleSpec
@@ -13,6 +14,8 @@ from bot_hunter.pipeline import (
     _assign_operational_tier,
     _method_disagreement,
     _normalize_reason,
+    _selected_event_dicts,
+    _selected_method_counts,
     run_pipeline,
 )
 
@@ -115,6 +118,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert summary["total_events"] == 3
     assert summary["ml_backend"] == "eif"
     assert summary["feature_artifact"] == "artifacts/features.tsv"
+    assert summary["selected_events_artifact"] == "artifacts/selected_events.json"
     assert summary["tier_counts"] == {"suppress": 0, "quarantine": 0, "monitor": 3}
     submission = (tmp_path / "submission.tsv").read_text(encoding="utf-8")
     assert submission.startswith("event_id\tis_bot\toperational_tier\n")
@@ -132,6 +136,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert '"capped":' in sample_events
     assert "method_disagreement" in summary
     assert sum(count for _, count in summary["method_disagreement"]) == 3
+    assert summary["selected_method_counts"] == {}
     assert "_".join(["method", "disagreement", "extreme"]) not in summary
     assert "_".join(["method", "disagreement", "support"]) not in summary
     assert summary["tier_thresholds"]["ml_agreement_score"] == 0.975
@@ -153,6 +158,10 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert summary["anomaly_classes"]["filtering_options"][0]["name"] == (
         "Conservative suppression review"
     )
+    selected_events = json.loads(
+        (tmp_path / "artifacts" / "selected_events.json").read_text(encoding="utf-8")
+    )
+    assert selected_events == []
     assert "_".join(["ml", "support", "score"]) not in summary["tier_thresholds"]
     assert (
         "_".join(["suppress", "agreement", "ml", "score"])
@@ -314,6 +323,44 @@ def test_anomaly_classes_use_selected_counts_and_ml_only_population() -> None:
     assert "not proven fraud labels" in classes["scope"]
 
 
+def test_selected_event_dicts_include_dashboard_filter_fields() -> None:
+    events = [
+        _classified_event(
+            "evt_replay_context",
+            heuristic_score=0.86,
+            ml_score=0.99,
+            combined_score=0.91,
+            is_bot=1,
+            tier="suppress",
+            rule_ids=["repeat_query_domain", "high_volume_domain"],
+        ),
+        _classified_event(
+            "evt_ml_selected",
+            heuristic_score=0.40,
+            ml_score=0.99,
+            combined_score=0.65,
+            is_bot=1,
+            tier="quarantine",
+            rule_ids=[],
+        ),
+    ]
+
+    rows = _selected_event_dicts(events)
+
+    assert rows[0]["event_id"] == "evt_replay_context"
+    assert rows[0]["method_bucket"] == "Heuristic + ML"
+    assert rows[0]["anomaly_class"] == "repetition_with_supporting_context"
+    assert rows[0]["operational_tier"] == "suppress"
+    assert rows[0]["rule_contributions"][0]["rule_id"] == "repeat_query_domain"
+    assert rows[1]["method_bucket"] == "ML only"
+    assert rows[1]["anomaly_class"] == "ml_tail_multivariate"
+
+    assert _selected_method_counts(events) == {
+        "Heuristic + ML": 1,
+        "ML only": 1,
+    }
+
+
 def test_single_event_pipeline_is_not_selected_by_percentile_gate(
     monkeypatch, tmp_path: Path
 ) -> None:
@@ -386,6 +433,14 @@ def test_pipeline_handles_empty_input(tmp_path: Path) -> None:
     ) == "event_id\tis_bot\toperational_tier\n"
     assert (tmp_path / "artifacts" / "features.tsv").read_text(encoding="utf-8") == (
         "event_id\t" + "\t".join(summary["feature_names"]) + "\n"
+    )
+    assert (
+        json.loads(
+            (tmp_path / "artifacts" / "selected_events.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        == []
     )
 
 

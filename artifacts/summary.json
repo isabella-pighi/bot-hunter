@@ -9,6 +9,7 @@
   "estimated_precision": 0.7449155722326454,
   "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
+  "selected_events_artifact": "artifacts/selected_events.json",
   "feature_names": [
     "log_domain_count",
     "log_query_count",
@@ -82,6 +83,12 @@
       145197
     ]
   ],
+  "selected_method_counts": {
+    "Heuristic + ML": 1726,
+    "Heuristic only": 311,
+    "ML only": 509,
+    "Combined tail": 1185
+  },
   "anomaly_classes": {
     "scope": "Operational anomaly classes derived from the current unlabelled run; these are not proven fraud labels.",
     "selected_event_count": 3731,

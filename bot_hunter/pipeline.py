@@ -94,6 +94,7 @@ def run_pipeline(
         "estimated_precision": estimated_precision,
         "ml_backend": ml_backend_used,
         "feature_artifact": "artifacts/features.tsv",
+        "selected_events_artifact": "artifacts/selected_events.json",
         "feature_names": feature_names,
         "ml_feature_names": ml_feature_names,
         "ml_feature_weights": dict(zip(ml_feature_names, ml_feature_weights)),
@@ -109,6 +110,7 @@ def run_pipeline(
             ),
         },
         "method_disagreement": _method_disagreement(events),
+        "selected_method_counts": _selected_method_counts(bot_events),
         "anomaly_classes": _anomaly_classes(events),
         "tier_thresholds": {
             "suppress_combined_score": SUPPRESS_COMBINED_THRESHOLD,
@@ -139,6 +141,8 @@ def run_pipeline(
     _write_submission(root / "submission.tsv", events)
     _write_json(artifacts / "summary.json", summary)
     _write_features(artifacts / "features.tsv", feature_names, events)
+    selected = sorted(bot_events, key=lambda event: event.combined_score, reverse=True)
+    _write_json(artifacts / "selected_events.json", _selected_event_dicts(selected))
     sample = sorted(events, key=lambda event: event.combined_score, reverse=True)[:250]
     _write_json(artifacts / "sample_events.json", list(iter_event_dicts(sample)))
     write_reports(summary, root / "docs")
@@ -188,6 +192,13 @@ def _method_disagreement(
         ("ML only", counts.get("ML only", 0)),
         ("Neither strong", counts.get("Neither strong", 0)),
     ]
+
+
+def _selected_method_counts(events: list[ClickEvent]) -> dict[str, int]:
+    return _ordered_counter(
+        Counter(_event_method_bucket(event) for event in events),
+        ("Heuristic + ML", "Heuristic only", "ML only", "Combined tail"),
+    )
 
 
 def _anomaly_classes(events: list[ClickEvent]) -> dict[str, object]:
@@ -495,6 +506,16 @@ def _anomaly_filtering_options() -> list[dict[str, str]]:
             ),
         },
     ]
+
+
+def _selected_event_dicts(events: list[ClickEvent]) -> list[dict[str, object]]:
+    rows = []
+    for event in events:
+        row = next(iter_event_dicts([event]))
+        row["method_bucket"] = _event_method_bucket(event)
+        row["anomaly_class"] = _event_anomaly_class(event)
+        rows.append(row)
+    return rows
 
 
 def _write_submission(path: Path, events) -> None:

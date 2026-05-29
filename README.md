@@ -79,6 +79,7 @@ to match the existing project structure:
 | `submission.tsv` | Required event-level output |
 | `artifacts/summary.json` | Metrics, thresholds, settings, and disagreement counts |
 | `artifacts/features.tsv` | Engineered feature matrix for audit and debugging |
+| `artifacts/selected_events.json` | Full selected anomaly rows for dashboard filtering |
 | `artifacts/sample_events.json` | High-risk examples and rule contributions |
 | `docs/analysis_report.md` | Markdown report |
 | `docs/analysis_report.html` | HTML report |
@@ -115,6 +116,7 @@ The dashboard serves:
 | `/features` | Feature table |
 | `/report` | HTML report |
 | `/api/summary` | Summary metrics as JSON |
+| `/api/anomalies` | Full selected anomaly rows as JSON |
 | `/api/events` | Sample high-risk events as JSON |
 | `/api/features` | Engineered features as JSON |
 | `POST /upload` | Upload a TSV and run the pipeline |
