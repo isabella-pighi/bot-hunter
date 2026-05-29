@@ -59,7 +59,7 @@ T*
 T*
 (  mechanically timed, or tightly clustered click patterns.) Tj
 T*
-(- Machine-learning classifier: an Extended Isolation Forest anomaly model over 14) Tj
+(- Machine-learning classifier: an Extended Isolation Forest anomaly model over 40) Tj
 T*
 (engineered behavioural features.) Tj
 T*
@@ -93,9 +93,9 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,476 events) Tj
+(- repeated query: 3,414 events) Tj
 T*
-(- repeated query/domain pair: 2,091 events) Tj
+(- repeated query/domain pair: 2,068 events) Tj
 T*
 (- confirmed query repetition: 2,023 events) Tj
 T*
@@ -106,25 +106,25 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2089 >>
+<< /Length 2083 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(- same-second click burst: 1,876 events) Tj
+(- same-second click burst: 1,994 events) Tj
 T*
-(- heavy region/browser/OS cluster: 1,868 events) Tj
+(- high-volume clicked domain: 1,773 events) Tj
 T*
-(- very short query: 1,835 events) Tj
+(- very short query: 1,759 events) Tj
 T*
-(- high-volume clicked domain: 1,726 events) Tj
+(- heavy region/browser/OS cluster: 1,541 events) Tj
 T*
-(- concentrated ct context: 1,154 events) Tj
+(- concentrated ct context: 894 events) Tj
 T*
-(- dense burst repetition cluster: 526 events) Tj
+(- moderately long time-to-click: 476 events) Tj
 T*
-(- moderately long time-to-click: 472 events) Tj
+(- dense burst repetition cluster: 421 events) Tj
 T*
 () Tj
 T*
@@ -138,7 +138,7 @@ T*
 T*
 () Tj
 T*
-(The new concentrated ct rule is deliberately cautious. It adds low-weight) Tj
+(The concentrated ct rule is deliberately cautious. It adds low-weight) Tj
 T*
 (support only when country-like concentration appears with repeated query) Tj
 T*
@@ -203,7 +203,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 2005 >>
+<< /Length 2071 >>
 stream
 BT
 /F1 10 Tf
@@ -237,7 +237,9 @@ T*
 T*
 (- timing magnitude after log transformation) Tj
 T*
-(- low-cardinality kp and sld codes) Tj
+(- fixed-size categorical hash-bucket indicators for region, browser, OS,) Tj
+T*
+(  ct, source-like parameters, kp, and sld) Tj
 T*
 () Tj
 T*
@@ -251,15 +253,15 @@ T*
 T*
 () Tj
 T*
-(kp and sld are treated as categorical-style assumptions rather than true) Tj
+(Categorical indicators use a deterministic four-bucket hash per field. That) Tj
 T*
-(continuous measurements because their observed cardinality is very low. The) Tj
+(keeps the feature matrix bounded even if new categories appear, while still) Tj
 T*
-(next planned feature revision is to encode them as bounded categorical) Tj
+(letting the anomaly model see category-level population shape. kp and sld) Tj
 T*
-(indicators and reduce their anomaly-model influence to 0.50 for kp and) Tj
+(are treated as categorical-style codes rather than continuous measurements;) Tj
 T*
-(0.25 for sld.) Tj
+(their bucket indicators are weighted at 0.50 and 0.25, respectively.) Tj
 T*
 () Tj
 T*
@@ -273,7 +275,7 @@ T*
 T*
 (text) Tj
 T*
-(combined_score > 0.606846) Tj
+(combined_score > 0.584123) Tj
 T*
 (or heuristic_score >= 0.62) Tj
 T*
@@ -291,8 +293,6 @@ T*
 T*
 (The heuristic override protects high-confidence, explainable rule hits. For) Tj
 T*
-(example, a strongly repeated query/domain pattern with mechanical timing should) Tj
-T*
 ET
 endstream
 endobj
@@ -300,12 +300,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
 endobj
 10 0 obj
-<< /Length 1637 >>
+<< /Length 1642 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(example, a strongly repeated query/domain pattern with mechanical timing should) Tj
+T*
 (not be missed only because the anomaly ranking moved after a feature change.) Tj
 T*
 () Tj
@@ -318,7 +320,7 @@ T*
 T*
 (- ML agreement-tail reference rate: 2.50%) Tj
 T*
-(- operational confidence estimate: 73%) Tj
+(- operational confidence estimate: 66%) Tj
 T*
 () Tj
 T*
@@ -332,9 +334,9 @@ T*
 T*
 () Tj
 T*
-(At the ML agreement threshold, this run has 1,478 Heuristic + ML events and 2,253 ML) Tj
+(At the ML agreement threshold, this run has 860 Heuristic + ML events and 2,871 ML only) Tj
 T*
-(only events.) Tj
+(events.) Tj
 T*
 () Tj
 T*
@@ -342,13 +344,13 @@ T*
 T*
 () Tj
 T*
-(- Heuristic + ML: 1,478 events) Tj
+(- Heuristic + ML: 860 events) Tj
 T*
-(- Heuristic only: 612 events) Tj
+(- Heuristic only: 1,230 events) Tj
 T*
-(- ML only: 2,253 events) Tj
+(- ML only: 2,871 events) Tj
 T*
-(- Neither strong: 144,896 events) Tj
+(- Neither strong: 144,278 events) Tj
 T*
 () Tj
 T*
@@ -376,9 +378,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,966 events) Tj
+(- suppress: 1,744 events) Tj
 T*
-(- quarantine: 1,765 events) Tj
+(- quarantine: 1,987 events) Tj
 T*
 (- monitor: 145,508 events) Tj
 T*
@@ -388,8 +390,6 @@ T*
 T*
 () Tj
 T*
-(- suppress: high-confidence traffic that can be excluded from billing or) Tj
-T*
 ET
 endstream
 endobj
@@ -397,12 +397,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
 endobj
 12 0 obj
-<< /Length 2198 >>
+<< /Length 2237 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(- suppress: high-confidence traffic that can be excluded from billing or) Tj
+T*
 (  downstream metrics after policy approval.) Tj
 T*
 (- quarantine: suspicious traffic that should be reviewed, sampled, or delayed) Tj
@@ -425,7 +427,7 @@ T*
 T*
 () Tj
 T*
-(The estimated probability that a flagged event is fraudulent is 73%. This is an) Tj
+(The estimated probability that a flagged event is fraudulent is 66%. This is an) Tj
 T*
 (operational estimate based on signal agreement, not a calibrated probability.) Tj
 T*
@@ -485,8 +487,6 @@ T*
 T*
 (- There are no ground-truth labels, so measured precision, recall, and) Tj
 T*
-(  calibration cannot be reported.) Tj
-T*
 ET
 endstream
 endobj
@@ -494,12 +494,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
 endobj
 14 0 obj
-<< /Length 1675 >>
+<< /Length 1717 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(  calibration cannot be reported.) Tj
+T*
 (- Legitimate campaigns can create high repetition, dense clusters, or regional) Tj
 T*
 (  concentration.) Tj
@@ -562,9 +564,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,966) Tj
+(- suppress: 1,744) Tj
 T*
-(- quarantine: 1,765) Tj
+(- quarantine: 1,987) Tj
 T*
 (- monitor: 145,508) Tj
 T*
@@ -591,16 +593,16 @@ xref
 0000000218 00000 n
 0000002070 00000 n
 0000002196 00000 n
-0000004337 00000 n
-0000004463 00000 n
-0000006520 00000 n
-0000006646 00000 n
-0000008336 00000 n
-0000008464 00000 n
-0000010715 00000 n
-0000010843 00000 n
-0000012571 00000 n
+0000004331 00000 n
+0000004457 00000 n
+0000006580 00000 n
+0000006706 00000 n
+0000008401 00000 n
+0000008529 00000 n
+0000010819 00000 n
+0000010947 00000 n
+0000012717 00000 n
 trailer << /Size 16 /Root 1 0 R >>
 startxref
-12699
+12845
 %%EOF

@@ -19,7 +19,7 @@ Bot Hunter combines two complementary classifiers.
 
 - Rules-based classifier: transparent rules that identify repeated,
   mechanically timed, or tightly clustered click patterns.
-- Machine-learning classifier: an Extended Isolation Forest anomaly model over 14 engineered behavioural features.
+- Machine-learning classifier: an Extended Isolation Forest anomaly model over 40 engineered behavioural features.
 
 The final score is a weighted blend:
 
@@ -35,23 +35,23 @@ combinations that a small rule set may not capture.
 
 The strongest explainable patterns in this run were:
 
-- repeated query: 3,476 events
-- repeated query/domain pair: 2,091 events
+- repeated query: 3,414 events
+- repeated query/domain pair: 2,068 events
 - confirmed query repetition: 2,023 events
-- same-second click burst: 1,876 events
-- heavy region/browser/OS cluster: 1,868 events
-- very short query: 1,835 events
-- high-volume clicked domain: 1,726 events
-- concentrated ct context: 1,154 events
-- dense burst repetition cluster: 526 events
-- moderately long time-to-click: 472 events
+- same-second click burst: 1,994 events
+- high-volume clicked domain: 1,773 events
+- very short query: 1,759 events
+- heavy region/browser/OS cluster: 1,541 events
+- concentrated ct context: 894 events
+- moderately long time-to-click: 476 events
+- dense burst repetition cluster: 421 events
 
 Example interpretation: a single repeated query is not enough to prove bot
 traffic. It becomes more concerning when it appears with a repeated clicked
 domain, dense same-second activity, reused time-to-click values, or a narrow
 region/browser/OS footprint.
 
-The new concentrated `ct` rule is deliberately cautious. It adds low-weight
+The concentrated `ct` rule is deliberately cautious. It adds low-weight
 support only when country-like concentration appears with repeated query
 behaviour and either a heavy device cluster or a same-second burst. Country-like
 concentration alone is not treated as bot evidence because legitimate campaigns
@@ -94,22 +94,23 @@ families are:
 - query, domain, and query/domain repetition counts
 - same-second and exact time-to-click reuse counts
 - timing magnitude after log transformation
-- low-cardinality `kp` and `sld` codes
+- fixed-size categorical hash-bucket indicators for region, browser, OS,
+  `ct`, source-like parameters, `kp`, and `sld`
 
 High-volume domain frequency and global country frequency are down-weighted to 0.50 and 0.50, respectively. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
 
-`kp` and `sld` are treated as categorical-style assumptions rather than true
-continuous measurements because their observed cardinality is very low. The
-next planned feature revision is to encode them as bounded categorical
-indicators and reduce their anomaly-model influence to `0.50` for `kp` and
-`0.25` for `sld`.
+Categorical indicators use a deterministic four-bucket hash per field. That
+keeps the feature matrix bounded even if new categories appear, while still
+letting the anomaly model see category-level population shape. `kp` and `sld`
+are treated as categorical-style codes rather than continuous measurements;
+their bucket indicators are weighted at `0.50` and `0.25`, respectively.
 
 ## 5. Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
 ```text
-combined_score > 0.606846
+combined_score > 0.584123
 or heuristic_score >= 0.62
 ```
 
@@ -125,21 +126,21 @@ In this run:
 
 - heuristic-only flag rate: 1.40%
 - ML agreement-tail reference rate: 2.50%
-- operational confidence estimate: 73%
+- operational confidence estimate: 66%
 
 ## 6. Method Agreement And Disagreement
 
 Agreement between the rules layer and the anomaly model is useful review
 evidence. It is not statistical validation, because there are no labels.
 
-At the ML agreement threshold, this run has 1,478 `Heuristic + ML` events and 2,253 `ML only` events.
+At the ML agreement threshold, this run has 860 `Heuristic + ML` events and 2,871 `ML only` events.
 
 Method disagreement (`ml_score >= 0.975`):
 
-- Heuristic + ML: 1,478 events
-- Heuristic only: 612 events
-- ML only: 2,253 events
-- Neither strong: 144,896 events
+- Heuristic + ML: 860 events
+- Heuristic only: 1,230 events
+- ML only: 2,871 events
+- Neither strong: 144,278 events
 
 Example interpretation:
 
@@ -153,8 +154,8 @@ Example interpretation:
 
 Bot Hunter separates prediction from action by assigning operational tiers:
 
-- suppress: 1,966 events
-- quarantine: 1,765 events
+- suppress: 1,744 events
+- quarantine: 1,987 events
 - monitor: 145,508 events
 
 Recommended use:
@@ -171,7 +172,7 @@ business-control layer.
 
 ## 8. Probability Perspective
 
-The estimated probability that a flagged event is fraudulent is 73%. This is an operational estimate based on signal agreement, not a calibrated probability.
+The estimated probability that a flagged event is fraudulent is 66%. This is an operational estimate based on signal agreement, not a calibrated probability.
 
 The estimate is stronger when independent signals agree. For example, a click
 with repeated query/domain replay, same-second burst evidence, and an upper-tail
@@ -232,8 +233,8 @@ This run selected 3,731 of 149,239 events as likely bots (2.50%).
 
 Operational split:
 
-- suppress: 1,966
-- quarantine: 1,765
+- suppress: 1,744
+- quarantine: 1,987
 - monitor: 145,508
 
 Use the report and dashboard as review aids. They explain why traffic was

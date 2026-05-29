@@ -212,28 +212,6 @@ botnet command and control categories should usually matter more than a broad
 - Add an allowlist stage so legitimate domains can be protected from stale or
   overly broad reputation signals.
 
-### 10. Add Richer Categorical Encodings
-
-The current model uses aggregate count features for categorical fields such as
-region, browser, OS, and country. More direct encodings may help the anomaly
-model understand population shape.
-
-`kp` and `sld` should be included in this work. Although they are parsed as
-numbers today, their observed cardinality is low enough that they should be
-treated as categorical-style codes rather than continuous measurements. The
-recommended representation is bounded categorical indicators, with lower model
-weights than broad behavioural features: `kp` at `0.50` and `sld` at `0.25`.
-
-**Proposed work:**
-
-- Add deterministic bounded encodings for region, browser, OS, country, and
-  future traffic-source fields.
-- Replace raw `kp` and `sld` ML values with bounded categorical indicators.
-- Down-weight `kp` and `sld` to `0.50` and `0.25`, respectively, unless future
-  validation shows they deserve stronger influence.
-- Avoid high-cardinality encodings that make artefacts difficult to inspect.
-- Compare results before making the change production default.
-
 ### 11. Calibrate Thresholds Against Historical Batches
 
 Current thresholds are batch-relative. That is appropriate for a self-contained
@@ -298,6 +276,7 @@ pipeline looks the way it does.
 | Rules classifier | Added concentrated `ct` context as supporting evidence | Lets the rules layer use country-like concentration only when paired with repeated query behaviour and clustering. |
 | Decision logic | Added `suppress`, `quarantine`, and `monitor` tiers | Turns scores into practical actions without pretending unlabelled data has measured precision. |
 | Decision logic | Added method disagreement buckets | Makes rules/ML agreement and disagreement visible for review. |
+| Anomaly classifier | Added bounded categorical hash-bucket indicators | Gives region, browser, OS, `ct`, source-like fields, `kp`, and `sld` compact categorical shape signals without high-cardinality artefact growth. |
 
 ## Suggested Next Slice
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -12,6 +13,8 @@ EXPECTED_FIELD_COUNT = 6
 EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 EPOCH = datetime(1970, 1, 1)
 EXCLUDED_ML_FEATURE_NAMES: set[str] = set()
+CATEGORY_BUCKET_COUNT = 4
+SOURCE_PARAM_NAMES = ("st", "source", "src", "utm_source", "campaign_source")
 ML_FEATURE_WEIGHTS = {
     "log_domain_count": 0.5,
     "log_country_count": 0.5,
@@ -20,6 +23,15 @@ ML_FEATURE_WEIGHTS = {
     "log_ttc_seconds": 0.5,
     "is_sub_200ms_click": 0.5,
     "query_entropy": 0.5,
+}
+CATEGORICAL_ML_FEATURE_WEIGHTS = {
+    "region_cat": 0.5,
+    "browser_cat": 0.5,
+    "os_cat": 0.5,
+    "country_cat": 0.5,
+    "source_cat": 0.5,
+    "kp_cat": 0.5,
+    "sld_cat": 0.25,
 }
 
 
@@ -85,7 +97,9 @@ def parse_clicks(path: str | Path) -> list[ClickEvent]:
             event_id, event_time, region, browser, os_name, url = parts
             parsed_url = urlsplit(url)
             raw_params = parse_qs(parsed_url.query, keep_blank_values=True)
-            params = {key: values[-1] if values else "" for key, values in raw_params.items()}
+            params = {
+                key: values[-1] if values else "" for key, values in raw_params.items()
+            }
             events.append(
                 ClickEvent(
                     event_id=event_id,
@@ -128,8 +142,13 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
         "log_country_count",
         "log_same_second_count",
         "log_ttc_count",
-        "kp",
-        "sld",
+        *_categorical_feature_names("region_cat"),
+        *_categorical_feature_names("browser_cat"),
+        *_categorical_feature_names("os_cat"),
+        *_categorical_feature_names("country_cat"),
+        *_categorical_feature_names("source_cat"),
+        *_categorical_feature_names("kp_cat"),
+        *_categorical_feature_names("sld_cat"),
         "hour",
         "log_ttc_seconds",
         "is_sub_200ms_click",
@@ -139,8 +158,8 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
     ml_feature_weights = select_ml_feature_weights(names)
     burst_counts = _pseudo_session_burst_counts(events)
     for event in events:
-        kp = _parse_float_param(event.params.get("kp"), default=-9.0)
-        sld = _parse_float_param(event.params.get("sld"), default=0.0)
+        kp = _category_param(event.params.get("kp"))
+        sld = _category_param(event.params.get("sld"))
         click_delay_seconds = max(event.ttc, 0) / 1000.0
         event.features = [
             log1p(counters["domain"][event.domain]),
@@ -150,8 +169,13 @@ def build_features(events: list[ClickEvent]) -> tuple[list[str], dict[str, Count
             log1p(counters["country"][event.params.get("ct", "")]),
             log1p(counters["second"][event.event_time]),
             log1p(counters["ttc"][event.ttc]),
-            kp,
-            sld,
+            *_categorical_indicators("region", event.region),
+            *_categorical_indicators("browser", event.browser),
+            *_categorical_indicators("os", event.os),
+            *_categorical_indicators("country", event.params.get("ct", "")),
+            *_categorical_indicators("source", _source_category(event.params)),
+            *_categorical_indicators("kp", kp),
+            *_categorical_indicators("sld", sld),
             float(event.event_time.hour),
             log1p(click_delay_seconds),
             1.0 if 0 <= event.ttc < 200 else 0.0,
@@ -168,17 +192,71 @@ def select_ml_feature_names(feature_names: list[str]) -> list[str]:
 
 
 def select_ml_feature_weights(feature_names: list[str]) -> list[float]:
-    return [ML_FEATURE_WEIGHTS.get(name, 1.0) for name in select_ml_feature_names(feature_names)]
+    return [_ml_feature_weight(name) for name in select_ml_feature_names(feature_names)]
 
 
 def _select_ml_features(feature_names: list[str], values: list[float]) -> list[float]:
-    return [value for name, value in zip(feature_names, values) if name not in EXCLUDED_ML_FEATURE_NAMES]
+    return [
+        value
+        for name, value in zip(feature_names, values)
+        if name not in EXCLUDED_ML_FEATURE_NAMES
+    ]
 
 
-def _pseudo_session_burst_counts(events: list[ClickEvent], window_seconds: int = 10) -> dict[int, int]:
+def _ml_feature_weight(name: str) -> float:
+    if name in ML_FEATURE_WEIGHTS:
+        return ML_FEATURE_WEIGHTS[name]
+    for prefix, weight in CATEGORICAL_ML_FEATURE_WEIGHTS.items():
+        if name.startswith(f"{prefix}_bucket_"):
+            return weight
+    return 1.0
+
+
+def _categorical_feature_names(prefix: str) -> list[str]:
+    return [f"{prefix}_bucket_{idx}" for idx in range(CATEGORY_BUCKET_COUNT)]
+
+
+def _categorical_indicators(namespace: str, value: str) -> list[float]:
+    indicators = [0.0] * CATEGORY_BUCKET_COUNT
+    normalized = value.strip().lower()
+    if not normalized:
+        return indicators
+    bucket = _stable_bucket(namespace, normalized)
+    indicators[bucket] = 1.0
+    return indicators
+
+
+def _stable_bucket(namespace: str, value: str) -> int:
+    key = f"{namespace}\0{value}".encode("utf-8")
+    digest = hashlib.blake2b(key, digest_size=2).digest()
+    return int.from_bytes(digest, byteorder="big") % CATEGORY_BUCKET_COUNT
+
+
+def _source_category(params: dict[str, str]) -> str:
+    for param_name in SOURCE_PARAM_NAMES:
+        value = params.get(param_name, "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _category_param(value: str | None) -> str:
+    if value is None:
+        return ""
+    normalized = value.strip()
+    if normalized.lower() in {"nan", "inf", "+inf", "-inf", "infinity"}:
+        return ""
+    return normalized
+
+
+def _pseudo_session_burst_counts(
+    events: list[ClickEvent], window_seconds: int = 10
+) -> dict[int, int]:
     groups: dict[tuple[str, str, str, str, str], list[ClickEvent]] = defaultdict(list)
     for event in events:
-        groups[(event.region, event.browser, event.os, event.query, event.domain)].append(event)
+        groups[
+            (event.region, event.browser, event.os, event.query, event.domain)
+        ].append(event)
 
     counts: dict[int, int] = {}
     half_window = window_seconds / 2.0
@@ -190,7 +268,10 @@ def _pseudo_session_burst_counts(events: list[ClickEvent], window_seconds: int =
         for idx, timestamp in enumerate(timestamps):
             while timestamps[left] < timestamp - half_window:
                 left += 1
-            while right + 1 < len(timestamps) and timestamps[right + 1] <= timestamp + half_window:
+            while (
+                right + 1 < len(timestamps)
+                and timestamps[right + 1] <= timestamp + half_window
+            ):
                 right += 1
             counts[id(ordered[idx])] = right - left + 1
     return counts

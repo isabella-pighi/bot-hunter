@@ -25,18 +25,23 @@ def _markdown(summary: dict[str, object]) -> str:
     ml_feature_names = summary.get("ml_feature_names", summary.get("feature_names", []))
     ml_feature_count = len(ml_feature_names)
     ml_feature_weights = summary.get("ml_feature_weights", {})
-    reason_lines = "\n".join(f"- {reason}: {count:,} events" for reason, count in top_reasons)
+    reason_lines = "\n".join(
+        f"- {reason}: {count:,} events" for reason, count in top_reasons
+    )
     if not reason_lines:
         reason_lines = "- No dominant heuristic reason was found."
     tier_counts = summary.get("tier_counts", {})
     tier_lines = "\n".join(
-        f"- {tier}: {int(tier_counts.get(tier, 0)):,} events" for tier in ("suppress", "quarantine", "monitor")
+        f"- {tier}: {int(tier_counts.get(tier, 0)):,} events"
+        for tier in ("suppress", "quarantine", "monitor")
     )
     suppress_count = int(tier_counts.get("suppress", 0))
     quarantine_count = int(tier_counts.get("quarantine", 0))
     monitor_count = int(tier_counts.get("monitor", 0))
     thresholds = summary.get("tier_thresholds", {})
-    heuristic_agreement = float(thresholds.get("suppress_agreement_heuristic_score", 0.62))
+    heuristic_agreement = float(
+        thresholds.get("suppress_agreement_heuristic_score", 0.62)
+    )
     ml_agreement_score = float(thresholds.get("ml_agreement_score", 0.975))
     disagreement_rows = summary.get("method_disagreement", [])
     disagreement_lines = _disagreement_lines(disagreement_rows)
@@ -94,7 +99,7 @@ traffic. It becomes more concerning when it appears with a repeated clicked
 domain, dense same-second activity, reused time-to-click values, or a narrow
 region/browser/OS footprint.
 
-The new concentrated `ct` rule is deliberately cautious. It adds low-weight
+The concentrated `ct` rule is deliberately cautious. It adds low-weight
 support only when country-like concentration appears with repeated query
 behaviour and either a heavy device cluster or a same-second burst. Country-like
 concentration alone is not treated as bot evidence because legitimate campaigns
@@ -137,15 +142,16 @@ families are:
 - query, domain, and query/domain repetition counts
 - same-second and exact time-to-click reuse counts
 - timing magnitude after log transformation
-- low-cardinality `kp` and `sld` codes
+- fixed-size categorical hash-bucket indicators for region, browser, OS,
+  `ct`, source-like parameters, `kp`, and `sld`
 
 High-volume domain frequency and global country frequency are down-weighted to {domain_weight:.2f} and {country_weight:.2f}, respectively. {model_detail}
 
-`kp` and `sld` are treated as categorical-style assumptions rather than true
-continuous measurements because their observed cardinality is very low. The
-next planned feature revision is to encode them as bounded categorical
-indicators and reduce their anomaly-model influence to `0.50` for `kp` and
-`0.25` for `sld`.
+Categorical indicators use a deterministic four-bucket hash per field. That
+keeps the feature matrix bounded even if new categories appear, while still
+letting the anomaly model see category-level population shape. `kp` and `sld`
+are treated as categorical-style codes rather than continuous measurements;
+their bucket indicators are weighted at `0.50` and `0.25`, respectively.
 
 ## 5. Thresholds And Decision Logic
 
@@ -315,36 +321,54 @@ def _disagreement_count(rows: object, label: str) -> int:
 
 
 def _html(markdown: str) -> str:
-    body = []
+    body: list[str] = []
+    paragraph_lines: list[str] = []
     in_list = False
     in_code = False
-    for line in markdown.splitlines():
+
+    def flush_paragraph() -> None:
+        if paragraph_lines:
+            body.append(f"<p>{html.escape(' '.join(paragraph_lines))}</p>")
+            paragraph_lines.clear()
+
+    def close_list() -> None:
+        nonlocal in_list
+        if in_list:
+            body.append("</ul>")
+            in_list = False
+
+    for line in _merge_wrapped_list_items(markdown.splitlines()):
         if line.startswith("```"):
+            flush_paragraph()
+            close_list()
             body.append("</pre>" if in_code else "<pre>")
             in_code = not in_code
             continue
         if in_code:
-            body.append(html.escape(line))
+            body.append(f"{html.escape(line)}\n")
             continue
         if line.startswith("# "):
+            flush_paragraph()
+            close_list()
             body.append(f"<h1>{html.escape(line[2:])}</h1>")
         elif line.startswith("## "):
-            if in_list:
-                body.append("</ul>")
-                in_list = False
+            flush_paragraph()
+            close_list()
             body.append(f"<h2>{html.escape(line[3:])}</h2>")
         elif line.startswith("- "):
+            flush_paragraph()
             if not in_list:
                 body.append("<ul>")
                 in_list = True
             body.append(f"<li>{html.escape(line[2:])}</li>")
         elif line.strip():
-            if in_list:
-                body.append("</ul>")
-                in_list = False
-            body.append(f"<p>{html.escape(line)}</p>")
-    if in_list:
-        body.append("</ul>")
+            close_list()
+            paragraph_lines.append(line.strip())
+        else:
+            flush_paragraph()
+            close_list()
+    flush_paragraph()
+    close_list()
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -362,6 +386,23 @@ def _html(markdown: str) -> str:
 </html>"""
 
 
+def _merge_wrapped_list_items(lines: list[str]) -> list[str]:
+    merged: list[str] = []
+    in_code = False
+    for line in lines:
+        if line.startswith("```"):
+            in_code = not in_code
+            merged.append(line)
+            continue
+        if not in_code and line.startswith("  ") and merged:
+            previous = merged[-1]
+            if previous.startswith("- "):
+                merged[-1] = f"{previous} {line.strip()}"
+                continue
+        merged.append(line)
+    return merged
+
+
 def _write_simple_pdf(path: Path, text: str) -> None:
     lines: list[str] = []
     for raw in text.replace("#", "").replace("`", "").splitlines():
@@ -371,7 +412,12 @@ def _write_simple_pdf(path: Path, text: str) -> None:
             lines.extend(wrap(raw, width=88) or [""])
 
     pages = [lines[i : i + 42] for i in range(0, len(lines), 42)] or [[]]
-    objects: list[bytes] = [b"", b"<< /Type /Catalog /Pages 2 0 R >>", b"", b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>"]
+    objects: list[bytes] = [
+        b"",
+        b"<< /Type /Catalog /Pages 2 0 R >>",
+        b"",
+        b"<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+    ]
     page_ids: list[int] = []
     for page_lines in pages:
         content = ["BT", "/F1 10 Tf", "50 780 Td", "14 TL"]
@@ -382,7 +428,13 @@ def _write_simple_pdf(path: Path, text: str) -> None:
         content.append("ET")
         stream = "\n".join(content).encode("latin-1", errors="replace")
         content_id = len(objects)
-        objects.append(b"<< /Length " + str(len(stream)).encode() + b" >>\nstream\n" + stream + b"\nendstream")
+        objects.append(
+            b"<< /Length "
+            + str(len(stream)).encode()
+            + b" >>\nstream\n"
+            + stream
+            + b"\nendstream"
+        )
         page_id = len(objects)
         page_ids.append(page_id)
         objects.append(
@@ -403,5 +455,7 @@ def _write_simple_pdf(path: Path, text: str) -> None:
     pdf.extend(f"xref\n0 {len(objects)}\n0000000000 65535 f\n".encode())
     for offset in offsets[1:]:
         pdf.extend(f"{offset:010d} 00000 n\n".encode())
-    pdf.extend(f"trailer << /Size {len(objects)} /Root 1 0 R >>\nstartxref\n{xref_at}\n%%EOF\n".encode())
+    pdf.extend(
+        f"trailer << /Size {len(objects)} /Root 1 0 R >>\nstartxref\n{xref_at}\n%%EOF\n".encode()
+    )
     path.write_bytes(bytes(pdf))
