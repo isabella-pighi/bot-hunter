@@ -137,8 +137,15 @@ families are:
 - query, domain, and query/domain repetition counts
 - same-second and exact time-to-click reuse counts
 - timing magnitude after log transformation
+- low-cardinality `kp` and `sld` codes
 
 High-volume domain frequency and global country frequency are down-weighted to {domain_weight:.2f} and {country_weight:.2f}, respectively. {model_detail}
+
+`kp` and `sld` are treated as categorical-style assumptions rather than true
+continuous measurements because their observed cardinality is very low. The
+next planned feature revision is to encode them as bounded categorical
+indicators and reduce their anomaly-model influence to `0.50` for `kp` and
+`0.25` for `sld`.
 
 ## 5. Thresholds And Decision Logic
 

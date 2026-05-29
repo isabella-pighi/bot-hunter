@@ -203,7 +203,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
 endobj
 8 0 obj
-<< /Length 1871 >>
+<< /Length 2005 >>
 stream
 BT
 /F1 10 Tf
@@ -237,6 +237,8 @@ T*
 T*
 (- timing magnitude after log transformation) Tj
 T*
+(- low-cardinality kp and sld codes) Tj
+T*
 () Tj
 T*
 (High-volume domain frequency and global country frequency are down-weighted to 0.50 and) Tj
@@ -246,6 +248,18 @@ T*
 (anomaly scores. EIF is the only production anomaly model; alternate ML backends and) Tj
 T*
 (supervised pilots have been removed.) Tj
+T*
+() Tj
+T*
+(kp and sld are treated as categorical-style assumptions rather than true) Tj
+T*
+(continuous measurements because their observed cardinality is very low. The) Tj
+T*
+(next planned feature revision is to encode them as bounded categorical) Tj
+T*
+(indicators and reduce their anomaly-model influence to 0.50 for kp and) Tj
+T*
+(0.25 for sld.) Tj
 T*
 () Tj
 T*
@@ -279,6 +293,19 @@ T*
 T*
 (example, a strongly repeated query/domain pattern with mechanical timing should) Tj
 T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 1637 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (not be missed only because the anomaly ranking moved after a feature change.) Tj
 T*
 () Tj
@@ -293,19 +320,6 @@ T*
 T*
 (- operational confidence estimate: 73%) Tj
 T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 1747 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 ( 6. Method Agreement And Disagreement) Tj
@@ -376,6 +390,19 @@ T*
 T*
 (- suppress: high-confidence traffic that can be excluded from billing or) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 2198 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (  downstream metrics after policy approval.) Tj
 T*
 (- quarantine: suspicious traffic that should be reviewed, sampled, or delayed) Tj
@@ -390,19 +417,6 @@ T*
 T*
 (The binary is_bot field is the compatibility output. The tier is the safer) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 2274 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (business-control layer.) Tj
 T*
 () Tj
@@ -473,6 +487,19 @@ T*
 T*
 (  calibration cannot be reported.) Tj
 T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 1675 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- Legitimate campaigns can create high repetition, dense clusters, or regional) Tj
 T*
 (  concentration.) Tj
@@ -487,19 +514,6 @@ T*
 T*
 (- The anomaly score is relative to the current batch and should be monitored) Tj
 T*
-ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
-endobj
-14 0 obj
-<< /Length 1226 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (  for drift across future runs.) Tj
 T*
 () Tj
@@ -579,14 +593,14 @@ xref
 0000002196 00000 n
 0000004337 00000 n
 0000004463 00000 n
-0000006386 00000 n
-0000006512 00000 n
-0000008312 00000 n
-0000008440 00000 n
-0000010767 00000 n
-0000010895 00000 n
-0000012174 00000 n
+0000006520 00000 n
+0000006646 00000 n
+0000008336 00000 n
+0000008464 00000 n
+0000010715 00000 n
+0000010843 00000 n
+0000012571 00000 n
 trailer << /Size 16 /Root 1 0 R >>
 startxref
-12302
+12699
 %%EOF

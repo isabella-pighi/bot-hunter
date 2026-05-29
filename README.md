@@ -53,8 +53,8 @@ fields such as:
 | `ttc` | time to click |
 | `ct` | country-like location signal |
 | `kl` | language or locale-like signal |
-| `kp` | numeric parameter used as a model feature |
-| `sld` | numeric parameter used as a model feature |
+| `kp` | low-cardinality categorical-style parameter |
+| `sld` | low-cardinality categorical-style parameter |
 
 Example, wrapped across fields for readability:
 
@@ -245,8 +245,8 @@ The current production feature set includes:
 | `log_country_count` | `ct` country frequency |
 | `log_same_second_count` | Events with the same timestamp |
 | `log_ttc_count` | Exact time-to-click reuse |
-| `kp` | Numeric `kp` parameter |
-| `sld` | Numeric `sld` parameter |
+| `kp` | Low-cardinality categorical-style `kp` parameter |
+| `sld` | Low-cardinality categorical-style `sld` parameter |
 | `hour` | Event hour |
 | `log_ttc_seconds` | Log-scaled time-to-click |
 | `is_sub_200ms_click` | Mechanical sub-200 ms click indicator |
@@ -257,6 +257,12 @@ Several features use logarithmic transforms because click-log data are usually
 heavy-tailed. A small number of queries, domains, or device clusters may appear
 many times. Log transforms reduce the influence of extreme values so the model
 does not treat scale alone as the whole story.
+
+`kp` and `sld` currently appear as compact numeric codes, but the project treats
+them as categorical-style indicators because their observed cardinality is very
+low. The intended next feature change is to represent them as bounded
+categorical indicators rather than continuous values, and to down-weight them in
+the anomaly model: `kp` to `0.50` and `sld` to `0.25`.
 
 ### Probability Perspective
 

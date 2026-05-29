@@ -218,10 +218,19 @@ The current model uses aggregate count features for categorical fields such as
 region, browser, OS, and country. More direct encodings may help the anomaly
 model understand population shape.
 
+`kp` and `sld` should be included in this work. Although they are parsed as
+numbers today, their observed cardinality is low enough that they should be
+treated as categorical-style codes rather than continuous measurements. The
+recommended representation is bounded categorical indicators, with lower model
+weights than broad behavioural features: `kp` at `0.50` and `sld` at `0.25`.
+
 **Proposed work:**
 
 - Add deterministic bounded encodings for region, browser, OS, country, and
   future traffic-source fields.
+- Replace raw `kp` and `sld` ML values with bounded categorical indicators.
+- Down-weight `kp` and `sld` to `0.50` and `0.25`, respectively, unless future
+  validation shows they deserve stronger influence.
 - Avoid high-cardinality encodings that make artefacts difficult to inspect.
 - Compare results before making the change production default.
 
