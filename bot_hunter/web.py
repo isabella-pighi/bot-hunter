@@ -438,7 +438,11 @@ def _dashboard_html() -> str:
         <div class="active-filters" id="activeFilters"></div>
       </section>
     <section class="page active" id="page-overview">
-      <div class="story">
+      <div class="panel">
+        <h2>Run at a glance</h2>
+        <p class="label">Full-run aggregate. Explorer filters do not change these KPI cards.</p>
+        <div class="metric-grid" id="metrics"></div>
+      </div>
       <div class="panel">
         <h2>What this run says</h2>
         <p id="storyLead" class="loading">Loading current run...</p>
@@ -465,30 +469,6 @@ def _dashboard_html() -> str:
           automatically suppressed.
         </div>
       </div>
-      <div class="panel">
-        <h2>Run at a glance</h2>
-        <p class="label">Full-run aggregate. Explorer filters do not change these KPI cards.</p>
-        <div class="metric-grid" id="metrics"></div>
-      </div>
-      </div>
-      <div class="chart-grid" aria-label="Current result proportions">
-        <div class="card">
-          <h2>Operational tiers</h2>
-          <p class="label">Full-run aggregate. Explorer filters do not change this chart.</p>
-          <div class="chart-body" id="tierChart"></div>
-        </div>
-        <div class="card">
-          <h2>Method buckets</h2>
-          <p class="label">Full-run aggregate. Explorer filters do not change this chart.</p>
-          <div id="methodChart"></div>
-        </div>
-        <div class="card">
-          <h2>Anomaly classes</h2>
-          <p class="label">Full-run aggregate. Explorer filters do not change this chart.</p>
-          <div class="chart-body" id="classChart"></div>
-        </div>
-      </div>
-      <p class="label">Overview charts use full-run aggregates from `summary.json`; explorer filters do not change them.</p>
       <section class="panel">
         <h2>Recommended actions</h2>
         <div class="action-grid" id="actionGuidance"></div>
@@ -700,11 +680,8 @@ def _dashboard_html() -> str:
         .join('');
     }
     function renderCharts(s) {
-      renderDonut('tierChart', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', 'tier', 'full-run aggregate; not affected by explorer filters');
-      renderMethodChart(s.method_disagreement || [], 'methodChart', 'full-run aggregate, not affected by explorer filters');
       const classes = ((s.anomaly_classes || {}).classes || [])
         .map(item => [item.label, item.count]);
-      renderDonut('classChart', 'Anomaly classes', classes, 'selected', 'anomalyClass', 'full-run aggregate; not affected by explorer filters');
       renderDonut('tierChartBreakdown', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', 'tier', 'full-run aggregate; not affected by explorer filters');
       renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown', 'full-run aggregate, not affected by explorer filters');
       renderDonut('classChartBreakdown', 'Anomaly classes', classes, 'selected', 'anomalyClass', 'full-run aggregate; not affected by explorer filters');

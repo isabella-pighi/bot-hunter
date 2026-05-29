@@ -16,11 +16,28 @@ SIDEBAR_LABELS = [
     "Help",
 ]
 
+OVERVIEW_HEADINGS = [
+    "<h2>Run at a glance</h2>",
+    "<h2>What this run says</h2>",
+    "<h2>Recommended actions</h2>",
+]
+
 
 def _sidebar_nav_markup(dashboard: str) -> str:
     nav_start = dashboard.index('<nav class="sidebar-nav">')
     nav_end = dashboard.index("</nav>", nav_start)
     return dashboard[nav_start:nav_end]
+
+
+def _overview_markup(dashboard: str) -> str:
+    overview_start = dashboard.index('<section class="page active" id="page-overview">')
+    overview_end = dashboard.index('<section class="page" id="page-classes">')
+    return dashboard[overview_start:overview_end]
+
+
+def _labels_are_ordered(markup: str, labels: list[str]) -> bool:
+    positions = [markup.index(label) for label in labels]
+    return positions == sorted(positions)
 
 
 def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
@@ -91,15 +108,20 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "What was analysed" in dashboard
         assert "How to act" in dashboard
         assert "Run at a glance" in dashboard
+        overview_markup = _overview_markup(dashboard)
+        assert _labels_are_ordered(overview_markup, OVERVIEW_HEADINGS)
+        assert 'aria-label="Current result proportions"' not in overview_markup
+        assert 'id="tierChart"' not in overview_markup
+        assert 'id="methodChart"' not in overview_markup
+        assert 'id="classChart"' not in overview_markup
         assert "Traffic Explorer" in dashboard
         assert "Query Terms" in dashboard
         assert "Method/Tier Breakdown" in dashboard
         assert "Help" in dashboard
         nav_markup = _sidebar_nav_markup(dashboard)
-        nav_positions = [
-            nav_markup.index(f">{label}</button>") for label in SIDEBAR_LABELS
-        ]
-        assert nav_positions == sorted(nav_positions)
+        assert _labels_are_ordered(
+            nav_markup, [f">{label}</button>" for label in SIDEBAR_LABELS]
+        )
         assert 'data-page="classes"' not in nav_markup
         assert (
             '<button type="button" class="nav" data-page="overview" '
@@ -165,9 +187,12 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Adaptive rule thresholds" in dashboard
         assert 'id="ruleStrengths"' in dashboard
         assert 'id="heuristicThresholds"' in dashboard
-        assert 'id="tierChart"' in dashboard
-        assert 'id="methodChart"' in dashboard
-        assert 'id="classChart"' in dashboard
+        assert 'id="tierChart"' not in dashboard
+        assert 'id="methodChart"' not in dashboard
+        assert 'id="classChart"' not in dashboard
+        assert 'id="tierChartBreakdown"' in dashboard
+        assert 'id="methodChartBreakdown"' in dashboard
+        assert 'id="classChartBreakdown"' in dashboard
         assert 'id="classCards"' in dashboard
         assert 'id="filteringOptions"' in dashboard
         assert 'id="definitionButtons"' in dashboard
@@ -222,7 +247,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
             in dashboard
         )
         assert "sample filters do not change them" not in dashboard
-        assert "explorer filters do not change them" in dashboard
+        assert "Overview charts use full-run aggregates" not in dashboard
         assert "Filtered anomaly domains" in dashboard
         assert "Rows below come from `artifacts/selected_events.json`" in dashboard
         assert "full selected detected-anomaly set" in dashboard
@@ -270,7 +295,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "method_disagreement || []" in dashboard
         assert (
             "renderMethodChart(s.method_disagreement || [], 'methodChart', "
-            "'full-run aggregate, not affected by explorer filters')" in dashboard
+            not in dashboard
         )
         assert (
             "renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown', "
@@ -296,15 +321,8 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Method buckets bar chart for review-relevant events" in dashboard
         assert "label !== 'Neither strong'" in dashboard
         assert "excluded from this review-bucket chart" in dashboard
-        assert (
-            "renderDonut('tierChart', 'Operational tiers', "
-            "Object.entries(s.tier_counts || {})" in dashboard
-        )
-        assert (
-            "renderDonut('classChart', 'Anomaly classes', classes, 'selected', "
-            "'anomalyClass', 'full-run aggregate; not affected by explorer filters')"
-            in dashboard
-        )
+        assert "renderDonut('tierChart', 'Operational tiers', " not in dashboard
+        assert "renderDonut('classChart', 'Anomaly classes', " not in dashboard
         assert "(s.anomaly_classes || {}).classes || []" in dashboard
         assert "0.90 ML agreement" not in dashboard
 
