@@ -1032,7 +1032,7 @@ def _dashboard_html() -> str:
       const csv = [header.join(',')].concat(rows.map(row => header.map(key => {
         const value = key === 'export_scope' ? exportScope : (key === 'method_bucket' ? methodBucket(row) : row[key]);
         return `"${String(value ?? '').replace(/"/g, '""')}"`;
-      }).join(','))).join('\n');
+      }).join(','))).join('\\n');
       const blob = new Blob([csv], {type: 'text/csv'});
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');

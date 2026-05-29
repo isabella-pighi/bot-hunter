@@ -138,6 +138,8 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "clearFilters()" in dashboard
         assert "exportSelection()" in dashboard
         assert "export_scope" in dashboard
+        assert "))).join('\\n');" in dashboard
+        assert "))).join('\n');" not in dashboard
         assert "Filtered top-250 highest-risk suppress sample" in dashboard
         assert "full-run aggregate; not affected by explorer filters" in dashboard
         assert (
