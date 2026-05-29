@@ -11,6 +11,7 @@ build-backend = "setuptools.build_meta"
 [dependency-groups]
 dev = [
     "black>=26.5.1",
+    "playwright>=1.60.0",
     "pylint>=4.0.5",
     "pytest>=8",
 ]
