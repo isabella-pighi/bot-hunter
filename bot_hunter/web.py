@@ -318,6 +318,7 @@ def _dashboard_html() -> str:
     .chart-note { color:var(--muted); font-size:12px; line-height:1.4; margin:2px 0 0; }
     .class-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
     .class-card { display:grid; gap:8px; }
+    .class-card.selected { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-weak); }
     .class-meta { display:flex; gap:8px; flex-wrap:wrap; color:var(--muted); font-size:12px; }
     .pill { display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:999px; padding:3px 8px; background:#f9fbfb; white-space:nowrap; }
     .example { border-top:1px solid var(--line); padding-top:8px; color:var(--muted); font-size:13px; }
@@ -337,9 +338,17 @@ def _dashboard_html() -> str:
     .modal-backdrop.open { display:flex; }
     .modal { background:#fff; color:var(--ink); max-width:560px; width:min(560px,100%); border-radius:8px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
     .modal-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
+    .global-filters { position:sticky; top:122px; z-index:8; }
+    .filter-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+    .filter-grid select[multiple] { min-height:76px; width:100%; }
+    .sample-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:12px; }
+    .clickable { cursor:pointer; }
+    .clickable:focus { outline:3px solid var(--accent-weak); outline-offset:2px; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     @media (max-width: 1000px) {
       header, .story, .chart-grid, .technical-grid, .split { grid-template-columns:1fr; }
       .metric-grid, .three, .action-grid, .filter-grid, .term-grid, .help-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .sample-grid { grid-template-columns:1fr; }
       .class-grid { grid-template-columns:1fr; }
     }
     @media (max-width: 700px) {
@@ -388,6 +397,20 @@ def _dashboard_html() -> str:
     </div>
   </header>
   <main>
+    <section class="panel global-filters" aria-labelledby="filterTitle">
+      <h2 id="filterTitle">Explore detected anomaly sample</h2>
+      <p class="label">These controls update sample-backed cards, charts,
+      query views, and event rows. Full-run aggregate charts remain labelled
+      when they cannot be filtered with the available row data.</p>
+      <div class="filter-grid" id="filters"></div>
+      <div class="filter-actions">
+        <button type="button" onclick="clearFilters()">Clear filters</button>
+        <button type="button" onclick="showPage('explorer')">View Underlying Data</button>
+        <button type="button" onclick="exportSelection()">Export Selection CSV</button>
+      </div>
+      <div class="active-filters" id="activeFilters"></div>
+      <div class="sample-grid" id="sampleKpis"></div>
+    </section>
     <section class="page active" id="page-overview">
       <div class="story">
       <div class="panel">
@@ -418,6 +441,7 @@ def _dashboard_html() -> str:
       </div>
       <div class="panel">
         <h2>Run at a glance</h2>
+        <p class="label">Full-run aggregate. Explorer filters do not change these KPI cards.</p>
         <div class="metric-grid" id="metrics"></div>
       </div>
       </div>
@@ -426,6 +450,7 @@ def _dashboard_html() -> str:
         <h2>Operational tiers</h2>
         <div class="chart-body" id="tierChart"></div>
       </div>
+      <p class="label">Overview charts use full-run aggregates from `summary.json`; sample filters do not change them.</p>
       <div class="card">
         <h2>Method buckets</h2>
         <div id="methodChart"></div>
@@ -444,6 +469,7 @@ def _dashboard_html() -> str:
       <section class="panel">
       <h2>Anomaly classes and handling</h2>
       <div class="label" id="classScope"></div>
+      <div class="notice" id="classSelectionNote" hidden></div>
       <div class="class-grid" id="classCards"></div>
       </section>
     </section>
@@ -455,8 +481,11 @@ def _dashboard_html() -> str:
       Full-population event rows, quarantine/monitor rows, ML-only event rows,
       anomaly class per row, and raw `ct`/country values are not available
       through the current dashboard API.</p>
-      <div class="filter-grid" id="filters"></div>
-      <div class="active-filters" id="activeFilters"></div>
+      <div class="chart-grid">
+        <div class="card"><h3>Filtered sample tiers</h3><div class="chart-body" id="sampleTierChart"></div></div>
+        <div class="card"><h3>Filtered sample method buckets</h3><div id="sampleMethodChart"></div></div>
+        <div class="card"><h3>Filtered sample domains</h3><div id="sampleDomainChart"></div></div>
+      </div>
       <div class="table-wrap"><table>
         <thead><tr><th>Event</th><th>Method</th><th>Device cluster</th><th>Domain</th><th>Query</th><th>Scores</th><th>Tier</th></tr></thead>
         <tbody id="filteredEvents"></tbody>
@@ -480,6 +509,7 @@ def _dashboard_html() -> str:
     <section class="page" id="page-breakdown">
       <section class="panel">
       <h2>Method/Tier Breakdown</h2>
+      <p class="label">These are full-run aggregate charts. Use the Traffic Explorer for filtered sample charts.</p>
       <div class="chart-grid" aria-label="Breakdown charts">
         <div class="card"><h3>Operational tiers</h3><div class="chart-body" id="tierChartBreakdown"></div></div>
         <div class="card"><h3>Review method buckets</h3><div id="methodChartBreakdown"></div></div>
@@ -557,12 +587,18 @@ def _dashboard_html() -> str:
         "'": '&#39;'
       })[ch]);
     }
+    function handlerAttr(code) {
+      return escapeHtml(code);
+    }
+    function jsString(value) {
+      return JSON.stringify(String(value ?? ''));
+    }
     const colours = ['#0f6674', '#327a52', '#a35b00', '#4361a6',
       '#7157a8', '#aa4238', '#61717a', '#8a6f3f'];
     let sampleEvents = [];
     let summaryData = {};
     let lastHelpButton = null;
-    const filters = { anomalyOnly: true, method: '', region: '', device: '', domain: '', query: '' };
+    const filters = { method: [], tier: [], anomalyClass: [], region: [], device: [], domain: [], query: '' };
     const definitions = {
       'is_bot': ['The required yes/no output. A value of 1 means Bot Hunter selected the event for bot review.', 'Example: an event marked is_bot = 1 appears in the detected anomaly sample.'],
       'operational tier': ['The suggested business handling after prediction.', 'Example: suppress is stronger than quarantine, but still needs policy approval.'],
@@ -589,8 +625,7 @@ def _dashboard_html() -> str:
       renderAnomalyClasses(summary);
       renderActions(summary);
       renderFilters(sampleEvents, summary);
-      renderExplorer();
-      renderQueries(sampleEvents, summary);
+      updateFilteredViews();
       renderEvents(sampleEvents);
     }
     function pct(x) { return (100 * Number(x || 0)).toFixed(2) + '%'; }
@@ -632,24 +667,24 @@ def _dashboard_html() -> str:
     }
     function renderDefinitions() {
       document.getElementById('definitionButtons').innerHTML = Object.keys(definitions)
-        .map(term => `<button type="button" class="help-link" onclick="openDefinition('${escapeHtml(term)}')">${escapeHtml(term)}</button>`)
+        .map(term => `<button type="button" class="help-link" onclick="${handlerAttr(`openDefinition(${jsString(term)})`)}">${escapeHtml(term)}</button>`)
         .join('');
     }
     function renderCharts(s) {
-      renderDonut('tierChart', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic');
-      renderMethodChart(s.method_disagreement || []);
+      renderDonut('tierChart', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', 'tier', 'full-run aggregate; not affected by explorer filters');
+      renderMethodChart(s.method_disagreement || [], 'methodChart', 'full-run aggregate, not affected by explorer filters');
       const classes = ((s.anomaly_classes || {}).classes || [])
         .map(item => [item.label, item.count]);
-      renderDonut('classChart', 'Anomaly classes', classes, 'selected');
-      renderDonut('tierChartBreakdown', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic');
-      renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown');
-      renderDonut('classChartBreakdown', 'Anomaly classes', classes, 'selected');
+      renderDonut('classChart', 'Anomaly classes', classes, 'selected', 'anomalyClass', 'full-run aggregate; not affected by explorer filters');
+      renderDonut('tierChartBreakdown', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', 'tier', 'full-run aggregate; not affected by explorer filters');
+      renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown', 'full-run aggregate, not affected by explorer filters');
+      renderDonut('classChartBreakdown', 'Anomaly classes', classes, 'selected', 'anomalyClass', 'full-run aggregate; not affected by explorer filters');
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);
       document.getElementById(id).innerHTML = rows.map(r => `<div class="label">${escapeHtml(r[0])} (${r[1].toLocaleString()})</div><div class="bar"><span style="width:${100*r[1]/max}%"></span></div>`).join('');
     }
-    function renderMethodChart(rows, targetId = 'methodChart') {
+    function renderMethodChart(rows, targetId = 'methodChart', scope = 'current scope') {
       const reviewRows = rows.filter(([label]) => label !== 'Neither strong');
       const neither = rows.find(([label]) => label === 'Neither strong');
       const reviewTotal = reviewRows.reduce((sum, row) => sum + Number(row[1] || 0), 0);
@@ -657,13 +692,13 @@ def _dashboard_html() -> str:
       const bars = reviewRows.map(([label, raw], index) => {
         const value = Number(raw || 0);
         const share = reviewTotal ? `${((value / reviewTotal) * 100).toFixed(1)}%` : '0.0%';
-        return `<div class="method-row">
+        return `<button type="button" class="method-row clickable" onclick="${handlerAttr(`toggleFilterValue('method', ${jsString(label)})`)}" title="${escapeHtml(label)}: ${count(value)} events (${share}); ${escapeHtml(scope)}">
           <span>${escapeHtml(label)}</span>
           <span class="method-track" aria-hidden="true">
             <span class="method-fill" style="width:${(100 * value) / max}%; background:${colours[index % colours.length]}"></span>
           </span>
           <strong>${count(value)} (${share})</strong>
-        </div>`;
+        </button>`;
       }).join('');
       const neitherNote = neither
         ? `${count(neither[1])} events were not strongly indicated by either method and are excluded from this review-bucket chart.`
@@ -675,7 +710,7 @@ def _dashboard_html() -> str:
         </div>
         <p class="chart-note">${escapeHtml(neitherNote)}</p>`;
     }
-    function renderDonut(id, label, rows, noun) {
+    function renderDonut(id, label, rows, noun, filterName = '', scope = 'current scope') {
       const total = rows.reduce((sum, row) => sum + Number(row[1] || 0), 0);
       const radius = 46;
       const circumference = 2 * Math.PI * radius;
@@ -685,22 +720,24 @@ def _dashboard_html() -> str:
         const length = total ? (value / total) * circumference : 0;
         const gap = total && length > 3 ? 1.2 : 0;
         const dash = `${Math.max(length - gap, 0)} ${circumference}`;
-        const element = `<circle r="${radius}" cx="60" cy="60"
+        const click = filterName ? `onclick="${handlerAttr(`toggleFilterValue(${jsString(filterName)}, ${jsString(label)})`)}" class="clickable"` : '';
+        const element = `<circle r="${radius}" cx="60" cy="60" ${click}
           fill="transparent" stroke="${colours[index % colours.length]}"
           stroke-width="22" stroke-dasharray="${dash}"
           stroke-dashoffset="${-offset}" transform="rotate(-90 60 60)">
-          <title>${escapeHtml(label)}: ${count(value)} ${noun}</title></circle>`;
+          <title>${escapeHtml(label)}: ${count(value)} ${noun}; ${escapeHtml(scope)}</title></circle>`;
         offset += length;
         return element;
       }).join('');
       const legend = rows.map(([label, raw], index) => {
         const value = Number(raw || 0);
         const share = total ? `${((value / total) * 100).toFixed(1)}%` : '0.0%';
-        return `<div class="legend-row">
+        const click = filterName ? ` onclick="${handlerAttr(`toggleFilterValue(${jsString(filterName)}, ${jsString(label)})`)}"` : '';
+        return `<button type="button" class="legend-row clickable"${click}>
           <span class="swatch" style="background:${colours[index % colours.length]}"></span>
           <span>${escapeHtml(label)}</span>
           <strong>${count(value)} (${share})</strong>
-        </div>`;
+        </button>`;
       }).join('');
       document.getElementById(id).innerHTML = `
         <svg class="donut" viewBox="0 0 120 120" role="img"
@@ -713,6 +750,7 @@ def _dashboard_html() -> str:
           <text x="60" y="73" text-anchor="middle" font-size="10"
             fill="#5c6870">${escapeHtml(noun)}</text>
         </svg>
+        <p class="sr-only">Use the legend buttons below to apply filters with a keyboard.</p>
         <div class="legend">${legend}</div>`;
     }
     function renderAnomalyClasses(s) {
@@ -721,25 +759,40 @@ def _dashboard_html() -> str:
       const selected = Number(anomaly.selected_event_count || s.bot_events || 0);
       document.getElementById('classScope').textContent =
         anomaly.scope || definitions['anomaly class'][0];
+      renderClassSelectionNote();
       document.getElementById('classCards').innerHTML = classes.map(item => {
         const share = selected ? `${((Number(item.count || 0) / selected) * 100).toFixed(1)}%` : '0.0%';
         const example = (item.examples || [])[0];
+        const isSelected = filters.anomalyClass.includes(item.label);
+        const cardClass = isSelected ? 'card class-card clickable selected' : 'card class-card clickable';
         const exampleHtml = example ? `<div class="example">
           Example ${escapeHtml(example.event_id)}: ${escapeHtml(example.domain)}
           / ${escapeHtml(example.query)}; tier ${escapeHtml(example.operational_tier)};
           method ${escapeHtml(example.method_bucket)}; combined ${score(example.combined_score)}.
         </div>` : '<div class="example">No example supplied for this class.</div>';
-        return `<article class="card class-card">
+        return `<article class="${cardClass}" role="button" aria-pressed="${isSelected}" tabindex="0" onclick="${handlerAttr(`toggleFilterValue('anomalyClass', ${jsString(item.label)})`)}" onkeydown="${handlerAttr(`if(event.key==='Enter'||event.key===' ') { event.preventDefault(); toggleFilterValue('anomalyClass', ${jsString(item.label)}); }`)}">
           <h3>${escapeHtml(item.label)}</h3>
           <div class="class-meta">
             <span class="pill">${count(item.count)} selected</span>
             <span class="pill">${share} of selected traffic</span>
+            ${isSelected ? '<span class="pill">Viewing</span>' : ''}
           </div>
           <p>${escapeHtml(item.description)}</p>
           <p><strong>Suggested handling:</strong> ${escapeHtml(item.review_action)}</p>
           ${exampleHtml}
         </article>`;
       }).join('');
+    }
+    function renderClassSelectionNote() {
+      const note = document.getElementById('classSelectionNote');
+      if (!note) return;
+      if (!filters.anomalyClass.length) {
+        note.hidden = true;
+        note.textContent = '';
+        return;
+      }
+      note.hidden = false;
+      note.textContent = `Viewing: ${filters.anomalyClass.join(', ')} (row-level filtering is not available for this class).`;
     }
     function renderActions(s) {
       const tiers = s.operational_tiers || {};
@@ -816,51 +869,78 @@ def _dashboard_html() -> str:
     }
     function renderFilters(events) {
       const methods = uniqueRows(events, methodBucket);
+      const tiers = uniqueRows(events, e => e.operational_tier);
       const regions = uniqueRows(events, e => e.region);
       const devices = uniqueRows(events, deviceLabel);
       const domains = uniqueRows(events, e => e.domain);
       document.getElementById('filters').innerHTML = `
-        ${selectHtml('method', 'Method bucket', methods)}
+        ${selectHtml('method', 'Method bucket (sample)', methods)}
+        ${selectHtml('tier', 'Operational tier (sample)', tiers)}
         <label>Country / ct<select disabled><option>Not available in sample_events.json</option></select><span class="label">Raw country/ct is not available in the row sample.</span></label>
-        ${selectHtml('region', 'Region', regions)}
-        ${selectHtml('device', 'Device cluster (region/browser/OS)', devices)}
-        ${selectHtml('domain', 'Domain', domains)}
+        ${selectHtml('region', 'Region (sample)', regions)}
+        ${selectHtml('device', 'Device cluster (region/browser/OS sample)', devices)}
+        ${selectHtml('domain', 'Domain (sample)', domains)}
         <label>Query text<input id="filter-query" placeholder="Search query text"></label>
         <label>Anomaly focus<select id="filter-focus"><option value="anomaly">Detected anomaly sample</option><option value="all" disabled>All traffic rows unavailable</option></select></label>`;
-      ['method', 'region', 'device', 'domain'].forEach(name => {
+      ['method', 'tier', 'region', 'device', 'domain'].forEach(name => {
         document.getElementById(`filter-${name}`).onchange = event => {
-          filters[name] = event.target.value;
-          renderExplorer();
+          filters[name] = selectedValues(event.target);
+          updateFilteredViews();
         };
       });
       document.getElementById('filter-query').oninput = event => {
         filters.query = event.target.value.toLowerCase();
-        renderExplorer();
+        updateFilteredViews();
       };
     }
     function selectHtml(name, label, options) {
-      return `<label>${escapeHtml(label)}<select id="filter-${name}">
-        <option value="">Any</option>${options.map(item => `<option>${escapeHtml(item)}</option>`).join('')}
+      return `<label>${escapeHtml(label)}<select id="filter-${name}" multiple>
+        ${options.map(item => `<option>${escapeHtml(item)}</option>`).join('')}
       </select></label>`;
+    }
+    function selectedValues(select) {
+      return [...select.selectedOptions].map(option => option.value);
     }
     function filteredEvents() {
       return sampleEvents.filter(event => {
-        if (filters.method && methodBucket(event) !== filters.method) return false;
-        if (filters.region && event.region !== filters.region) return false;
-        if (filters.device && deviceLabel(event) !== filters.device) return false;
-        if (filters.domain && event.domain !== filters.domain) return false;
+        if (filters.method.length && !filters.method.includes(methodBucket(event))) return false;
+        if (filters.tier.length && !filters.tier.includes(event.operational_tier)) return false;
+        if (filters.region.length && !filters.region.includes(event.region)) return false;
+        if (filters.device.length && !filters.device.includes(deviceLabel(event))) return false;
+        if (filters.domain.length && !filters.domain.includes(event.domain)) return false;
         if (filters.query && !String(event.query || '').toLowerCase().includes(filters.query)) return false;
         return true;
       });
     }
-    function renderExplorer() {
+    function updateFilteredViews() {
       const rows = filteredEvents();
+      renderSampleKpis(rows);
+      renderExplorer(rows);
+      renderQueries(rows, summaryData);
+      renderSampleCharts(rows);
+    }
+    function renderSampleKpis(rows) {
+      const suppress = rows.filter(row => row.operational_tier === 'suppress').length;
+      const domains = new Set(rows.map(row => row.domain)).size;
+      document.getElementById('sampleKpis').innerHTML = [
+        ['Filtered sample rows', count(rows.length), `of ${count(sampleEvents.length)} sample rows`],
+        ['Suppress rows', count(suppress), 'sample scope only'],
+        ['Unique domains', count(domains), 'in filtered sample']
+      ].map(([label, value, note]) => `<div class="metric"><div class="metric-label">${escapeHtml(label)}</div><div class="metric-value">${escapeHtml(value)}</div><div class="label">${escapeHtml(note)}</div></div>`).join('');
+    }
+    function renderSampleCharts(rows) {
+      renderDonut('sampleTierChart', 'Filtered sample tiers', countBy(rows, e => e.operational_tier), 'rows', 'tier', 'filtered top-250 suppress sample');
+      renderMethodChart(countBy(rows, methodBucket), 'sampleMethodChart', 'filtered top-250 suppress sample');
+      renderCountBars('sampleDomainChart', countBy(rows, e => e.domain), rows.length, 'domain');
+    }
+    function renderExplorer(rows) {
       const chips = [
         'Focus: detected anomaly sample',
-        filters.method && `Method: ${filters.method}`,
-        filters.region && `Region: ${filters.region}`,
-        filters.device && `Device cluster: ${filters.device}`,
-        filters.domain && `Domain: ${filters.domain}`,
+        filters.method.length && `Method: ${filters.method.join(', ')}`,
+        filters.tier.length && `Tier: ${filters.tier.join(', ')}`,
+        filters.region.length && `Region: ${filters.region.join(', ')}`,
+        filters.device.length && `Device cluster: ${filters.device.join(', ')}`,
+        filters.domain.length && `Domain: ${filters.domain.join(', ')}`,
         filters.query && `Query contains: ${filters.query}`
       ].filter(Boolean);
       document.getElementById('activeFilters').innerHTML = chips.map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('');
@@ -873,8 +953,8 @@ def _dashboard_html() -> str:
       </tr>`).join('');
     }
     function renderQueries(events, summary) {
-      renderCountBars('sampleQueries', countBy(events, e => e.query), events.length);
-      renderCountBars('queryDomainPairs', countBy(events, e => `${e.query} / ${e.domain}`), events.length);
+      renderCountBars('sampleQueries', countBy(events, e => e.query), events.length, 'query');
+      renderCountBars('queryDomainPairs', countBy(events, e => `${e.query} / ${e.domain}`), events.length, 'query');
       renderBars('summaryQueries', summary.top_queries || []);
     }
     function countBy(rows, getter) {
@@ -885,12 +965,71 @@ def _dashboard_html() -> str:
       });
       return [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
     }
-    function renderCountBars(id, rows, total) {
+    function renderCountBars(id, rows, total, filterName = 'query') {
       const max = Math.max(...rows.map(row => row[1]), 1);
       document.getElementById(id).innerHTML = rows.map(([label, value]) => {
         const share = total ? `${((100 * value) / total).toFixed(1)}%` : '0.0%';
-        return `<div class="label">${escapeHtml(label)} (${count(value)}, ${share})</div><div class="bar"><span style="width:${(100 * value) / max}%"></span></div>`;
+        return `<button type="button" class="label clickable" onclick="${handlerAttr(`applyBarFilter(${jsString(filterName)}, ${jsString(label)})`)}">${escapeHtml(label)} (${count(value)}, ${share})</button><div class="bar"><span style="width:${(100 * value) / max}%"></span></div>`;
       }).join('');
+    }
+    function applyBarFilter(filterName, label) {
+      if (filterName === 'query') {
+        filters.query = String(label).split(' / ')[0].toLowerCase();
+        document.getElementById('filter-query').value = filters.query;
+      } else {
+        toggleFilterValue(filterName, label);
+        return;
+      }
+      updateFilteredViews();
+      showPage('explorer');
+    }
+    function toggleFilterValue(name, value) {
+      if (!filters[name]) return;
+      if (name === 'anomalyClass') {
+        filters[name] = filters[name].includes(value) ? [] : [value];
+        updateFilteredViews();
+        renderAnomalyClasses(summaryData);
+        showPage('classes');
+        return;
+      }
+      const idx = filters[name].indexOf(value);
+      if (idx >= 0) {
+        filters[name].splice(idx, 1);
+      } else {
+        filters[name].push(value);
+      }
+      const select = document.getElementById(`filter-${name}`);
+      if (select) {
+        [...select.options].forEach(option => { option.selected = filters[name].includes(option.value); });
+      }
+      updateFilteredViews();
+      showPage('explorer');
+    }
+    function clearFilters() {
+      Object.assign(filters, { method: [], tier: [], anomalyClass: [], region: [], device: [], domain: [], query: '' });
+      ['method', 'tier', 'region', 'device', 'domain'].forEach(name => {
+        const select = document.getElementById(`filter-${name}`);
+        if (select) [...select.options].forEach(option => { option.selected = false; });
+      });
+      document.getElementById('filter-query').value = '';
+      updateFilteredViews();
+      renderAnomalyClasses(summaryData);
+    }
+    function exportSelection() {
+      const rows = filteredEvents();
+      const header = ['export_scope','event_id','method_bucket','operational_tier','region','browser','os','domain','query','combined_score','heuristic_score','ml_score'];
+      const exportScope = 'Filtered top-250 highest-risk suppress sample / detected anomaly sample';
+      const csv = [header.join(',')].concat(rows.map(row => header.map(key => {
+        const value = key === 'export_scope' ? exportScope : (key === 'method_bucket' ? methodBucket(row) : row[key]);
+        return `"${String(value ?? '').replace(/"/g, '""')}"`;
+      }).join(','))).join('\n');
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'bot-hunter-filtered-sample.csv';
+      link.click();
+      URL.revokeObjectURL(url);
     }
     function renderHeuristicThresholds(thresholds) {
       const rows = Object.values(thresholds).sort((a, b) => String(a.label).localeCompare(String(b.label)));

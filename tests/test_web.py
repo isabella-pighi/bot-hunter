@@ -97,7 +97,35 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Country/ct: unavailable in row sample" not in dashboard
         assert "Detected anomaly sample" in dashboard
         assert "All traffic rows unavailable" in dashboard
-        assert "Device cluster (region/browser/OS)" in dashboard
+        assert "Device cluster (region/browser/OS sample)" in dashboard
+        assert "Explore detected anomaly sample" in dashboard
+        assert "Clear filters" in dashboard
+        assert "View Underlying Data" in dashboard
+        assert "Export Selection CSV" in dashboard
+        assert 'id="sampleKpis"' in dashboard
+        assert 'id="sampleTierChart"' in dashboard
+        assert 'id="sampleMethodChart"' in dashboard
+        assert 'id="sampleDomainChart"' in dashboard
+        assert 'select id="filter-${name}" multiple' in dashboard
+        assert 'id="classSelectionNote"' in dashboard
+        assert "Viewing:" in dashboard
+        assert "row-level filtering is not available for this class" in dashboard
+        assert "class-card clickable selected" in dashboard
+        assert (
+            "Use the legend buttons below to apply filters with a keyboard."
+            in dashboard
+        )
+        assert "clearFilters()" in dashboard
+        assert "exportSelection()" in dashboard
+        assert "export_scope" in dashboard
+        assert "Filtered top-250 highest-risk suppress sample" in dashboard
+        assert "full-run aggregate; not affected by explorer filters" in dashboard
+        assert (
+            "Full-run aggregate. Explorer filters do not change these KPI cards."
+            in dashboard
+        )
+        assert "sample filters do not change them" in dashboard
+        assert "Filtered sample domains" in dashboard
         assert "Rows below come from `artifacts/sample_events.json`" in dashboard
         assert "250-row highest-risk suppress sample" in dashboard
         assert "quarantine/monitor rows" in dashboard
@@ -144,15 +172,25 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "item.family || item.rule_family || 'general'" in dashboard
         assert "score +${applied} of ${raw}" in dashboard
         assert "method_disagreement || []" in dashboard
-        assert "renderMethodChart(s.method_disagreement || [])" in dashboard
         assert (
-            "renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown')"
-            in dashboard
+            "renderMethodChart(s.method_disagreement || [], 'methodChart', "
+            "'full-run aggregate, not affected by explorer filters')" in dashboard
         )
-        assert "renderExplorer()" in dashboard
-        assert "renderQueries(sampleEvents, summary)" in dashboard
+        assert (
+            "renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown', "
+            "'full-run aggregate, not affected by explorer filters')" in dashboard
+        )
+        assert "function renderExplorer(rows)" in dashboard
+        assert "arguments.length" not in dashboard
+        assert "renderQueries(sampleEvents, summary)" not in dashboard
+        assert "updateFilteredViews()" in dashboard
         assert "methodBucket(event)" in dashboard
         assert "deviceLabel(event)" in dashboard
+        assert "renderCountBars('sampleDomainChart'" in dashboard
+        assert "rows.length, 'domain')" in dashboard
+        assert "applyBarFilter" in dashboard
+        assert "toggleFilterValue(name, value)" in dashboard
+        assert "Anomaly class aggregate only:" not in dashboard
         assert 'class="method-bars" role="img"' in dashboard
         assert "Method buckets bar chart for review-relevant events" in dashboard
         assert "label !== 'Neither strong'" in dashboard
@@ -162,7 +200,8 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
             "Object.entries(s.tier_counts || {})" in dashboard
         )
         assert (
-            "renderDonut('classChart', 'Anomaly classes', classes, 'selected')"
+            "renderDonut('classChart', 'Anomaly classes', classes, 'selected', "
+            "'anomalyClass', 'full-run aggregate; not affected by explorer filters')"
             in dashboard
         )
         assert "(s.anomaly_classes || {}).classes || []" in dashboard
