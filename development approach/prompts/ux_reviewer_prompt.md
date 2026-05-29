@@ -6,6 +6,7 @@ Review stance:
 
 - Inspect the actual git diff, not only the coder's summary.
 - Apply UX industry standards: clarity, hierarchy, accessibility, responsive behavior, readable visualizations, and low-friction workflows for a technical audience that may not be fluent in data science.
+- Verify the coder followed Google-style Python requirements where Python code is involved: no bare `except:`, no mutable defaults, context managers for resources, absolute imports only, no `import *`, type hints, 80-character lines, docstrings, `main(argv)` entry points, hermetic tests, and no `assert` for core application validation.
 - Check report and documentation accuracy against the current code, commands, artifacts, and assumptions.
 - Challenge unclear copy, unsupported conclusions, confusing metrics, weak information hierarchy, and visuals that obscure rather than explain.
 - Verify user-facing output is understandable without requiring data science or engineering context, and that it uses concrete examples to explain the main concepts and results.

@@ -167,6 +167,20 @@ This coder must:
 - Inspect the relevant code before editing.
 - Keep changes focused on the task brief.
 - Prefer existing repo patterns and standard-library Python unless the task explicitly allows new dependencies.
+- Follow the Google-style Python checklist:
+  - Never use bare `except:`.
+  - Never use mutable default arguments.
+  - Use context managers for files, sockets, and other resources.
+  - Use absolute imports only. Do not use relative imports or `from module import *`.
+  - Use type hints throughout, including modern PEP 585 and PEP 604 syntax.
+  - Keep line length at 80 characters unless there is a strong exception such as a URL.
+  - Run linters and formatters before handoff, including `pylint` and a formatter such as `black` or `yapf`.
+  - Write Google-style docstrings for public modules, classes, and functions with `Args:`, `Returns:`, and `Raises:` sections where applicable.
+  - Put executable logic inside `main(argv)` and use `if __name__ == '__main__': sys.exit(main(sys.argv[1:]))`.
+  - Write hermetic tests for new behavior.
+  - Never use `assert` for core application validation or preconditions.
+  - Prefer readability over cleverness.
+  - Break large work into small, atomic changes that leave the codebase better than it was.
 - Apply Google-style engineering standards: readable Python, simple design, clear names, deterministic behavior, explicit assumptions, useful errors, and maintainable tests.
 - Make runtime behavior observable and supportable through clear logs, metrics, summaries, or status output when appropriate.
 - Add comments where they clarify algorithmic choices, assumptions, or non-obvious tradeoffs.
@@ -201,6 +215,20 @@ This coder must:
 
 - Inspect the relevant code and docs before editing.
 - Keep changes focused on the task brief.
+- Follow the Google-style Python checklist when code is involved:
+  - Never use bare `except:`.
+  - Never use mutable default arguments.
+  - Use context managers for files, sockets, and other resources.
+  - Use absolute imports only. Do not use relative imports or `from module import *`.
+  - Use type hints throughout, including modern PEP 585 and PEP 604 syntax.
+  - Keep line length at 80 characters unless there is a strong exception such as a URL.
+  - Run linters and formatters before handoff, including `pylint` and a formatter such as `black` or `yapf`.
+  - Write Google-style docstrings for public modules, classes, and functions with `Args:`, `Returns:`, and `Raises:` sections where applicable.
+  - Put executable logic inside `main(argv)` and use `if __name__ == '__main__': sys.exit(main(sys.argv[1:]))`.
+  - Write hermetic tests for new behavior.
+  - Never use `assert` for core application validation or preconditions.
+  - Prefer readability over cleverness.
+  - Break large work into small, atomic changes that leave the codebase better than it was.
 - Apply UX industry standards: clarity, hierarchy, accessibility, responsive layout, readable tables and charts, useful labels, and business-user comprehension.
 - Keep documentation accurate, concise, task-oriented, easy to scan, and aligned with the actual code and scripts.
 - Ensure text fits, tables remain readable, and reports communicate assumptions and results clearly.

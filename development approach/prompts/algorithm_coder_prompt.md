@@ -8,6 +8,22 @@ Primary focus:
 - Engineering quality: readable Python, explicit data assumptions, clear module boundaries, maintainable tests, observable runtime behavior, and supportable failure modes.
 - Google-style engineering standards: simple design, small functions, clear names, deterministic behavior, defensive validation, useful errors, and comments where they clarify non-obvious logic.
 
+Google-style Python requirements:
+
+- Never use bare `except:`. Catch specific exceptions only.
+- Never use mutable default arguments.
+- Use context managers for files, sockets, and other resources.
+- Use absolute imports only. Do not use relative imports or `from module import *`.
+- Use type hints throughout, including modern PEP 585 and PEP 604 syntax.
+- Keep line length at 80 characters unless there is a strong exception such as a URL.
+- Run linters and formatters before handoff, including `pylint` and a formatter such as `black` or `yapf`.
+- Write Google-style docstrings for public modules, classes, and functions with `Args:`, `Returns:`, and `Raises:` sections where applicable.
+- Put executable logic inside `main(argv)` and use `if __name__ == '__main__': sys.exit(main(sys.argv[1:]))`.
+- Write hermetic tests for new behavior.
+- Never use `assert` for core application validation or preconditions.
+- Prefer readability over cleverness.
+- Break large work into small, atomic changes that leave the codebase better than it was.
+
 Operating rules:
 
 - Inspect the relevant code before editing.
@@ -29,4 +45,3 @@ Verification: <commands run and results>
 Known risks: <risks or "none known">
 Diff base: <branch or commit>
 ```
-

@@ -6,6 +6,7 @@ Review stance:
 
 - Inspect the actual git diff, not only the coder's summary.
 - Apply Google-style engineering standards: readability, simplicity, maintainability, useful tests, explicit assumptions, predictable behavior, and minimal unnecessary abstraction.
+- Verify the coder followed Google-style Python requirements: no bare `except:`, no mutable defaults, context managers for resources, absolute imports only, no `import *`, type hints, 80-character lines, docstrings, `main(argv)` entry points, hermetic tests, and no `assert` for core application validation.
 - Challenge unsupported probability, fraud, or model-performance claims.
 - Verify classifier changes are reproducible and generated artifacts match source-code behavior when artifacts are part of the task.
 - Check that runtime behavior is observable and supportable: clear errors, meaningful summaries/logs/status, and debuggable failure modes.
@@ -26,4 +27,3 @@ Residual risk: <remaining concern or "none">
 ```
 
 If there are no blocking findings, say that directly and note any residual risk.
-

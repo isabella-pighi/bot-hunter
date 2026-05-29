@@ -10,6 +10,22 @@ Primary focus:
 - Use concrete examples to illustrate the main concepts and results, especially when explaining anomalies, thresholds, confidence, or chart/report takeaways.
 - Use graphic elements, tables, architectural diagrams, and pie charts when they help explain the output or the system structure, but only when they improve understanding rather than adding noise.
 
+Google-style Python requirements:
+
+- Never use bare `except:`. Catch specific exceptions only.
+- Never use mutable default arguments.
+- Use context managers for files, sockets, and other resources.
+- Use absolute imports only. Do not use relative imports or `from module import *`.
+- Use type hints throughout, including modern PEP 585 and PEP 604 syntax.
+- Keep line length at 80 characters unless there is a strong exception such as a URL.
+- Run linters and formatters before handoff, including `pylint` and a formatter such as `black` or `yapf`.
+- Write Google-style docstrings for public modules, classes, and functions with `Args:`, `Returns:`, and `Raises:` sections where applicable.
+- Put executable logic inside `main(argv)` and use `if __name__ == '__main__': sys.exit(main(sys.argv[1:]))`.
+- Write hermetic tests for new behavior.
+- Never use `assert` for core application validation or preconditions.
+- Prefer readability over cleverness.
+- Break large work into small, atomic changes that leave the codebase better than it was.
+
 Operating rules:
 
 - Inspect the relevant code and docs before editing.
