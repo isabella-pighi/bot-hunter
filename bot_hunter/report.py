@@ -19,7 +19,7 @@ def _markdown(summary: dict[str, object]) -> str:
     bot_rate = float(summary["bot_rate"])
     precision = float(summary["estimated_precision"])
     ml_backend = str(summary.get("ml_backend", "eif"))
-    model_name, model_detail, backend_label = _model_copy(ml_backend)
+    _model_name, model_detail, backend_label = _model_copy(ml_backend)
     top_reasons = summary.get("top_reasons", [])
     feature_count = len(summary.get("feature_names", []))
     ml_feature_names = summary.get("ml_feature_names", summary.get("feature_names", []))
@@ -67,30 +67,53 @@ def _markdown(summary: dict[str, object]) -> str:
     kp_weight = float(ml_feature_weights.get("log_kp_count", 1.0))
     sld_weight = float(ml_feature_weights.get("log_sld_count", 1.0))
     anomaly_class_lines = _anomaly_class_lines(summary.get("anomaly_classes", {}))
+    statistical_findings = _statistical_findings_lines(summary)
+    reason_table = _reason_table(top_reasons)
+    disagreement_table = _method_agreement_table(disagreement_rows)
+    feature_definition_lines = _feature_definition_lines(
+        summary.get("feature_names", [])
+    )
 
     return f"""# Bot Hunter Analysis Report
 
-## 1. Executive Summary
+## 1. Problem Statement
 
-Bot Hunter analysed {total_events} click events.
-It selected {bot_events} as likely bot traffic, which is {bot_rate:.2%} of the run.
+Bot Hunter analyses fictitious ad-click traffic to identify events that look
+more like automated bot activity than legitimate user behaviour. The input is
+an unlabelled click log, so the task is not to prove fraud event by event. The
+task is to find defensible anomaly patterns, explain the evidence behind them,
+and produce a binary `submission.tsv` prediction where false positives and
+false negatives are treated as roughly equal in cost.
+
+This run read `{summary["input_path"]}` and analysed {total_events} click
+events. Each row contains an event identifier, timestamp, region, browser,
+operating system, and click URL. The URL query string carries behaviour signals
+such as clicked domain (`d`), search query (`q`), time to click (`ttc`), and
+country-like context (`ct`).
 
 This report should be read as evidence for review, not as proof of fraud for
 every individual event. The dataset does not include ground-truth labels, so the
-probability figures are operational confidence estimates rather than measured
-precision or recall.
+system cannot claim measured precision, measured recall, or a calibrated fraud probability.
 
 The submitted output is `submission.tsv`. It keeps the required binary
-`is_bot` decision and adds an operational tier so the same prediction can be
-used more carefully in business workflows.
+`is_bot` decision and adds `operational_tier` so the same prediction can be
+used carefully in business workflows.
 
-## 2. What The System Does
+## 2. Methodology And Rationale
 
-Bot Hunter combines two complementary classifiers.
+Bot Hunter uses two classifiers because each covers a different risk. The
+rules classifier catches patterns that are easy to explain and audit, such as
+repeated query/domain pairs, mechanical timing, and dense bursts. The
+{backend_label} catches unusual combinations across engineered features that
+fixed rules may miss.
 
-- Rules-based classifier: transparent rules that identify repeated,
-  mechanically timed, or tightly clustered click patterns.
-- Machine-learning classifier: {model_name} over {ml_feature_count} engineered behavioural features.
+| Component | Current choice | Why this choice was made |
+|---|---|---|
+| Rules classifier | Weighted heuristic rules | Transparent, auditable, and suitable for explaining repeated or mechanical click patterns. |
+| ML classifier | {backend_label} | Works without labels and can detect unusual combinations across engineered features. |
+| Score blend | `0.58 * heuristic_score + 0.42 * ml_score` | Keeps explainable rule evidence dominant while still using the anomaly model. |
+| Main cutoff | 97.5th percentile combined-score threshold | Keeps the selected population stable for an unlabelled batch. |
+| Override | `heuristic_score >= 0.62` | Protects high-confidence rule evidence from being missed by model ranking shifts. |
 
 The final score is a weighted blend:
 
@@ -102,28 +125,14 @@ The rules layer is weighted slightly higher because it is easier to explain and
 audit. The anomaly model still matters because it can identify unusual
 combinations that a small rule set may not capture.
 
-## 3. Main Results
-
-The strongest explainable patterns in this run were:
-
-{reason_lines}
-
-Example interpretation: a single repeated query is not enough to prove bot
-traffic. It becomes more concerning when it appears with a repeated clicked
-domain, dense same-second activity, reused time-to-click values, or a narrow
-region/browser/OS footprint.
-
-The new concentrated `ct` rule is deliberately cautious. It adds low-weight
-support only when country-like concentration appears with repeated query
-behaviour and either a heavy device cluster or a same-second burst. Country-like
-concentration alone is not treated as bot evidence because legitimate campaigns
-can be country-specific.
-
-## 4. Operational Anomaly Classes
-
-{anomaly_class_lines}
-
-## 5. Classifier Details
+Raw URLs are not model-ready. Bot Hunter parses each query string and converts
+it into behavioural features. Count features are log-transformed because
+click-log counts are heavy-tailed: a few domains or queries may appear many
+times while most appear once. `kp` and `sld` are treated as categorical
+identifiers, not ordered numeric measurements. Their raw values remain in
+`artifacts/features.tsv` for audit, but the model uses `log_kp_count` and
+`log_sld_count` to learn concentration without inventing false numeric distance
+between categories.
 
 The rules layer currently scores:
 
@@ -178,24 +187,155 @@ High-volume domain frequency and global country frequency are down-weighted to
 `kp` and `sld` frequency features are down-weighted to {kp_weight:.2f} and
 {sld_weight:.2f}. {model_detail}
 
-`kp` and `sld` are treated as categorical-style assumptions rather than true
-continuous measurements because their observed cardinality is very low. Raw
-`kp` and `sld` values remain in the feature artefact for audit, but the anomaly
-model uses `log_kp_count` and `log_sld_count` instead of raw numeric distances.
-The raw values are excluded from `ml_feature_names`.
+## 3. Current Statistical Findings
 
-Threshold-change validation used the regenerated `submission.tsv`,
-`artifacts/summary.json`, `artifacts/features.tsv`,
-`artifacts/sample_events.json`, and report files under `docs`. Targeted
-heuristic, pipeline, and dashboard tests passed (`uv run pytest
-tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py`, 42 passed),
-the full test suite passed (`uv run pytest`, 49 passed), and Black passed for
-the touched Python files with the existing Python 3.12 target-version warning.
-Each generated report reflects the current run's artefacts; fixed before/after
-comparison metrics are kept in the static README task history rather than
-repeated in this template.
+Bot Hunter selected {bot_events} of {total_events} events as likely bot
+traffic. That is {bot_rate:.2%} of the run.
 
-## 6. Thresholds And Decision Logic
+| Metric | Current value | Plain-English meaning |
+|---|---:|---|
+{statistical_findings}
+
+Top explainable rule patterns from the current run:
+
+| Pattern | Events | How to explain it |
+|---|---:|---|
+{reason_table}
+
+Method agreement from the current run:
+
+| Bucket | Events | Interpretation |
+|---|---:|---|
+{disagreement_table}
+
+Operational anomaly classes from the current run:
+
+{_anomaly_class_summary_table(summary.get("anomaly_classes", {}))}
+
+## 4. Explanation Of Anomalies Found
+
+Repetition is suspicious when the same query, clicked domain, and device-like
+context appear together. Timing matters because some click patterns are
+difficult for humans to produce consistently. Country-like `ct` concentration
+is supporting evidence only; it should not be treated as a country-blocking
+rule. ML-only events are unusual, but unusual does not automatically mean
+fraudulent.
+
+{anomaly_class_lines}
+
+## 5. Recommended Business Actions
+
+Separate prediction from action. `is_bot` is the compatibility prediction;
+`operational_tier` is the safer business-control layer.
+
+| Tier | Recommended action | Business assumption |
+|---|---|---|
+| `suppress` | Exclude from billing or downstream metrics after policy approval. | The organisation accepts limited review risk for high-confidence traffic. |
+| `quarantine` | Hold, delay, sample, or manually review before suppression. | Ambiguous traffic should not be automatically removed. |
+| `monitor` | Keep for trend monitoring and future labels. | Non-selected traffic can still help detect drift later. |
+
+Operational split in this run:
+
+{tier_lines}
+
+Use `suppress` for the strongest operational candidates after policy approval.
+Use `quarantine` as the default action for ambiguous or ML-only traffic. Do not
+automatically block traffic solely because it is in the ML tail.
+
+Filtering options are in Section 4. They are review controls for similar
+unlabelled datasets, not ground-truth fraud rules.
+
+## 6. Probability Perspective
+
+The current operational confidence estimate is {precision:.2%}. This is not measured precision because the dataset has no ground-truth labels.
+
+Confidence is higher when independent signals agree: for example, when a
+strong repeated query/domain rule hit also lands in the upper anomaly-model
+tail. Confidence is lower for ML-only events because anomaly detection can also
+surface legitimate edge cases such as unusual campaigns, regional spikes,
+testing traffic, or rare but valid user behaviour.
+
+The estimate is based on rule/model agreement, strength of rule evidence,
+operational tier, selected anomaly class, and the known absence of labels. It
+should guide review priority, not replace labelled validation or policy
+approval.
+
+## 7. Generalisation, Trade-Offs, And Limitations
+
+The approach should generalise to bot traffic that is repetitive,
+mechanically timed, or concentrated in narrow device and query patterns. It may
+miss bots that deliberately randomise timing, distribute activity across many
+query/domain pairs, or closely imitate human behaviour.
+
+The main trade-off is explainability versus coverage. Rules are easier to
+defend but can miss novel patterns. The anomaly model broadens coverage but
+needs careful interpretation because it finds unusual events, not necessarily
+fraudulent events.
+
+Known limitations:
+
+- There are no ground-truth labels, so measured precision, recall, and
+  calibration cannot be reported.
+- Legitimate campaigns can create high repetition, dense clusters, or regional
+  concentration.
+- The `ct` rule is supporting evidence only; it should not be used as a
+  country-level blocking rule.
+- The regular inter-arrival rule uses pseudo-session groups because there is no
+  explicit user or session identifier.
+- The anomaly score is relative to the current batch and should be monitored
+  for drift across future runs.
+
+Material changes in geography, campaign volume, inventory, browser mix, or
+feature extraction should trigger fresh threshold review.
+
+## 8. Future Work
+
+The next useful improvements are:
+
+1. Labelled validation from manual review, chargebacks, or confirmed invalid
+   traffic feedback.
+2. Feature-deviation explanations for ML-tail events.
+3. Historical drift monitoring for flagged rates and score distributions.
+4. Campaign-level or inventory-level normalisation if metadata becomes
+   available.
+5. Calibrated probabilities once trusted labels exist.
+6. A feedback loop from reviewed `suppress` and `quarantine` decisions.
+
+## Appendix A: Metric Definitions
+
+| Metric | Definition |
+|---|---|
+| `is_bot` | Required binary prediction in `submission.tsv`; `1` means selected as likely bot traffic. |
+| `heuristic_score` | Score from transparent rules such as repetition, timing, and burst checks. |
+| `ml_score` | Anomaly score from the Extended Isolation Forest feature model. |
+| `combined_score` | Weighted blend of rule and ML evidence. |
+| Combined-score cutoff | Run-specific threshold used to select the top anomaly population. |
+| Heuristic override | Rule-score threshold that selects strong explainable rule hits. |
+| Operational tier | Business action layer: `suppress`, `quarantine`, or `monitor`. |
+| Operational confidence estimate | Signal-based estimate from method agreement; not measured precision. |
+| Method bucket | Agreement category showing whether rules, ML, both, or neither were strong. |
+| Anomaly class | Human-readable grouping of selected events by dominant evidence pattern. |
+
+## Appendix B: Feature Definitions
+
+| Feature | Meaning |
+|---|---|
+{feature_definition_lines}
+
+## Appendix C: Model Definition
+
+Extended Isolation Forest is an unsupervised anomaly-detection model. It does
+not learn from known bot labels. Instead, it asks which events are easier to
+isolate from the rest of the batch using random feature-space splits.
+
+In plain English, events that look very different from the main population tend
+to be isolated more quickly and receive higher anomaly scores. This is useful
+for an unlabelled dataset, but it also means the model detects unusual
+behaviour rather than confirmed fraud. The model output is strongest when it
+agrees with transparent rule evidence and weakest when it stands alone without
+feature-deviation review.
+
+## Appendix D: Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
@@ -220,116 +360,7 @@ In this run:
 
 - heuristic-only flag rate: {heuristic_flag_rate:.2%}
 - ML agreement-tail reference rate: {ml_tail_rate:.2%}
-- operational confidence estimate: {precision:.0%}
-
-## 7. Method Agreement And Disagreement
-
-Agreement between the rules layer and the anomaly model is useful review
-evidence. It is not statistical validation, because there are no labels.
-
-At the ML agreement threshold, this run has {agreement_both_count:,} `Heuristic + ML` events and {ml_only_count:,} `ML only` events.
-
-Method disagreement (`ml_score >= {ml_agreement_score:.3f}`):
-
-{disagreement_lines}
-
-Example interpretation:
-
-- `Heuristic + ML` events are usually the strongest review candidates.
-- `Heuristic only` events may be explainable rule hits that are not unusual in
-  the wider feature space.
-- `ML only` events may contain multivariate anomalies, but they need careful
-  review because unusual legitimate behaviour can also be anomalous.
-
-## 8. Operational Actions
-
-Bot Hunter separates prediction from action by assigning operational tiers:
-
-{tier_lines}
-
-Recommended use:
-
-- `suppress`: high-confidence traffic that can be excluded from billing or
-  downstream metrics after policy approval.
-- `quarantine`: suspicious traffic that should be reviewed, sampled, or delayed
-  before suppression.
-- `monitor`: traffic not selected for bot action, retained for trend analysis
-  and future labels.
-
-The binary `is_bot` field is the compatibility output. The tier is the safer
-business-control layer.
-
-## 9. Probability Perspective
-
-The estimated probability that a flagged event is fraudulent is {precision:.0%}. This is an operational estimate based on signal agreement, not a calibrated probability.
-
-The estimate is stronger when independent signals agree. For example, a click
-with repeated query/domain replay, same-second burst evidence, and an upper-tail
-ML score is more likely to be fraudulent than a click selected only because one
-feature is unusual.
-
-The estimate is weaker for isolated ML-only events, because unsupervised anomaly
-detection can also surface legitimate edge cases such as unusual campaigns,
-regional spikes, testing traffic, or rare but valid user behaviour.
-
-## 10. Generalisation And Trade-Offs
-
-The approach should generalise when bot traffic is repetitive, mechanically
-timed, or concentrated in narrow device and query patterns. It may miss bots
-that deliberately randomise timing, distribute across many query/domain pairs,
-or imitate human behaviour closely.
-
-The main trade-off is explainability versus coverage. Rules are easier to
-defend but can miss novel patterns. The anomaly model broadens coverage but
-needs careful interpretation because it finds unusual events, not necessarily
-fraudulent events.
-
-Material changes in geography, campaign volume, inventory, browser mix, or
-feature extraction should trigger fresh threshold review.
-
-## 11. Known Limitations
-
-- There are no ground-truth labels, so measured precision, recall, and
-  calibration cannot be reported.
-- Legitimate campaigns can create high repetition, dense clusters, or regional
-  concentration.
-- The `ct` rule is supporting evidence only; it should not be used as a
-  country-level blocking rule.
-- The regular inter-arrival rule uses pseudo-session groups because there is no
-  explicit user or session identifier.
-- The anomaly score is relative to the current batch and should be monitored
-  for drift across future runs.
-
-## 12. Future Work
-
-The next useful improvements are:
-
-- labelled validation from manual review, chargebacks, or confirmed invalid
-  traffic feedback
-- campaign-level or inventory-level normalisation
-- stronger browser or user-agent fingerprinting if those fields become
-  available
-- historical drift monitoring for score distributions and flagged rates
-- calibrated probabilities once trusted labels exist
-- a feedback loop from reviewed `suppress` and `quarantine` decisions
-
-## 13. Submission Summary
-
-The repository includes `submission.tsv` with `event_id`, `is_bot`, and
-`operational_tier`.
-
-This run selected {bot_events} of {total_events} events as likely bots.
-That is {bot_rate:.2%} of the run.
-
-Operational split:
-
-- suppress: {suppress_count:,}
-- quarantine: {quarantine_count:,}
-- monitor: {monitor_count:,}
-
-Use the report and dashboard as review aids. They explain why traffic was
-selected and where the evidence is strongest, but they do not replace labelled
-validation or policy approval.
+- operational confidence estimate: {precision:.2%}
 """
 
 
@@ -347,6 +378,185 @@ def _model_copy(ml_backend: str) -> tuple[str, str, str]:
         "Events with stronger statistical anomaly evidence receive higher anomaly scores.",
         "Extended Isolation Forest model",
     )
+
+
+def _statistical_findings_lines(summary: dict[str, object]) -> str:
+    tier_counts = summary.get("tier_counts", {})
+    if not isinstance(tier_counts, dict):
+        tier_counts = {}
+    rows = [
+        (
+            "Total events analysed",
+            f"{int(summary.get('total_events', 0)):,}",
+            "Number of click events in the batch.",
+        ),
+        (
+            "Selected bot events",
+            f"{int(summary.get('bot_events', 0)):,}",
+            "Events marked `is_bot = 1`.",
+        ),
+        (
+            "Selected bot rate",
+            f"{float(summary.get('bot_rate', 0.0)):.2%}",
+            "Share of the batch selected as likely bot traffic.",
+        ),
+        (
+            "Suppress tier",
+            f"{int(tier_counts.get('suppress', 0)):,}",
+            "Strongest operational candidates, subject to policy approval.",
+        ),
+        (
+            "Quarantine tier",
+            f"{int(tier_counts.get('quarantine', 0)):,}",
+            "Suspicious events that should be reviewed or sampled.",
+        ),
+        (
+            "Monitor tier",
+            f"{int(tier_counts.get('monitor', 0)):,}",
+            "Events not selected for bot action.",
+        ),
+        (
+            "Combined-score cutoff",
+            f"{float(summary.get('threshold', 0.0)):.6f}",
+            "Run-specific anomaly threshold.",
+        ),
+        (
+            "Heuristic-only flag rate",
+            f"{float(summary.get('heuristic_flag_rate', 0.0)):.2%}",
+            "Share flagged by rules before model blending.",
+        ),
+        (
+            "ML agreement-tail rate",
+            f"{float(summary.get('ml_tail_rate', 0.0)):.2%}",
+            "Reference tail used to compare ML agreement.",
+        ),
+        (
+            "Operational confidence estimate",
+            f"{float(summary.get('estimated_precision', 0.0)):.2%}",
+            "Signal-based estimate, not measured precision.",
+        ),
+    ]
+    return "\n".join(
+        f"| {name} | {value} | {meaning} |" for name, value, meaning in rows
+    )
+
+
+def _reason_table(top_reasons: object) -> str:
+    explanations = {
+        "repeated query": "The same search term appears unusually often.",
+        "repeated query/domain pair": (
+            "The same search term repeatedly clicks the same domain."
+        ),
+        "confirmed query repetition": (
+            "Query repetition is backed by additional context."
+        ),
+        "very short query": (
+            "Short terms can be legitimate, but are useful supporting evidence."
+        ),
+        "high-volume clicked domain": "A domain receives unusually concentrated clicks.",
+        "heavy region/browser/OS cluster": (
+            "Traffic is concentrated in a narrow device/server footprint."
+        ),
+        "concentrated ct context": (
+            "Country-like context is concentrated with repetition and clustering."
+        ),
+        "same-second click burst": "Multiple clicks happen in the same second.",
+        "moderately long time-to-click": (
+            "Timing is unusual enough to support other evidence."
+        ),
+        "dense burst repetition cluster": (
+            "Burstiness and repeated behaviour appear together."
+        ),
+    }
+    if not isinstance(top_reasons, list):
+        return "| No dominant pattern | 0 | No rule pattern was reported. |"
+    rows = []
+    for reason, count in top_reasons:
+        explanation = explanations.get(
+            str(reason), "Explainable rule evidence contributed to selection."
+        )
+        rows.append(f"| {reason} | {int(count):,} | {explanation} |")
+    return (
+        "\n".join(rows) or "| No dominant pattern | 0 | No rule pattern was reported. |"
+    )
+
+
+def _method_agreement_table(rows: object) -> str:
+    explanations = {
+        "Heuristic + ML": "Strongest review candidates because both methods agree.",
+        "Heuristic only": (
+            "Explainable rule hits that are not extreme in the ML feature space."
+        ),
+        "ML only": "Multivariate anomalies that need careful sampling or review.",
+        "Neither strong": "Traffic not strongly indicated by either method.",
+    }
+    if not isinstance(rows, list):
+        return "| Not available | 0 | No method agreement data was reported. |"
+    rendered = []
+    for row in rows:
+        if isinstance(row, (list, tuple)) and len(row) == 2:
+            label = str(row[0])
+            rendered.append(
+                f"| {label} | {int(row[1]):,} | "
+                f"{explanations.get(label, 'Agreement bucket reported by the run.')} |"
+            )
+    return (
+        "\n".join(rendered)
+        or "| Not available | 0 | No method agreement data was reported. |"
+    )
+
+
+def _anomaly_class_summary_table(anomaly_classes: object) -> str:
+    if not isinstance(anomaly_classes, dict):
+        return "| Class | Selected events | Recommended handling |\n|---|---:|---|\n| Not available | 0 | Review manually. |"
+    classes = anomaly_classes.get("classes", [])
+    if not isinstance(classes, list):
+        return "| Class | Selected events | Recommended handling |\n|---|---:|---|\n| Not available | 0 | Review manually. |"
+    rows = ["| Class | Selected events | Recommended handling |", "|---|---:|---|"]
+    for item in classes:
+        if not isinstance(item, dict):
+            continue
+        rows.append(
+            "| "
+            f"{_cell(str(item.get('label', item.get('class_id', 'Unknown'))))} | "
+            f"{int(item.get('count', 0)):,} | "
+            f"{_cell(str(item.get('review_action', 'Review manually.')))} |"
+        )
+    return "\n".join(rows)
+
+
+def _feature_definition_lines(feature_names: object) -> str:
+    definitions = {
+        "log_domain_count": "Log-scaled frequency of the clicked domain.",
+        "log_query_count": "Log-scaled frequency of the search query.",
+        "log_query_domain_count": "Log-scaled frequency of the query/domain pair.",
+        "log_device_count": "Log-scaled frequency of the region/browser/OS cluster.",
+        "log_country_count": (
+            "Log-scaled frequency of `ct`, the country-like URL parameter."
+        ),
+        "log_same_second_count": "Log-scaled number of clicks sharing the same second.",
+        "log_ttc_count": "Log-scaled reuse count for exact time-to-click values.",
+        "log_kp_count": "Log-scaled frequency of the `kp` URL parameter value.",
+        "log_sld_count": "Log-scaled frequency of the `sld` URL parameter value.",
+        "kp": "Raw `kp` URL parameter retained for audit; excluded from ML features.",
+        "sld": "Raw `sld` URL parameter retained for audit; excluded from ML features.",
+        "hour": "Event hour extracted from the timestamp.",
+        "log_ttc_seconds": "Log-scaled time-to-click duration.",
+        "is_sub_200ms_click": (
+            "Flag for click timing below a plausible human reaction threshold."
+        ),
+        "log_pseudo_session_10s_click_count": (
+            "Log-scaled burst density within pseudo-session-style groups."
+        ),
+        "query_entropy": "Text randomness measure for the search query.",
+    }
+    if not isinstance(feature_names, list):
+        feature_names = list(definitions)
+    rows = []
+    for feature_name in feature_names:
+        if feature_name in definitions:
+            rows.append(f"| `{feature_name}` | {definitions[feature_name]} |")
+    return "\n".join(rows)
 
 
 def _disagreement_lines(rows: object) -> str:
