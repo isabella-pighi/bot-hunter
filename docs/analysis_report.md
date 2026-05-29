@@ -36,15 +36,15 @@ combinations that a small rule set may not capture.
 
 The strongest explainable patterns in this run were:
 
-- repeated query: 3,392 events
+- repeated query: 3,403 events
 - repeated query/domain pair: 2,086 events
 - confirmed query repetition: 2,023 events
-- very short query: 1,802 events
-- high-volume clicked domain: 1,737 events
-- heavy region/browser/OS cluster: 1,181 events
-- concentrated ct context: 903 events
-- same-second click burst: 674 events
-- moderately long time-to-click: 429 events
+- very short query: 1,798 events
+- high-volume clicked domain: 1,732 events
+- heavy region/browser/OS cluster: 1,168 events
+- concentrated ct context: 904 events
+- same-second click burst: 677 events
+- moderately long time-to-click: 431 events
 - dense burst repetition cluster: 236 events
 
 Example interpretation: a single repeated query is not enough to prove bot
@@ -74,6 +74,18 @@ The rules layer currently scores:
 - implausibly fast clicks
 - moderately long or extreme time-to-click values
 - regular pseudo-session inter-arrival timing
+
+Rule contributions are separated into strong and supporting evidence. Strong
+rules represent direct mechanical or replay-like patterns, such as impossible
+timing or repeated query/domain behaviour. Supporting rules provide context,
+such as volume, concentration, or broad clustering. Supporting contributions
+are capped so several weak signals cannot add up to the same meaning as a
+strong bot signal on their own.
+
+| Rule strength | Meaning | Score treatment |
+|---|---|---|
+| Strong | Direct mechanical or replay evidence | Contributes its full rule weight |
+| Supporting | Contextual or weaker evidence | Capped together at 0.24 |
 
 The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold
 with an absolute floor. The main repetition and concentration rules also use
@@ -113,14 +125,20 @@ The raw values are excluded from `ml_feature_names`.
 Threshold-change validation used the regenerated `submission.tsv`,
 `artifacts/summary.json`, `artifacts/features.tsv`,
 `artifacts/sample_events.json`, and report files under `docs`. Targeted
-heuristic and pipeline tests passed (`uv run pytest tests/test_heuristics.py tests/test_pipeline.py`, 33 passed), the full test suite passed (`uv run pytest`, 46 passed), and Black passed for the touched Python files with the existing Python 3.12 target-version warning. Each generated report reflects the current run's artefacts; fixed before/after comparison metrics are kept in the static README task history rather than repeated in this template.
+heuristic, pipeline, and dashboard tests passed (`uv run pytest
+tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py`, 42 passed),
+the full test suite passed (`uv run pytest`, 48 passed), and Black passed for
+the touched Python files with the existing Python 3.12 target-version warning.
+Each generated report reflects the current run's artefacts; fixed before/after
+comparison metrics are kept in the static README task history rather than
+repeated in this template.
 
 ## 5. Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:
 
 ```text
-combined_score > 0.568533
+combined_score > 0.568053
 or heuristic_score >= 0.62
 ```
 
@@ -148,7 +166,7 @@ In this run:
 
 - heuristic-only flag rate: 1.36%
 - ML agreement-tail reference rate: 2.50%
-- operational confidence estimate: 75%
+- operational confidence estimate: 74%
 
 ## 6. Method Agreement And Disagreement
 
@@ -176,8 +194,8 @@ Example interpretation:
 
 Bot Hunter separates prediction from action by assigning operational tiers:
 
-- suppress: 1,866 events
-- quarantine: 1,865 events
+- suppress: 1,863 events
+- quarantine: 1,868 events
 - monitor: 145,508 events
 
 Recommended use:
@@ -194,7 +212,7 @@ business-control layer.
 
 ## 8. Probability Perspective
 
-The estimated probability that a flagged event is fraudulent is 75%. This is an operational estimate based on signal agreement, not a calibrated probability.
+The estimated probability that a flagged event is fraudulent is 74%. This is an operational estimate based on signal agreement, not a calibrated probability.
 
 The estimate is stronger when independent signals agree. For example, a click
 with repeated query/domain replay, same-second burst evidence, and an upper-tail
@@ -256,8 +274,8 @@ That is 2.50% of the run.
 
 Operational split:
 
-- suppress: 1,866
-- quarantine: 1,865
+- suppress: 1,863
+- quarantine: 1,868
 - monitor: 145,508
 
 Use the report and dashboard as review aids. They explain why traffic was

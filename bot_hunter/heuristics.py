@@ -23,6 +23,9 @@ COUNTRY_CONTEXT_MIN_RATE = 0.10
 COUNTRY_CONTEXT_WEIGHT = 0.06
 ADAPTIVE_COUNT_PERCENTILE = 0.99
 SAME_SECOND_COUNT_FLOOR = 4
+SUPPORTING_RULE_CAP = 0.24
+STRONG = "strong"
+SUPPORTING = "supporting"
 
 
 @dataclass(frozen=True)
@@ -59,13 +62,11 @@ def apply_heuristics(
     country_counts = counters.get("country", Counter())
 
     for event in events:
-        score = 0.0
         reasons: list[str] = []
         contributions: list[RuleContribution] = []
 
         qd_count = counters["query_domain"][(event.query, event.domain)]
         if qd_count >= query_domain_hi:
-            score += 0.32
             reason = f"query/domain repeated {qd_count} times"
             reasons.append(reason)
             contributions.append(
@@ -78,12 +79,12 @@ def apply_heuristics(
                     query_domain_hi,
                     "query_domain_count >= adaptive percentile threshold",
                     "adaptive_percentile",
+                    family="repetition",
                 )
             )
 
         q_count = counters["query"][event.query]
         if q_count >= query_hi:
-            score += 0.18
             reason = f"query repeated {q_count} times"
             reasons.append(reason)
             contributions.append(
@@ -96,11 +97,11 @@ def apply_heuristics(
                     query_hi,
                     "query_count >= adaptive percentile threshold",
                     "adaptive_percentile",
+                    family="repetition",
                 )
             )
 
         if qd_count >= query_domain_hi and q_count >= query_hi:
-            score += CONFIRMED_QUERY_REPETITION_WEIGHT
             reason = (
                 f"confirmed query repetition (query/domain {qd_count}, query {q_count})"
             )
@@ -118,12 +119,12 @@ def apply_heuristics(
                         "and query_count >= adaptive percentile threshold"
                     ),
                     "adaptive_percentile",
+                    family="repetition",
                 )
             )
 
         d_count = counters["domain"][event.domain]
         if d_count >= domain_hi:
-            score += 0.10
             reason = f"high-volume clicked domain ({d_count})"
             reasons.append(reason)
             contributions.append(
@@ -136,12 +137,13 @@ def apply_heuristics(
                     domain_hi,
                     "domain_count >= adaptive percentile threshold",
                     "adaptive_percentile",
+                    SUPPORTING,
+                    "volume",
                 )
             )
 
         device_count = counters["device"][(event.region, event.browser, event.os)]
         if device_count >= device_hi:
-            score += 0.08
             reason = f"heavy region/browser/os cluster ({device_count})"
             reasons.append(reason)
             contributions.append(
@@ -154,12 +156,13 @@ def apply_heuristics(
                     device_hi,
                     "device_count >= adaptive percentile threshold",
                     "adaptive_percentile",
+                    SUPPORTING,
+                    "cluster",
                 )
             )
 
         ttc_count = counters["ttc"][event.ttc]
         if event.ttc >= 0 and ttc_count >= ttc_hi:
-            score += 0.16
             reason = f"exact time-to-click reused {ttc_count} times"
             reasons.append(reason)
             contributions.append(
@@ -175,12 +178,12 @@ def apply_heuristics(
                         "threshold with absolute floor 40"
                     ),
                     "adaptive_percentile",
+                    family="timing",
                 )
             )
 
         same_second = counters["second"][event.event_time]
         if same_second >= same_second_hi:
-            score += 0.12
             reason = f"{same_second} clicks in the same second"
             reasons.append(reason)
             contributions.append(
@@ -193,6 +196,7 @@ def apply_heuristics(
                     same_second_hi,
                     "same_second_count >= adaptive percentile threshold",
                     "adaptive_percentile",
+                    family="timing",
                 )
             )
 
@@ -201,7 +205,6 @@ def apply_heuristics(
             and same_second >= DENSE_BURST_REPETITION_MIN_SAME_SECOND
             and (q_count >= query_hi or qd_count >= query_domain_hi)
         ):
-            score += DENSE_BURST_REPETITION_WEIGHT
             repeated_observed = max(q_count, qd_count)
             repeated_label = "query/domain" if qd_count >= query_domain_hi else "query"
             reason = (
@@ -232,6 +235,7 @@ def apply_heuristics(
                         "query_domain_count >= adaptive percentile threshold)"
                     ),
                     "adaptive_percentile",
+                    family="compound",
                 )
             )
 
@@ -243,7 +247,6 @@ def apply_heuristics(
             or same_second >= DENSE_BURST_REPETITION_MIN_SAME_SECOND
         )
         if country_count >= country_hi and has_repetition and has_cluster_or_burst:
-            score += COUNTRY_CONTEXT_WEIGHT
             repeated_observed = max(q_count, qd_count)
             repeated_label = "query/domain" if qd_count >= query_domain_hi else "query"
             cluster_label = (
@@ -279,11 +282,12 @@ def apply_heuristics(
                         "or same_second_count >= 5)"
                     ),
                     "adaptive_percentile",
+                    SUPPORTING,
+                    "context",
                 )
             )
 
         if 0 <= event.ttc <= 250:
-            score += 0.18
             reason = "implausibly fast click"
             reasons.append(reason)
             contributions.append(
@@ -295,10 +299,10 @@ def apply_heuristics(
                     event.ttc,
                     250,
                     "0 <= ttc <= threshold",
+                    family="timing",
                 )
             )
         elif MODERATE_LONG_TTC_MIN_MS <= event.ttc <= MODERATE_LONG_TTC_MAX_MS:
-            score += MODERATE_LONG_TTC_WEIGHT
             reason = "moderately long time-to-click"
             reasons.append(reason)
             contributions.append(
@@ -310,10 +314,11 @@ def apply_heuristics(
                     event.ttc,
                     f"{MODERATE_LONG_TTC_MIN_MS}-{MODERATE_LONG_TTC_MAX_MS}",
                     "20000 <= ttc <= 60000",
+                    strength=SUPPORTING,
+                    family="timing",
                 )
             )
         elif event.ttc > 120000:
-            score += 0.08
             reason = "extreme time-to-click"
             reasons.append(reason)
             contributions.append(
@@ -325,12 +330,13 @@ def apply_heuristics(
                     event.ttc,
                     120000,
                     "ttc > threshold",
+                    strength=SUPPORTING,
+                    family="timing",
                 )
             )
 
         query_terms = len(event.query.split())
         if query_terms <= 1:
-            score += 0.04
             reason = "very short query"
             reasons.append(reason)
             contributions.append(
@@ -342,16 +348,17 @@ def apply_heuristics(
                     query_terms,
                     1,
                     "query_terms <= threshold",
+                    strength=SUPPORTING,
+                    family="query",
                 )
             )
 
         interarrival_contribution = regular_interarrival.get(id(event))
         if interarrival_contribution:
-            score += interarrival_contribution.weight
             reasons.append(interarrival_contribution.reason)
             contributions.append(interarrival_contribution)
 
-        event.heuristic_score = min(score, 1.0)
+        event.heuristic_score = _apply_contribution_caps(contributions)
         event.reasons = reasons
         event.rule_contributions = contributions
     return threshold_summary
@@ -503,10 +510,31 @@ def _regular_interarrival_contributions(
             round(cv, 3),
             REGULAR_INTERARRIVAL_MAX_CV,
             "events >= 8 and mean_delta_seconds <= 300 and cv <= 0.50",
+            family="timing",
         )
         for event in group_events:
             contributions[id(event)] = contribution
     return contributions
+
+
+def _apply_contribution_caps(contributions: list[RuleContribution]) -> float:
+    for contribution in contributions:
+        contribution.applied_weight = contribution.weight
+        contribution.capped = False
+
+    supporting = [
+        contribution
+        for contribution in contributions
+        if contribution.strength == SUPPORTING
+    ]
+    supporting_total = sum(contribution.weight for contribution in supporting)
+    if supporting_total > SUPPORTING_RULE_CAP:
+        scale = SUPPORTING_RULE_CAP / supporting_total
+        for contribution in supporting:
+            contribution.applied_weight = contribution.weight * scale
+            contribution.capped = True
+
+    return min(sum(contribution.applied_weight for contribution in contributions), 1.0)
 
 
 def _contribution(
@@ -518,6 +546,8 @@ def _contribution(
     threshold: int | float | str | None,
     condition: str,
     threshold_mode: str = "absolute",
+    strength: str = STRONG,
+    family: str = "general",
 ) -> RuleContribution:
     return RuleContribution(
         rule_id=rule_id,
@@ -528,4 +558,7 @@ def _contribution(
         threshold=threshold,
         threshold_mode=threshold_mode,
         condition=condition,
+        strength=strength,
+        family=family,
+        applied_weight=weight,
     )

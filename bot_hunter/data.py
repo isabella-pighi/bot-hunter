@@ -35,6 +35,10 @@ class RuleContribution:
     threshold: int | float | str | None = None
     threshold_mode: str = "absolute"
     condition: str = ""
+    strength: str = "strong"
+    family: str = "general"
+    applied_weight: float = 0.0
+    capped: bool = False
 
 
 @dataclass
@@ -269,6 +273,10 @@ def iter_event_dicts(events: Iterable[ClickEvent]) -> Iterable[dict[str, object]
                     "label": contribution.label,
                     "reason": contribution.reason,
                     "weight": contribution.weight,
+                    "applied_weight": round(contribution.applied_weight, 4),
+                    "strength": contribution.strength,
+                    "family": contribution.family,
+                    "capped": contribution.capped,
                     "observed": contribution.observed,
                     "threshold": contribution.threshold,
                     "threshold_mode": contribution.threshold_mode,

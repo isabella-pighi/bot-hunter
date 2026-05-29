@@ -12,7 +12,7 @@ from .data import (
     select_ml_feature_names,
     select_ml_feature_weights,
 )
-from .heuristics import apply_heuristics
+from .heuristics import STRONG, SUPPORTING, SUPPORTING_RULE_CAP, apply_heuristics
 from .ml import score_anomalies
 from .report import write_reports
 
@@ -117,6 +117,13 @@ def run_pipeline(
             "monitor": "is_bot == 0",
         },
         "heuristic_thresholds": heuristic_thresholds,
+        "rule_strengths": {
+            STRONG: "Direct mechanical or replay evidence; applied at full weight.",
+            SUPPORTING: (
+                "Contextual or weaker evidence; combined applied weight is capped."
+            ),
+            "supporting_cap": SUPPORTING_RULE_CAP,
+        },
         "tier_counts": {
             tier: tier_counts.get(tier, 0)
             for tier in ("suppress", "quarantine", "monitor")

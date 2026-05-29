@@ -1,8 +1,11 @@
 from collections import Counter
 from datetime import datetime, timedelta
 
+import pytest
+
 from bot_hunter.data import ClickEvent, build_features
 from bot_hunter.heuristics import (
+    SUPPORTING_RULE_CAP,
     _adaptive_thresholds,
     apply_heuristics,
 )
@@ -61,12 +64,15 @@ def test_rule_contributions_preserve_reasons_and_score() -> None:
         "short_query",
     ]
     assert (
-        sum(contribution.weight for contribution in event.rule_contributions)
+        sum(contribution.applied_weight for contribution in event.rule_contributions)
         == event.heuristic_score
     )
     assert event.rule_contributions[0].reason == "query/domain repeated 4 times"
     assert event.rule_contributions[0].label == "Repeated query/domain pair"
     assert event.rule_contributions[0].weight == 0.32
+    assert event.rule_contributions[0].applied_weight == 0.32
+    assert event.rule_contributions[0].strength == "strong"
+    assert event.rule_contributions[0].family == "repetition"
     assert event.rule_contributions[0].observed == 4
     assert event.rule_contributions[0].threshold == 4
     assert (
@@ -107,10 +113,85 @@ def test_high_volume_rule_contribution_fields() -> None:
     assert contribution.label == "High-volume clicked domain"
     assert contribution.reason == "high-volume clicked domain (200)"
     assert contribution.weight == 0.10
+    assert contribution.applied_weight == 0.10
+    assert contribution.strength == "supporting"
+    assert contribution.family == "volume"
+    assert not contribution.capped
     assert contribution.observed == 200
     assert contribution.threshold == 200
     assert contribution.condition == "domain_count >= adaptive percentile threshold"
     assert contribution.threshold_mode == "adaptive_percentile"
+
+
+def test_supporting_only_rules_are_capped_as_a_group() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=120001&q=foo",
+        params={"d": "a.com", "ttc": "120001", "q": "foo"},
+    )
+    counters = {
+        "query_domain": Counter({("foo", "a.com"): 1}),
+        "query": Counter({"foo": 1}),
+        "domain": Counter({"a.com": 200}),
+        "device": Counter({("Mars", "Chrome", "Android"): 600}),
+        "ttc": Counter({120001: 1}),
+        "second": Counter({event.event_time: 1}),
+    }
+
+    apply_heuristics([event], counters)
+
+    assert [item.rule_id for item in event.rule_contributions] == [
+        "high_volume_domain",
+        "heavy_device_cluster",
+        "extreme_ttc",
+        "short_query",
+    ]
+    assert event.heuristic_score == pytest.approx(SUPPORTING_RULE_CAP)
+    assert all(item.strength == "supporting" for item in event.rule_contributions)
+    assert sum(item.weight for item in event.rule_contributions) == pytest.approx(0.30)
+    assert sum(item.applied_weight for item in event.rule_contributions) == (
+        pytest.approx(SUPPORTING_RULE_CAP)
+    )
+    assert all(item.capped for item in event.rule_contributions)
+
+
+def test_strong_rules_keep_full_weight_when_supporting_cap_binds() -> None:
+    event = ClickEvent(
+        event_id="evt",
+        event_time=datetime(2019, 12, 2, 8, 0, 0),
+        region="Mars",
+        browser="Chrome",
+        os="Android",
+        url="/ad_click?d=a.com&ttc=120001&q=foo",
+        params={"d": "a.com", "ttc": "120001", "q": "foo"},
+    )
+    counters = {
+        "query_domain": Counter({("foo", "a.com"): 4}),
+        "query": Counter({"foo": 1}),
+        "domain": Counter({"a.com": 200}),
+        "device": Counter({("Mars", "Chrome", "Android"): 600}),
+        "ttc": Counter({120001: 1}),
+        "second": Counter({event.event_time: 1}),
+    }
+
+    apply_heuristics([event], counters)
+
+    strong = [item for item in event.rule_contributions if item.strength == "strong"]
+    supporting = [
+        item for item in event.rule_contributions if item.strength == "supporting"
+    ]
+    assert [item.rule_id for item in strong] == ["repeat_query_domain"]
+    assert strong[0].weight == 0.32
+    assert strong[0].applied_weight == 0.32
+    assert not strong[0].capped
+    assert sum(item.applied_weight for item in supporting) == pytest.approx(
+        SUPPORTING_RULE_CAP
+    )
+    assert event.heuristic_score == pytest.approx(0.32 + SUPPORTING_RULE_CAP)
 
 
 def test_dense_burst_repetition_cluster_requires_all_signals() -> None:
@@ -145,6 +226,9 @@ def test_dense_burst_repetition_cluster_requires_all_signals() -> None:
     assert contribution.rule_id == "dense_burst_repetition_cluster"
     assert contribution.label == "Dense burst repetition cluster"
     assert contribution.weight == 0.12
+    assert contribution.applied_weight == 0.12
+    assert contribution.strength == "strong"
+    assert contribution.family == "compound"
     assert contribution.observed == "device=600; same_second=5; query=12"
     assert (
         contribution.threshold == "device>=600; same_second>=5; repeated_query_pattern"
@@ -216,6 +300,9 @@ def test_concentrated_ct_context_is_supporting_evidence_only() -> None:
     assert contribution.rule_id == "concentrated_ct_context"
     assert contribution.label == "Concentrated ct context"
     assert contribution.weight == 0.06
+    assert contribution.applied_weight == 0.06
+    assert contribution.strength == "supporting"
+    assert contribution.family == "context"
     assert contribution.observed == "ct=US; ct_count=1000; device 600; query=12"
     assert contribution.threshold == (
         "ct_count>=1000; repeated_query_pattern; device_or_same_second_cluster"

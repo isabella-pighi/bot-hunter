@@ -27,33 +27,7 @@ cannot honestly claim measured fraud accuracy.
 
 ## P1: Make Existing Detection More Stable And Explainable
 
-### 1. Separate Strong Rules From Supporting Rules
-
-Not every suspicious signal has the same evidential strength. A sub-200 ms
-click is a strong mechanical signal. A popular domain is a weaker supporting
-signal because legitimate campaigns can also create high volume.
-
-At the moment, weak signals can accumulate into a score that looks similar to a
-single strong bot signal. That makes the output harder to explain and can
-increase false positives.
-
-**Proposed work:**
-
-- Split rule contributions into high-confidence and supporting families.
-- Limit how much any weak rule family can contribute on its own.
-- Make rule strength visible in `sample_events.json`, the dashboard, and the
-  report.
-
-**Acceptance examples:**
-
-- An event with only weak popularity signals is less likely to be treated like
-  a high-confidence bot.
-- An event with repeated query/domain replay plus impossible timing remains
-  high risk.
-- Reviewers can see whether a score came from one strong rule or many weak
-  supporting rules.
-
-### 2. Add Local Domain Reputation Signals
+### 1. Add Local Domain Reputation Signals
 
 Behavioural detection is the core of Bot Hunter, but domain reputation can add
 useful context. The safest first step is a local, versioned blocklist rather
@@ -77,7 +51,7 @@ and control list, that should increase risk. It should not automatically decide
 - The event explanation says which reputation source and category matched.
 - A reputation match boosts risk but does not bypass the combined scoring logic.
 
-### 3. Explain ML Tail Events With Feature Deviations
+### 2. Explain ML Tail Events With Feature Deviations
 
 The Extended Isolation Forest can identify unusual events, but an anomaly score
 alone is not enough for a reviewer. The system should say which features made
@@ -102,7 +76,7 @@ reuse. Showing those feature deviations makes the ML decision easier to audit.
 - The explanation does not depend on private internals of the `isotree` model.
 - The dashboard can compare heuristic reasons with ML feature deviations.
 
-### 4. Use Robust Scaling For Heavy-Tailed Features
+### 3. Use Robust Scaling For Heavy-Tailed Features
 
 Click-log features are often heavy-tailed. A few domains or queries may appear
 thousands of times while most appear once. Standard scaling can still leave
@@ -125,7 +99,7 @@ extreme values dominating the model.
 
 ## P2: Improve Context, Drift Awareness, And Batch Robustness
 
-### 5. Normalise High-Volume Signals By Available Context
+### 4. Normalise High-Volume Signals By Available Context
 
 High-volume traffic is not always fraudulent. A legitimate campaign, region, or
 inventory source can create concentrated traffic. The heuristic rules should
@@ -143,7 +117,7 @@ If a domain is globally popular across many devices and regions, that is less
 suspicious than the same volume concentrated in one narrow
 region/browser/OS/query cluster.
 
-### 6. Add Rolling Burst Features
+### 5. Add Rolling Burst Features
 
 The current system includes same-second and pseudo-session burst signals. It
 should also capture rolling windows over multiple time spans.
@@ -159,7 +133,7 @@ should also capture rolling windows over multiple time spans.
 A bot may avoid exact same-second bursts by spreading clicks every two seconds.
 A 60-second rolling window can still reveal the regular automated pattern.
 
-### 7. Cache Domain Reputation Lookups
+### 6. Cache Domain Reputation Lookups
 
 If live reputation providers are added later, the pipeline must not call a
 provider once per event. That would be slow, expensive, and likely to hit rate
@@ -172,7 +146,7 @@ limits.
 - Store provider, category, severity, and lookup timestamp.
 - Keep live lookups disabled by default.
 
-### 8. Weight Reputation Categories Differently
+### 7. Weight Reputation Categories Differently
 
 Not all reputation matches should carry the same weight. Malware, phishing, or
 botnet command and control categories should usually matter more than a broad
@@ -185,7 +159,7 @@ botnet command and control categories should usually matter more than a broad
 - Add an allowlist stage so legitimate domains can be protected from stale or
   overly broad reputation signals.
 
-### 9. Calibrate Thresholds Against Historical Batches
+### 8. Calibrate Thresholds Against Historical Batches
 
 Current thresholds are batch-relative. That is appropriate for a self-contained
 dataset, but production use would benefit from historical stability.
@@ -204,7 +178,7 @@ that visible before anyone treats the new output as normal.
 
 ## P3: Future Work That Needs More Evidence Or External Context
 
-### 10. Add Optional Live Reputation Providers
+### 9. Add Optional Live Reputation Providers
 
 Live providers such as Google Safe Browsing, Google Web Risk, Spamhaus DBL, or
 SURBL could add stronger threat intelligence when credentials and usage terms
@@ -217,7 +191,7 @@ allow it.
 - Use cached unique-domain lookups, not per-event calls.
 - Document provider terms and data handling before enabling the feature.
 
-### 11. Add Labelled Validation
+### 10. Add Labelled Validation
 
 The most important future improvement is labelled validation. Labels could come
 from manual review, invalid-traffic feedback, chargebacks, confirmed abuse
@@ -249,6 +223,7 @@ pipeline looks the way it does.
 | Explainability | Added structured rule contributions | Gives stable rule IDs, labels, weights, observed values, and thresholds for audits. |
 | Rules classifier | Added concentrated `ct` context as supporting evidence | Lets the rules layer use country-like concentration only when paired with repeated query behaviour and clustering. |
 | Rules classifier | Made count-based heuristic thresholds adaptive | Keeps repeated-query, domain, device, same-second, country, and exact time-to-click rules stable across different batch sizes by comparing counts with the current population while retaining conservative fixed guardrails for small inputs. |
+| Rules classifier | Split strong and supporting rule evidence | Prevents weaker contextual signals from accumulating into the same meaning as direct mechanical or replay evidence, while still showing reviewers how each rule contributed to the final score. |
 | Decision logic | Added `suppress`, `quarantine`, and `monitor` tiers | Turns scores into practical actions without pretending unlabelled data has measured precision. |
 | Decision logic | Added method disagreement buckets | Makes rules/ML agreement and disagreement visible for review. |
 
@@ -256,9 +231,9 @@ pipeline looks the way it does.
 
 The best next implementation slice is:
 
-1. strong-versus-supporting rule families
-2. feature-deviation explanations for ML tail events
-3. local domain reputation signals
+1. feature-deviation explanations for ML tail events
+2. local domain reputation signals
+3. context-normalised high-volume signals
 
 Those three items improve the current system without requiring external
 credentials, live services, or labels. They also make the dashboard and report

@@ -87,6 +87,10 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert '"rule_contributions"' in sample_events
     assert '"threshold_mode": "absolute"' in sample_events
     assert '"rule_id": "fast_click"' in sample_events
+    assert '"strength": "strong"' in sample_events
+    assert '"family": "timing"' in sample_events
+    assert '"applied_weight":' in sample_events
+    assert '"capped":' in sample_events
     assert "method_disagreement" in summary
     assert sum(count for _, count in summary["method_disagreement"]) == 3
     assert "_".join(["method", "disagreement", "extreme"]) not in summary
@@ -98,6 +102,8 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         == "adaptive_percentile"
     )
     assert summary["heuristic_thresholds"]["repeat_query_domain"]["absolute_floor"] == 4
+    assert "rule_strengths" in summary
+    assert summary["rule_strengths"]["supporting_cap"] == 0.24
     assert "_".join(["ml", "support", "score"]) not in summary["tier_thresholds"]
     assert (
         "_".join(["suppress", "agreement", "ml", "score"])
@@ -106,6 +112,10 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "an Extended Isolation Forest anomaly model" in report
     assert "Adaptive heuristic thresholds used in this run" in report
+    assert (
+        "Rule contributions are separated into strong and supporting evidence" in report
+    )
+    assert "Capped together at 0.24" in report
     assert "Repeated query/domain pair (`repeat_query_domain`)" in report
     assert "99th-percentile threshold" in report
     assert "% percentile" not in report

@@ -63,14 +63,20 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Method Disagreement" in dashboard
         assert 'id="disagreement"' in dashboard
         assert "Adaptive Rule Thresholds" in dashboard
+        assert 'id="ruleStrengths"' in dashboard
         assert 'id="heuristicThresholds"' in dashboard
         assert '<section class="card block">' in dashboard
         assert 'style="margin-bottom' not in dashboard
+        assert "renderRuleStrengths(s.rule_strengths || {})" in dashboard
         assert "renderHeuristicThresholds(s.heuristic_thresholds || {})" in dashboard
+        assert "Supporting rule score is capped at" in dashboard
+        assert "strong rule evidence is not capped" in dashboard
         assert "th-percentile" in dashboard
         assert "threshold, floor" in dashboard
         assert "% percentile" not in dashboard
         assert "Rule evidence" in dashboard
+        assert "item.family || item.rule_family || 'general'" in dashboard
+        assert "score +${applied} of ${raw}" in dashboard
         assert "method_disagreement || []" in dashboard
         assert "ML >= ${ml}" in dashboard
         assert "not measured accuracy" in dashboard

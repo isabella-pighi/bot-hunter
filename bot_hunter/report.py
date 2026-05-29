@@ -39,6 +39,7 @@ def _markdown(summary: dict[str, object]) -> str:
     quarantine_count = int(tier_counts.get("quarantine", 0))
     monitor_count = int(tier_counts.get("monitor", 0))
     thresholds = summary.get("tier_thresholds", {})
+    rule_strength_lines = _rule_strength_lines(summary.get("rule_strengths", {}))
     heuristic_threshold_lines = _heuristic_threshold_lines(
         summary.get("heuristic_thresholds", {})
     )
@@ -134,6 +135,15 @@ The rules layer currently scores:
 - moderately long or extreme time-to-click values
 - regular pseudo-session inter-arrival timing
 
+Rule contributions are separated into strong and supporting evidence. Strong
+rules represent direct mechanical or replay-like patterns, such as impossible
+timing or repeated query/domain behaviour. Supporting rules provide context,
+such as volume, concentration, or broad clustering. Supporting contributions
+are capped so several weak signals cannot add up to the same meaning as a
+strong bot signal on their own.
+
+{rule_strength_lines}
+
 The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold
 with an absolute floor. The main repetition and concentration rules also use
 99th-percentile batch thresholds with the previous fixed count and total-rate
@@ -172,7 +182,13 @@ The raw values are excluded from `ml_feature_names`.
 Threshold-change validation used the regenerated `submission.tsv`,
 `artifacts/summary.json`, `artifacts/features.tsv`,
 `artifacts/sample_events.json`, and report files under `docs`. Targeted
-heuristic and pipeline tests passed (`uv run pytest tests/test_heuristics.py tests/test_pipeline.py`, 33 passed), the full test suite passed (`uv run pytest`, 46 passed), and Black passed for the touched Python files with the existing Python 3.12 target-version warning. Each generated report reflects the current run's artefacts; fixed before/after comparison metrics are kept in the static README task history rather than repeated in this template.
+heuristic, pipeline, and dashboard tests passed (`uv run pytest
+tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py`, 42 passed),
+the full test suite passed (`uv run pytest`, 48 passed), and Black passed for
+the touched Python files with the existing Python 3.12 target-version warning.
+Each generated report reflects the current run's artefacts; fixed before/after
+comparison metrics are kept in the static README task history rather than
+repeated in this template.
 
 ## 5. Thresholds And Decision Logic
 
@@ -356,6 +372,29 @@ def _heuristic_threshold_lines(thresholds: object) -> str:
         if rate_floor is not None:
             basis = f"{basis}, rate guardrail {rate_floor}"
         rows.append(f"| {label} (`{rule_id}`) | {threshold} | {basis} |")
+    return "\n".join(rows)
+
+
+def _rule_strength_lines(settings: object) -> str:
+    if not isinstance(settings, dict) or not settings:
+        return (
+            "The current run did not report rule-strength settings in the "
+            "summary artefact."
+        )
+    supporting_cap = settings.get("supporting_cap")
+    rows = [
+        "| Rule strength | Meaning | Score treatment |",
+        "|---|---|---|",
+        (
+            "| Strong | Direct mechanical or replay evidence | "
+            "Contributes its full rule weight |"
+        ),
+    ]
+    if supporting_cap is None:
+        treatment = "Contributes as supporting evidence"
+    else:
+        treatment = f"Capped together at {float(supporting_cap):.2f}"
+    rows.append(f"| Supporting | Contextual or weaker evidence | {treatment} |")
     return "\n".join(rows)
 
 

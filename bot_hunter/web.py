@@ -329,6 +329,7 @@ def _dashboard_html() -> str:
     </section>
     <section class="card block">
       <h2>Adaptive Rule Thresholds</h2>
+      <div class="label" id="ruleStrengths"></div>
       <div class="table-wrap"><table>
         <thead><tr><th>Rule</th><th>Threshold</th><th>Basis</th></tr></thead>
         <tbody id="heuristicThresholds"></tbody>
@@ -372,6 +373,7 @@ def _dashboard_html() -> str:
       renderDisagreementNote(s);
       renderBars('disagreement', s.method_disagreement || []);
       renderBars('tiers', Object.entries(s.tier_counts || {}));
+      renderRuleStrengths(s.rule_strengths || {});
       renderHeuristicThresholds(s.heuristic_thresholds || {});
     }
     function renderDisagreementNote(s) {
@@ -394,12 +396,30 @@ def _dashboard_html() -> str:
         return `<tr><td>${escapeHtml(item.label)}<br><span class="label">${escapeHtml(item.rule_id)}</span></td><td class="score">${escapeHtml(item.threshold)}</td><td>${basis}</td></tr>`;
       }).join('');
     }
+    function renderRuleStrengths(settings) {
+      const cap = settings.supporting_cap;
+      document.getElementById('ruleStrengths').textContent = cap === undefined
+        ? ''
+        : `Supporting rule score is capped at ${Number(cap).toFixed(2)}; strong rule evidence is not capped.`;
+    }
     function renderRuleEvidence(event) {
       const contributions = event.rule_contributions || [];
       if (!contributions.length) {
         return (event.reasons || []).map(escapeHtml).join('<br>');
       }
-      return contributions.map(item => `${escapeHtml(item.label || item.rule_id)}: ${escapeHtml(item.observed)} vs threshold ${escapeHtml(item.threshold)}`).join('<br>');
+      return contributions.map(item => {
+        const strength = item.strength || 'supporting';
+        const family = item.family || item.rule_family || 'general';
+        const raw = item.weight === undefined ? '' : Number(item.weight).toFixed(3);
+        const applied = item.applied_weight === undefined
+          ? (item.uncapped_weight === undefined ? raw : Number(item.weight).toFixed(3))
+          : Number(item.applied_weight).toFixed(3);
+        const score = raw && applied && raw !== applied
+          ? `score +${applied} of ${raw}`
+          : (applied ? `score +${applied}` : '');
+        const meta = `${escapeHtml(strength)} / ${escapeHtml(family)}`;
+        return `${meta} - ${escapeHtml(item.label || item.rule_id)}: ${escapeHtml(item.observed)} vs threshold ${escapeHtml(item.threshold)}${score ? ` (${score})` : ''}`;
+      }).join('<br>');
     }
     function renderEvents(events) {
       document.getElementById('events').innerHTML = events.slice(0, 80).map(e => `<tr>

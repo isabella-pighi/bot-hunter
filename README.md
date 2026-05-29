@@ -236,6 +236,16 @@ traffic volume increased. The computed rule thresholds are stored in
 `artifacts/summary.json` under `heuristic_thresholds` and are shown in the
 report and dashboard.
 
+Rule contributions are also split by strength. Strong rules cover direct
+mechanical or replay evidence, such as impossible timing, exact time-to-click
+reuse, or repeated query/domain behaviour. Supporting rules cover weaker
+context, such as broad volume, dense clusters, or query shape. Supporting rule
+scores are capped together, so several weak context signals cannot accumulate
+into the same score as one strong bot signal. Event-level evidence in
+`artifacts/sample_events.json`, the dashboard, and the report shows the rule
+`strength`, evidence `family`, raw `weight`, and applied score contribution
+after any cap.
+
 The anomaly layer captures combinations. A single feature value may look
 ordinary, but the combination can still be suspicious. For example, a click may
 not have an impossible `ttc`, but it may belong to a rare mix of high query
@@ -288,16 +298,16 @@ The current implementation was checked with the following commands:
 
 | Check | Result |
 |---|---|
-| `uv run pytest tests/test_heuristics.py tests/test_pipeline.py` | 33 passed |
-| `uv run pytest` | 46 passed |
+| `uv run pytest tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py` | 42 passed |
+| `uv run pytest` | 48 passed |
 | `uv run black --check bot_hunter/heuristics.py bot_hunter/pipeline.py bot_hunter/report.py bot_hunter/web.py tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py` | passed with the existing Python 3.12 target-version warning |
 
 The full EIF run regenerated `submission.tsv`, `artifacts/summary.json`,
 `artifacts/features.tsv`, `artifacts/sample_events.json`, and the Markdown,
 HTML, and PDF reports under `docs/`. In the current run it selected `3,731`
 of `149,239` events. The run-specific combined-score threshold is `0.5685`,
-and the operational precision estimate is `0.7454`. The operational split is
-`1,866` suppress, `1,865` quarantine, and `145,508` monitor. These figures
+and the operational precision estimate is `0.7449`. The operational split is
+`1,863` suppress, `1,868` quarantine, and `145,508` monitor. These figures
 describe this unlabelled batch; they are not measured fraud accuracy.
 
 Example adaptive thresholds from the current run:

@@ -3,10 +3,10 @@
   "total_events": 149239,
   "bot_events": 3731,
   "bot_rate": 0.025000167516533882,
-  "threshold": 0.5685334298235034,
+  "threshold": 0.5680527157962448,
   "heuristic_flag_rate": 0.013649247180696735,
   "ml_tail_rate": 0.025000167516533882,
-  "estimated_precision": 0.7453846153846153,
+  "estimated_precision": 0.7449155722326454,
   "ml_backend": "eif",
   "feature_artifact": "artifacts/features.tsv",
   "feature_names": [
@@ -162,15 +162,20 @@
       "selected_from": "current batch counts with fixed guardrails"
     }
   },
+  "rule_strengths": {
+    "strong": "Direct mechanical or replay evidence; applied at full weight.",
+    "supporting": "Contextual or weaker evidence; combined applied weight is capped.",
+    "supporting_cap": 0.24
+  },
   "tier_counts": {
-    "suppress": 1866,
-    "quarantine": 1865,
+    "suppress": 1863,
+    "quarantine": 1868,
     "monitor": 145508
   },
   "top_reasons": [
     [
       "repeated query",
-      3392
+      3403
     ],
     [
       "repeated query/domain pair",
@@ -182,27 +187,27 @@
     ],
     [
       "very short query",
-      1802
+      1798
     ],
     [
       "high-volume clicked domain",
-      1737
+      1732
     ],
     [
       "heavy region/browser/OS cluster",
-      1181
+      1168
     ],
     [
       "concentrated ct context",
-      903
+      904
     ],
     [
       "same-second click burst",
-      674
+      677
     ],
     [
       "moderately long time-to-click",
-      429
+      431
     ],
     [
       "dense burst repetition cluster",
@@ -312,15 +317,15 @@
   "bot_regions": [
     [
       "Mars",
-      1856
+      1853
     ],
     [
       "Earth",
-      1697
+      1699
     ],
     [
       "Mercury",
-      53
+      54
     ],
     [
       "Saturn",

@@ -93,7 +93,7 @@ T*
 T*
 () Tj
 T*
-(- repeated query: 3,392 events) Tj
+(- repeated query: 3,403 events) Tj
 T*
 (- repeated query/domain pair: 2,086 events) Tj
 T*
@@ -106,23 +106,23 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
 endobj
 6 0 obj
-<< /Length 2090 >>
+<< /Length 2136 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(- very short query: 1,802 events) Tj
+(- very short query: 1,798 events) Tj
 T*
-(- high-volume clicked domain: 1,737 events) Tj
+(- high-volume clicked domain: 1,732 events) Tj
 T*
-(- heavy region/browser/OS cluster: 1,181 events) Tj
+(- heavy region/browser/OS cluster: 1,168 events) Tj
 T*
-(- concentrated ct context: 903 events) Tj
+(- concentrated ct context: 904 events) Tj
 T*
-(- same-second click burst: 674 events) Tj
+(- same-second click burst: 677 events) Tj
 T*
-(- moderately long time-to-click: 429 events) Tj
+(- moderately long time-to-click: 431 events) Tj
 T*
 (- dense burst repetition cluster: 236 events) Tj
 T*
@@ -184,6 +184,43 @@ T*
 T*
 () Tj
 T*
+(Rule contributions are separated into strong and supporting evidence. Strong) Tj
+T*
+(rules represent direct mechanical or replay-like patterns, such as impossible) Tj
+T*
+(timing or repeated query/domain behaviour. Supporting rules provide context,) Tj
+T*
+(such as volume, concentration, or broad clustering. Supporting contributions) Tj
+T*
+(are capped so several weak signals cannot add up to the same meaning as a) Tj
+T*
+(strong bot signal on their own.) Tj
+T*
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+8 0 obj
+<< /Length 2387 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+() Tj
+T*
+(| Rule strength | Meaning | Score treatment |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Strong | Direct mechanical or replay evidence | Contributes its full rule weight |) Tj
+T*
+(| Supporting | Contextual or weaker evidence | Capped together at 0.24 |) Tj
+T*
+() Tj
+T*
 (The exact time-to-click reuse rule uses a 99th-percentile reuse-count threshold) Tj
 T*
 (with an absolute floor. The main repetition and concentration rules also use) Tj
@@ -196,19 +233,6 @@ T*
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-7 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
-endobj
-8 0 obj
-<< /Length 2466 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (The ct rule, confirmed query repetition, and dense burst repetition rules are) Tj
 T*
 (conjunctive. In practical terms, they require multiple signals to be present) Tj
@@ -269,6 +293,19 @@ T*
 T*
 (The raw values are excluded from ml_feature_names.) Tj
 T*
+ET
+endstream
+endobj
+9 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
+endobj
+10 0 obj
+<< /Length 2280 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (Threshold-change validation used the regenerated submission.tsv,) Tj
@@ -277,35 +314,24 @@ T*
 T*
 (artifacts/sample_events.json, and report files under docs. Targeted) Tj
 T*
-(heuristic and pipeline tests passed \(uv run pytest tests/test_heuristics.py) Tj
+(heuristic, pipeline, and dashboard tests passed \(uv run pytest) Tj
 T*
-(tests/test_pipeline.py, 33 passed\), the full test suite passed \(uv run pytest, 46) Tj
+(tests/test_heuristics.py tests/test_pipeline.py tests/test_web.py, 42 passed\),) Tj
 T*
-(passed\), and Black passed for the touched Python files with the existing Python 3.12) Tj
+(the full test suite passed \(uv run pytest, 48 passed\), and Black passed for) Tj
 T*
-(target-version warning. Each generated report reflects the current run's artefacts;) Tj
+(the touched Python files with the existing Python 3.12 target-version warning.) Tj
 T*
-(fixed before/after comparison metrics are kept in the static README task history rather) Tj
+(Each generated report reflects the current run's artefacts; fixed before/after) Tj
 T*
-(than repeated in this template.) Tj
+(comparison metrics are kept in the static README task history rather than) Tj
+T*
+(repeated in this template.) Tj
 T*
 () Tj
 T*
 ( 5. Thresholds And Decision Logic) Tj
 T*
-ET
-endstream
-endobj
-9 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 8 0 R >>
-endobj
-10 0 obj
-<< /Length 2034 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 (An event is selected as a bot when either condition is true:) Tj
@@ -314,7 +340,7 @@ T*
 T*
 (text) Tj
 T*
-(combined_score > 0.568533) Tj
+(combined_score > 0.568053) Tj
 T*
 (or heuristic_score >= 0.62) Tj
 T*
@@ -364,6 +390,19 @@ T*
 T*
 (| Repeated query/domain pair \(repeat_query_domain\) | 37 | 99th-percentile threshold,) Tj
 T*
+ET
+endstream
+endobj
+11 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
+endobj
+12 0 obj
+<< /Length 1695 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (floor 4, rate guardrail 37 |) Tj
 T*
 (| Reused exact time-to-click \(reused_ttc\) | 40 | 99th-percentile threshold, floor 40 |) Tj
@@ -380,7 +419,7 @@ T*
 T*
 (- ML agreement-tail reference rate: 2.50%) Tj
 T*
-(- operational confidence estimate: 75%) Tj
+(- operational confidence estimate: 74%) Tj
 T*
 () Tj
 T*
@@ -390,19 +429,6 @@ T*
 T*
 (Agreement between the rules layer and the anomaly model is useful review) Tj
 T*
-ET
-endstream
-endobj
-11 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 10 0 R >>
-endobj
-12 0 obj
-<< /Length 1688 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (evidence. It is not statistical validation, because there are no labels.) Tj
 T*
 () Tj
@@ -451,9 +477,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,866 events) Tj
+(- suppress: 1,863 events) Tj
 T*
-(- quarantine: 1,865 events) Tj
+(- quarantine: 1,868 events) Tj
 T*
 (- monitor: 145,508 events) Tj
 T*
@@ -461,6 +487,19 @@ T*
 T*
 (Recommended use:) Tj
 T*
+ET
+endstream
+endobj
+13 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
+endobj
+14 0 obj
+<< /Length 2167 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (- suppress: high-confidence traffic that can be excluded from billing or) Tj
@@ -487,20 +526,7 @@ T*
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-13 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
-endobj
-14 0 obj
-<< /Length 2271 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(The estimated probability that a flagged event is fraudulent is 75%. This is an) Tj
+(The estimated probability that a flagged event is fraudulent is 74%. This is an) Tj
 T*
 (operational estimate based on signal agreement, not a calibrated probability.) Tj
 T*
@@ -558,6 +584,19 @@ T*
 T*
 () Tj
 T*
+ET
+endstream
+endobj
+15 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
+endobj
+16 0 obj
+<< /Length 1820 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (- There are no ground-truth labels, so measured precision, recall, and) Tj
 T*
 (  calibration cannot be reported.) Tj
@@ -584,19 +623,6 @@ T*
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-15 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
-endobj
-16 0 obj
-<< /Length 1167 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (The next useful improvements are:) Tj
 T*
 () Tj
@@ -639,9 +665,9 @@ T*
 T*
 () Tj
 T*
-(- suppress: 1,866) Tj
+(- suppress: 1,863) Tj
 T*
-(- quarantine: 1,865) Tj
+(- quarantine: 1,868) Tj
 T*
 (- monitor: 145,508) Tj
 T*
@@ -668,18 +694,18 @@ xref
 0000000225 00000 n
 0000002078 00000 n
 0000002204 00000 n
-0000004346 00000 n
-0000004472 00000 n
-0000006990 00000 n
-0000007116 00000 n
-0000009203 00000 n
-0000009331 00000 n
-0000011072 00000 n
-0000011200 00000 n
-0000013524 00000 n
-0000013652 00000 n
-0000014872 00000 n
+0000004392 00000 n
+0000004518 00000 n
+0000006957 00000 n
+0000007083 00000 n
+0000009416 00000 n
+0000009544 00000 n
+0000011292 00000 n
+0000011420 00000 n
+0000013640 00000 n
+0000013768 00000 n
+0000015641 00000 n
 trailer << /Size 18 /Root 1 0 R >>
 startxref
-15000
+15769
 %%EOF
