@@ -289,7 +289,8 @@ def _dashboard_html() -> str:
     input, select { min-height:38px; padding:8px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; }
     input { width:min(420px, 42vw); }
     .dataset { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .menu { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+    .menu { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; position:relative; z-index:1; }
+    .menu button { flex:0 1 auto; }
     .mode-group { display:flex; gap:4px; padding:3px; border:1px solid var(--line); border-radius:8px; background:#fff; }
     .input-panel { display:block; }
     .input-panel.is-hidden { display:none; }
@@ -338,7 +339,7 @@ def _dashboard_html() -> str:
     .modal-backdrop.open { display:flex; }
     .modal { background:#fff; color:var(--ink); max-width:560px; width:min(560px,100%); border-radius:8px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
     .modal-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
-    .global-filters { position:sticky; top:122px; z-index:8; }
+    .global-filters { position:relative; z-index:1; }
     .filter-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
     .filter-grid select[multiple] { min-height:76px; width:100%; }
     .sample-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:12px; }
@@ -347,6 +348,8 @@ def _dashboard_html() -> str:
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     @media (max-width: 1000px) {
       header, .story, .chart-grid, .technical-grid, .split { grid-template-columns:1fr; }
+      header { align-items:start; }
+      .actions { width:100%; }
       .metric-grid, .three, .action-grid, .filter-grid, .term-grid, .help-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .sample-grid { grid-template-columns:1fr; }
       .class-grid { grid-template-columns:1fr; }
@@ -355,6 +358,7 @@ def _dashboard_html() -> str:
       main { padding:14px; }
       input { width:100%; }
       .actions, .dataset, .input-panel, .mode-group { width:100%; }
+      .menu button { flex:1 1 calc(50% - 6px); min-width:0; }
       .mode-group button { flex:1; }
       .metric-grid, .three, .action-grid, .filter-grid, .term-grid, .help-grid { grid-template-columns:1fr; }
       .chart-body { grid-template-columns:1fr; }
@@ -367,13 +371,13 @@ def _dashboard_html() -> str:
       <h1>Bot Hunter Business Dashboard</h1>
       <div class="topline">Operational review view for current bot-click results.</div>
       <nav class="menu" aria-label="Dashboard pages">
-        <button class="nav" data-page="overview" aria-current="page">Overview</button>
-        <button class="nav" data-page="classes">Anomaly Classes</button>
-        <button class="nav" data-page="explorer">Traffic Explorer</button>
-        <button class="nav" data-page="queries">Query Terms</button>
-        <button class="nav" data-page="breakdown">Method/Tier Breakdown</button>
-        <button class="nav" data-page="technical">Technical Evidence</button>
-        <button class="nav" data-page="help">Help</button>
+        <button type="button" class="nav" data-page="overview" aria-current="page" onclick="showPage('overview')">Overview</button>
+        <button type="button" class="nav" data-page="classes" onclick="showPage('classes')">Anomaly Classes</button>
+        <button type="button" class="nav" data-page="explorer" onclick="showPage('explorer')">Traffic Explorer</button>
+        <button type="button" class="nav" data-page="queries" onclick="showPage('queries')">Query Terms</button>
+        <button type="button" class="nav" data-page="breakdown" onclick="showPage('breakdown')">Method/Tier Breakdown</button>
+        <button type="button" class="nav" data-page="technical" onclick="showPage('technical')">Technical Evidence</button>
+        <button type="button" class="nav" data-page="help" onclick="showPage('help')">Help</button>
       </nav>
     </div>
     <div class="actions">
@@ -446,20 +450,23 @@ def _dashboard_html() -> str:
       </div>
       </div>
       <div class="chart-grid" aria-label="Current result proportions">
-      <div class="card">
-        <h2>Operational tiers</h2>
-        <div class="chart-body" id="tierChart"></div>
+        <div class="card">
+          <h2>Operational tiers</h2>
+          <p class="label">Full-run aggregate. Explorer filters do not change this chart.</p>
+          <div class="chart-body" id="tierChart"></div>
+        </div>
+        <div class="card">
+          <h2>Method buckets</h2>
+          <p class="label">Full-run aggregate. Explorer filters do not change this chart.</p>
+          <div id="methodChart"></div>
+        </div>
+        <div class="card">
+          <h2>Anomaly classes</h2>
+          <p class="label">Full-run aggregate. Explorer filters do not change this chart.</p>
+          <div class="chart-body" id="classChart"></div>
+        </div>
       </div>
       <p class="label">Overview charts use full-run aggregates from `summary.json`; sample filters do not change them.</p>
-      <div class="card">
-        <h2>Method buckets</h2>
-        <div id="methodChart"></div>
-      </div>
-      <div class="card">
-        <h2>Anomaly classes</h2>
-        <div class="chart-body" id="classChart"></div>
-      </div>
-      </div>
       <section class="panel">
         <h2>Recommended actions</h2>
         <div class="action-grid" id="actionGuidance"></div>
@@ -598,6 +605,7 @@ def _dashboard_html() -> str:
     let sampleEvents = [];
     let summaryData = {};
     let lastHelpButton = null;
+    let navigationAttached = false;
     const filters = { method: [], tier: [], anomalyClass: [], region: [], device: [], domain: [], query: '' };
     const definitions = {
       'is_bot': ['The required yes/no output. A value of 1 means Bot Hunter selected the event for bot review.', 'Example: an event marked is_bot = 1 appears in the detected anomaly sample.'],
@@ -613,12 +621,12 @@ def _dashboard_html() -> str:
       'threshold': ['The run-specific cutoff used to select likely bot traffic.', 'Example: events above the combined-score cutoff are selected unless policy later rejects them.'],
       'unlabelled data': ['Data without known right answers. Precision, recall, and calibrated fraud probability cannot be measured yet.', 'Example: manual review labels would be needed to calculate precision.']
     };
+    attachNavigation();
     async function load() {
       const [summary, events] = await Promise.all([fetch('/api/summary').then(r => r.json()), fetch('/api/events').then(r => r.json())]);
       if (summary.error) { document.getElementById('metrics').innerHTML = `<div class="card">${escapeHtml(summary.error)}</div>`; return; }
       summaryData = summary;
       sampleEvents = Array.isArray(events) ? events : [];
-      attachNavigation();
       renderDefinitions();
       renderSummary(summary);
       renderCharts(summary);
@@ -815,6 +823,8 @@ def _dashboard_html() -> str:
         </tr>`).join('');
     }
     function attachNavigation() {
+      if (navigationAttached) return;
+      navigationAttached = true;
       document.querySelectorAll('button.nav').forEach(button => {
         button.onclick = () => showPage(button.dataset.page);
       });

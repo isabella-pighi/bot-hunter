@@ -69,6 +69,26 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Query Terms" in dashboard
         assert "Method/Tier Breakdown" in dashboard
         assert "Help" in dashboard
+        assert (
+            '<button type="button" class="nav" data-page="overview" '
+            'aria-current="page" onclick="showPage(\'overview\')">Overview' in dashboard
+        )
+        assert (
+            '<button type="button" class="nav" data-page="explorer" '
+            "onclick=\"showPage('explorer')\">Traffic Explorer" in dashboard
+        )
+        assert "let navigationAttached = false;" in dashboard
+        assert "if (navigationAttached) return;" in dashboard
+        assert "navigationAttached = true;" in dashboard
+        assert dashboard.index("attachNavigation();") < dashboard.index(
+            "async function load()"
+        )
+        assert "button.onclick = () => showPage(button.dataset.page);" in dashboard
+        assert ".global-filters { position:relative; z-index:1; }" in dashboard
+        assert "top:122px" not in dashboard
+        assert ".menu button { flex:0 1 auto; }" in dashboard
+        assert ".menu button { flex:1 1 calc(50% - 6px); min-width:0; }" in dashboard
+        assert "header { align-items:start; }" in dashboard
         assert "Operational tiers" in dashboard
         assert "Method buckets" in dashboard
         assert "Anomaly classes" in dashboard
