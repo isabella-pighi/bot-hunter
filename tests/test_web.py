@@ -84,10 +84,40 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
             "async function load()"
         )
         assert "button.onclick = () => showPage(button.dataset.page);" in dashboard
-        assert ".global-filters { position:relative; z-index:1; }" in dashboard
+        assert 'class="app-shell"' in dashboard
+        assert '<aside class="sidebar" aria-label="Dashboard sections">' in dashboard
+        assert '<nav class="sidebar-nav">' in dashboard
+        assert (
+            '<nav class="sidebar-nav" aria-label="Dashboard sections">' not in dashboard
+        )
+        assert "header { position:sticky; top:0; z-index:20;" in dashboard
+        assert (
+            ".app-shell { display:grid; grid-template-columns:240px minmax(0,1fr);"
+            in dashboard
+        )
+        assert ".sidebar { position:sticky; top:0;" in dashboard
+        assert ".workspace { min-width:0; width:100%;" in dashboard
+        assert (
+            ".global-filters { position:relative; z-index:1; padding:12px; }"
+            in dashboard
+        )
         assert "top:122px" not in dashboard
-        assert ".menu button { flex:0 1 auto; }" in dashboard
-        assert ".menu button { flex:1 1 calc(50% - 6px); min-width:0; }" in dashboard
+        assert ".control-head { display:flex;" in dashboard
+        assert (
+            ".filter-grid { grid-template-columns:repeat(4,minmax(140px,1fr)); gap:8px; }"
+            in dashboard
+        )
+        assert (
+            ".filter-grid select[multiple] { height:34px; min-height:34px; width:100%; }"
+            in dashboard
+        )
+        assert (
+            ".sidebar-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }"
+            in dashboard
+        )
+        assert (
+            ".sidebar-nav button.nav { text-align:center; min-width:0; }" in dashboard
+        )
         assert "header { align-items:start; }" in dashboard
         assert "Operational tiers" in dashboard
         assert "Method buckets" in dashboard
@@ -120,13 +150,16 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Device cluster (region/browser/OS sample)" in dashboard
         assert "Explore detected anomaly sample" in dashboard
         assert "Clear filters" in dashboard
-        assert "View Underlying Data" in dashboard
-        assert "Export Selection CSV" in dashboard
+        assert (
+            "Compact row-level controls for the top-250 suppress sample." in dashboard
+        )
+        assert "View data" in dashboard
+        assert "Export CSV" in dashboard
         assert 'id="sampleKpis"' in dashboard
         assert 'id="sampleTierChart"' in dashboard
         assert 'id="sampleMethodChart"' in dashboard
         assert 'id="sampleDomainChart"' in dashboard
-        assert 'select id="filter-${name}" multiple' in dashboard
+        assert 'select id="filter-${name}" multiple size="1"' in dashboard
         assert 'id="classSelectionNote"' in dashboard
         assert "Viewing:" in dashboard
         assert "row-level filtering is not available for this class" in dashboard

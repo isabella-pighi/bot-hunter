@@ -256,16 +256,12 @@ def _dashboard_html() -> str:
     }
     * { box-sizing: border-box; }
     body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); }
-    header {
-      position:sticky; top:0; z-index:10; background:#fff;
-      border-bottom:1px solid var(--line); padding:14px 22px;
-      display:grid; grid-template-columns:minmax(230px,1fr) auto; gap:14px;
-    }
+    header { position:sticky; top:0; z-index:20; background:#fff; border-bottom:1px solid var(--line); padding:14px 22px; display:grid; grid-template-columns:minmax(230px,1fr) auto; gap:14px; }
     h1 { font-size:24px; margin:0; letter-spacing:0; }
     h2 { font-size:18px; margin:0 0 12px; }
     h3 { font-size:15px; margin:0 0 8px; }
     p { margin:0 0 10px; }
-    main { max-width:1320px; margin:0 auto; padding:22px; }
+    main { margin:0; padding:0; }
     table { width:100%; border-collapse:collapse; font-size:13px; }
     th, td {
       border-bottom:1px solid var(--line);
@@ -289,8 +285,12 @@ def _dashboard_html() -> str:
     input, select { min-height:38px; padding:8px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; }
     input { width:min(420px, 42vw); }
     .dataset { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .menu { display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; position:relative; z-index:1; }
-    .menu button { flex:0 1 auto; }
+    .app-shell { display:grid; grid-template-columns:240px minmax(0,1fr); min-height:calc(100vh - 96px); }
+    .sidebar { position:sticky; top:0; align-self:start; min-height:calc(100vh - 96px); padding:16px; border-right:1px solid var(--line); background:#fff; }
+    .sidebar-title { color:var(--muted); font-size:12px; font-weight:750; letter-spacing:.04em; text-transform:uppercase; margin:0 0 10px; }
+    .sidebar-nav { display:grid; gap:6px; }
+    .sidebar-nav button.nav { width:100%; text-align:left; }
+    .workspace { min-width:0; width:100%; max-width:1320px; padding:18px 22px 28px; }
     .mode-group { display:flex; gap:4px; padding:3px; border:1px solid var(--line); border-radius:8px; background:#fff; }
     .input-panel { display:block; }
     .input-panel.is-hidden { display:none; }
@@ -339,26 +339,40 @@ def _dashboard_html() -> str:
     .modal-backdrop.open { display:flex; }
     .modal { background:#fff; color:var(--ink); max-width:560px; width:min(560px,100%); border-radius:8px; padding:18px; box-shadow:0 18px 60px rgba(0,0,0,.25); }
     .modal-head { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }
-    .global-filters { position:relative; z-index:1; }
-    .filter-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
-    .filter-grid select[multiple] { min-height:76px; width:100%; }
-    .sample-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:12px; }
+    .global-filters { position:relative; z-index:1; padding:12px; }
+    .control-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:8px; }
+    .control-head h2 { margin:0 0 3px; }
+    .filter-actions { display:flex; gap:6px; flex-wrap:wrap; }
+    .filter-actions button { padding:7px 9px; font-size:12px; }
+    .filter-grid { grid-template-columns:repeat(4,minmax(140px,1fr)); gap:8px; }
+    .filter-grid label { display:grid; gap:4px; font-size:12px; font-weight:650; }
+    .filter-grid input, .filter-grid select { min-height:34px; padding:6px 8px; font-size:12px; width:100%; }
+    .filter-grid select[multiple] { height:34px; min-height:34px; width:100%; }
+    .filter-grid .label { font-size:11px; font-weight:400; }
+    .sample-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:8px; }
+    .sample-grid .metric { min-height:74px; padding:9px; }
+    .sample-grid .metric-value { font-size:22px; margin:3px 0; }
     .clickable { cursor:pointer; }
     .clickable:focus { outline:3px solid var(--accent-weak); outline-offset:2px; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     @media (max-width: 1000px) {
-      header, .story, .chart-grid, .technical-grid, .split { grid-template-columns:1fr; }
+      header, .app-shell, .story, .chart-grid, .technical-grid, .split { grid-template-columns:1fr; }
       header { align-items:start; }
       .actions { width:100%; }
+      .sidebar { position:relative; min-height:auto; border-right:0; border-bottom:1px solid var(--line); }
+      .sidebar-nav { grid-template-columns:repeat(4,minmax(0,1fr)); }
+      .workspace { max-width:none; }
       .metric-grid, .three, .action-grid, .filter-grid, .term-grid, .help-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
       .sample-grid { grid-template-columns:1fr; }
       .class-grid { grid-template-columns:1fr; }
     }
     @media (max-width: 700px) {
-      main { padding:14px; }
+      .workspace { padding:14px; }
       input { width:100%; }
       .actions, .dataset, .input-panel, .mode-group { width:100%; }
-      .menu button { flex:1 1 calc(50% - 6px); min-width:0; }
+      .sidebar { padding:12px 14px; }
+      .sidebar-nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .sidebar-nav button.nav { text-align:center; min-width:0; }
       .mode-group button { flex:1; }
       .metric-grid, .three, .action-grid, .filter-grid, .term-grid, .help-grid { grid-template-columns:1fr; }
       .chart-body { grid-template-columns:1fr; }
@@ -370,15 +384,6 @@ def _dashboard_html() -> str:
     <div>
       <h1>Bot Hunter Business Dashboard</h1>
       <div class="topline">Operational review view for current bot-click results.</div>
-      <nav class="menu" aria-label="Dashboard pages">
-        <button type="button" class="nav" data-page="overview" aria-current="page" onclick="showPage('overview')">Overview</button>
-        <button type="button" class="nav" data-page="classes" onclick="showPage('classes')">Anomaly Classes</button>
-        <button type="button" class="nav" data-page="explorer" onclick="showPage('explorer')">Traffic Explorer</button>
-        <button type="button" class="nav" data-page="queries" onclick="showPage('queries')">Query Terms</button>
-        <button type="button" class="nav" data-page="breakdown" onclick="showPage('breakdown')">Method/Tier Breakdown</button>
-        <button type="button" class="nav" data-page="technical" onclick="showPage('technical')">Technical Evidence</button>
-        <button type="button" class="nav" data-page="help" onclick="showPage('help')">Help</button>
-      </nav>
     </div>
     <div class="actions">
       <div class="dataset" aria-label="Dataset source">
@@ -400,21 +405,36 @@ def _dashboard_html() -> str:
       <a class="secondary" href="/report">Report</a>
     </div>
   </header>
-  <main>
-    <section class="panel global-filters" aria-labelledby="filterTitle">
-      <h2 id="filterTitle">Explore detected anomaly sample</h2>
-      <p class="label">These controls update sample-backed cards, charts,
-      query views, and event rows. Full-run aggregate charts remain labelled
-      when they cannot be filtered with the available row data.</p>
-      <div class="filter-grid" id="filters"></div>
-      <div class="filter-actions">
-        <button type="button" onclick="clearFilters()">Clear filters</button>
-        <button type="button" onclick="showPage('explorer')">View Underlying Data</button>
-        <button type="button" onclick="exportSelection()">Export Selection CSV</button>
-      </div>
-      <div class="active-filters" id="activeFilters"></div>
-      <div class="sample-grid" id="sampleKpis"></div>
-    </section>
+  <main class="app-shell">
+    <aside class="sidebar" aria-label="Dashboard sections">
+      <div class="sidebar-title">Sections</div>
+      <nav class="sidebar-nav">
+        <button type="button" class="nav" data-page="overview" aria-current="page" onclick="showPage('overview')">Overview</button>
+        <button type="button" class="nav" data-page="classes" onclick="showPage('classes')">Anomaly Classes</button>
+        <button type="button" class="nav" data-page="explorer" onclick="showPage('explorer')">Traffic Explorer</button>
+        <button type="button" class="nav" data-page="queries" onclick="showPage('queries')">Query Terms</button>
+        <button type="button" class="nav" data-page="breakdown" onclick="showPage('breakdown')">Method/Tier Breakdown</button>
+        <button type="button" class="nav" data-page="technical" onclick="showPage('technical')">Technical Evidence</button>
+        <button type="button" class="nav" data-page="help" onclick="showPage('help')">Help</button>
+      </nav>
+    </aside>
+    <div class="workspace">
+      <section class="panel global-filters" aria-labelledby="filterTitle">
+        <div class="control-head">
+          <div>
+            <h2 id="filterTitle">Explore detected anomaly sample</h2>
+            <p class="label">Compact row-level controls for the top-250 suppress sample. Full-run aggregate charts stay labelled when filters do not apply.</p>
+          </div>
+          <div class="filter-actions">
+            <button type="button" onclick="clearFilters()">Clear filters</button>
+            <button type="button" onclick="showPage('explorer')">View data</button>
+            <button type="button" onclick="exportSelection()">Export CSV</button>
+          </div>
+        </div>
+        <div class="filter-grid" id="filters"></div>
+        <div class="active-filters" id="activeFilters"></div>
+        <div class="sample-grid" id="sampleKpis"></div>
+      </section>
     <section class="page active" id="page-overview">
       <div class="story">
       <div class="panel">
@@ -573,6 +593,7 @@ def _dashboard_html() -> str:
       <div class="help-grid" id="definitionButtons"></div>
       </section>
     </section>
+    </div>
   </main>
   <div class="modal-backdrop" id="helpModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" onclick="if(event.target===this)closeDefinition()">
     <div class="modal">
@@ -904,7 +925,7 @@ def _dashboard_html() -> str:
       };
     }
     function selectHtml(name, label, options) {
-      return `<label>${escapeHtml(label)}<select id="filter-${name}" multiple>
+      return `<label>${escapeHtml(label)}<select id="filter-${name}" multiple size="1">
         ${options.map(item => `<option>${escapeHtml(item)}</option>`).join('')}
       </select></label>`;
     }
