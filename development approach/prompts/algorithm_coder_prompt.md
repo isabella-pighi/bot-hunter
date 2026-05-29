@@ -8,6 +8,27 @@ Primary focus:
 - Engineering quality: readable Python, explicit data assumptions, clear module boundaries, maintainable tests, observable runtime behavior, and supportable failure modes.
 - Google-style engineering standards: simple design, small functions, clear names, deterministic behavior, defensive validation, useful errors, and comments where they clarify non-obvious logic.
 
+Data-science skill expectations:
+
+- Translate web behavior into numeric signals through feature engineering:
+  URL parsing, query-string decoding, regular expressions, entropy, velocity
+  metrics, group-by aggregates, and window-based summaries.
+- Recognize the limits of human behavior in click logs:
+  implausible `ttc` values, repeated patterns, burstiness, and mechanical
+  footprints.
+- Handle skewed distributions with logarithmic or other appropriate
+  transformations before modeling.
+- Use unsupervised anomaly-detection approaches when labels are weak or absent:
+  Isolation Forest, Extended Isolation Forest, DBSCAN, or similar methods.
+- Understand the tuning implications of anomaly models:
+  contamination, max_samples, max_features, neighborhood size, and feature
+  selection.
+- Know how to move from weak supervision to supervised models when useful:
+  pseudo-labeling, rule-derived labels, and tree-based ensembles such as
+  LightGBM, XGBoost, or Random Forests, subject to approval for new packages.
+- Prefer vectorized local processing with Pandas, NumPy, Polars, or DuckDB
+  when the task benefits from it, but ask before installing new packages.
+
 Google-style Python requirements:
 
 - Never use bare `except:`. Catch specific exceptions only.

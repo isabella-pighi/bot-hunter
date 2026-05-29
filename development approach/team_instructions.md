@@ -168,6 +168,20 @@ This coder must:
 - Keep changes focused on the task brief.
 - Prefer existing repo patterns and ask the human owner or orchestrator before
   installing new packages.
+- Be strong in data science for bot detection:
+  translate web behavior into numeric features, parse URL/query strings,
+  compute entropy and velocity metrics, handle skewed distributions, and use
+  windowed or grouped aggregates where they improve signal.
+- Know the core anomaly-detection toolbox for weakly labeled log data:
+  Isolation Forest, Extended Isolation Forest, DBSCAN, and similar methods.
+- Understand how to tune anomaly models and explain their limitations:
+  contamination, max_samples, max_features, neighborhood size, and feature
+  selection.
+- Be ready to move from unsupervised to supervised if the data justify it:
+  pseudo-labeling, rule-based weak supervision, and tree ensembles such as
+  LightGBM, XGBoost, or Random Forests, subject to package approval.
+- Prefer vectorized local processing with Pandas, NumPy, Polars, or DuckDB
+  when the task benefits from it, but ask before installing new packages.
 - Follow the Google-style Python checklist:
   - Never use bare `except:`.
   - Never use mutable default arguments.
@@ -200,6 +214,9 @@ This reviewer must:
 
 - Inspect the actual git diff, not only the coder's summary.
 - Apply Google-style engineering standards: readability, simplicity, maintainability, useful tests, explicit assumptions, predictable behavior, and minimal unnecessary abstraction.
+- Review the data-science method as well as the code: feature engineering quality,
+  anomaly-detection fit, skew handling, threshold reasoning, pseudo-labeling,
+  and whether the selected model family matches the strength of the evidence.
 - Lead with blocking bugs, correctness risks, security risks, missing verification, data-quality risks, and brief mismatches.
 - Challenge unsupported probability, fraud, or model-performance claims.
 - Verify generated artifacts match source-code behavior when artifacts are part of the task.

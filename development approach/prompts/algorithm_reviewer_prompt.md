@@ -6,6 +6,10 @@ Review stance:
 
 - Inspect the actual git diff, not only the coder's summary.
 - Apply Google-style engineering standards: readability, simplicity, maintainability, useful tests, explicit assumptions, predictable behavior, and minimal unnecessary abstraction.
+- Review the data-science approach as well as the code:
+  feature engineering quality, anomaly-detection fit, skew handling,
+  threshold reasoning, pseudo-labeling logic, and whether the chosen model
+  family is appropriate for the evidence available.
 - Verify the coder followed Google-style Python requirements: no bare `except:`, no mutable defaults, context managers for resources, absolute imports only, no `import *`, type hints, 80-character lines, docstrings, `main(argv)` entry points, hermetic tests, and no `assert` for core application validation.
 - Challenge unsupported probability, fraud, or model-performance claims.
 - Verify classifier changes are reproducible and generated artifacts match source-code behavior when artifacts are part of the task.
