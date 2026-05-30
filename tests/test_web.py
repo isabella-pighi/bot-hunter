@@ -109,14 +109,19 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "What was analysed" not in dashboard
         assert "How to act" not in dashboard
         assert 'id="storyAnalysed"' not in dashboard
+        assert 'class="panel analysis-brief-panel"' in dashboard
         assert 'class="analysis-brief-copy"' in dashboard
         assert '<p id="storyLead">Loading current run...</p>' in dashboard
         assert 'id="confidenceExplainer"' in dashboard
         assert '<p id="confidenceExplainer"></p>' in dashboard
-        assert ".analysis-brief-copy { display:grid; gap:10px;" in dashboard
+        assert ".analysis-brief-panel { min-width:0; overflow:visible; }" in dashboard
         assert (
-            ".analysis-brief-copy p { margin:0; color:var(--ink); "
-            "font-size:15px; line-height:1.55; }" in dashboard
+            ".analysis-brief-copy { display:grid; gap:10px; width:100%; "
+            "max-width:min(920px,100%); min-width:0; }" in dashboard
+        )
+        assert (
+            ".analysis-brief-copy p { max-width:72ch; margin:0; color:var(--ink); "
+            "font-size:15px; line-height:1.55; overflow-wrap:anywhere; }" in dashboard
         )
         assert "Operational confidence is estimated from how often" in dashboard
         assert "strong rule evidence and anomaly-model support" in dashboard
