@@ -682,7 +682,9 @@ that also crossed the combined-score cutoff is counted as selected traffic in
 the class table. This keeps ML-only anomalies visible without describing them
 as rule-derived replay evidence.
 
-Concrete examples from the current run:
+Concrete examples from the current run are summarised below. The underlying
+event-level fields, scores, tiers, and rule evidence can be visualised in the
+Traffic Explorer in the dashboard.
 
 {example_lines}
 
@@ -750,10 +752,6 @@ def _anomaly_example_lines(classes: object) -> str:
         if not isinstance(example, dict):
             continue
         label = str(item.get("label", item.get("class_id", "Anomaly class")))
-        rules = example.get("rule_ids")
-        rule_text = ""
-        if isinstance(rules, list) and rules:
-            rule_text = f"; rules: {', '.join(str(rule) for rule in rules)}"
         population = item.get("population_count")
         population_text = ""
         if population is not None:
@@ -765,12 +763,7 @@ def _anomaly_example_lines(classes: object) -> str:
             f"{label}{population_text}: {narrative} The example event is "
             f"`{example.get('event_id', 'unknown')}`, which clicked "
             f"`{example.get('domain', '')}` for query "
-            f"`{example.get('query', '')}`. The supporting data is: combined "
-            f"{float(example.get('combined_score', 0.0)):.4f}, rules "
-            f"{float(example.get('heuristic_score', 0.0)):.4f}, ML "
-            f"{float(example.get('ml_score', 0.0)):.4f}, tier "
-            f"`{example.get('operational_tier', '')}`, method "
-            f"`{example.get('method_bucket', '')}`{rule_text}."
+            f"`{example.get('query', '')}`."
         )
     return "\n".join(lines) or "- No anomaly class examples were reported."
 

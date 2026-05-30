@@ -591,7 +591,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
 endobj
 16 0 obj
-<< /Length 3294 >>
+<< /Length 3282 >>
 stream
 BT
 /F1 10 Tf
@@ -631,7 +631,11 @@ T*
 T*
 () Tj
 T*
-(Concrete examples from the current run:) Tj
+(Concrete examples from the current run are summarised below. The underlying) Tj
+T*
+(event-level fields, scores, tiers, and rule evidence can be visualised in the) Tj
+T*
+(Traffic Explorer in the dashboard.) Tj
 T*
 () Tj
 T*
@@ -645,13 +649,7 @@ T*
 T*
 (independent fields point in the same direction. The example event is evt_147679, which) Tj
 T*
-(clicked www.amazon.de for query nomnem. The supporting data is: combined 0.9183, rules) Tj
-T*
-(0.8600, ML 0.9988, tier suppress, method Heuristic + ML; rules: repeat_query_domain,) Tj
-T*
-(repeat_query, confirmed_query_repetition, high_volume_domain, heavy_device_cluster,) Tj
-T*
-(concentrated_ct_context, short_query.) Tj
+(clicked www.amazon.de for query nomnem.) Tj
 T*
 (- Compound burst/replay: This example shows repetition happening inside a burst. The key) Tj
 T*
@@ -661,15 +659,7 @@ T*
 T*
 (replay than with ordinary human browsing. The example event is evt_097085, which clicked) Tj
 T*
-(duckduckgo.com for query vielle motoneuron. The supporting data is: combined 0.9982,) Tj
-T*
-(rules 1.0000, ML 0.9957, tier suppress, method Heuristic + ML; rules:) Tj
-T*
-(repeat_query_domain, repeat_query, confirmed_query_repetition, heavy_device_cluster,) Tj
-T*
-(same_second_burst, dense_burst_repetition_cluster, concentrated_ct_context,) Tj
-T*
-(moderate_long_ttc.) Tj
+(duckduckgo.com for query vielle motoneuron.) Tj
 T*
 (- ML-tail multivariate anomaly \(2,005 events in the wider population\): This is an) Tj
 T*
@@ -681,22 +671,7 @@ T*
 T*
 (review candidate, not proof of fraud. The example event is evt_082067, which clicked) Tj
 T*
-ET
-endstream
-endobj
-17 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
-endobj
-18 0 obj
-<< /Length 3408 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
-(www.firefold.com for query splenocyte. The supporting data is: combined 0.7637, rules) Tj
-T*
-(0.6000, ML 0.9896, tier quarantine, method ML only.) Tj
+(www.firefold.com for query splenocyte.) Tj
 T*
 (- Repetition with timing anomaly: This example combines repeated query/domain behaviour) Tj
 T*
@@ -706,13 +681,20 @@ T*
 T*
 (human variation. The example event is evt_004943, which clicked www.amazon.ca for query) Tj
 T*
-(nomnem. The supporting data is: combined 0.9184, rules 0.8600, ML 0.9991, tier suppress,) Tj
-T*
-(method Heuristic + ML; rules: repeat_query_domain, repeat_query,) Tj
-T*
-(confirmed_query_repetition, high_volume_domain, heavy_device_cluster, extreme_ttc,) Tj
-T*
-(short_query.) Tj
+ET
+endstream
+endobj
+17 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
+endobj
+18 0 obj
+<< /Length 2954 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(nomnem.) Tj
 T*
 (- Repetition dominated: This is the simplest explainable replay pattern. The main) Tj
 T*
@@ -720,11 +702,7 @@ T*
 T*
 (needing burst or broader context to carry the decision. The example event is evt_009777,) Tj
 T*
-(which clicked www.overstock.com for query fuzz sulphid. The supporting data is: combined) Tj
-T*
-(0.7781, rules 0.6200, ML 0.9964, tier suppress, method Heuristic + ML; rules:) Tj
-T*
-(repeat_query_domain, repeat_query, confirmed_query_repetition.) Tj
+(which clicked www.overstock.com for query fuzz sulphid.) Tj
 T*
 (- Supporting context plus combined tail: This example is deliberately treated as) Tj
 T*
@@ -734,13 +712,7 @@ T*
 T*
 (is why the right action is review or quarantine rather than automatic suppression. The) Tj
 T*
-(example event is evt_089535, which clicked www.amazon.co.uk for query aw. The supporting) Tj
-T*
-(data is: combined 0.6109, rules 0.3600, ML 0.9574, tier quarantine, method Combined) Tj
-T*
-(tail; rules: high_volume_domain, heavy_device_cluster, same_second_burst,) Tj
-T*
-(moderate_long_ttc, short_query.) Tj
+(example event is evt_089535, which clicked www.amazon.co.uk for query aw.) Tj
 T*
 (- Other combined-tail anomaly: This is a residual combined-tail example. It crosses the) Tj
 T*
@@ -750,9 +722,7 @@ T*
 T*
 (automatic suppression. The example event is evt_032590, which clicked find.gmx.com for) Tj
 T*
-(query balm thyrohyal youre eight. The supporting data is: combined 0.5687, rules 0.3000,) Tj
-T*
-(ML 0.9396, tier quarantine, method Combined tail; rules: same_second_burst, fast_click.) Tj
+(query balm thyrohyal youre eight.) Tj
 T*
 () Tj
 T*
@@ -778,19 +748,6 @@ T*
 T*
 (| Explainable replay review: anomaly_class in repetition_with_supporting_context,) Tj
 T*
-ET
-endstream
-endobj
-19 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
-endobj
-20 0 obj
-<< /Length 2261 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (compound_burst_replay, repetition_with_timing, repetition_dominated | Focus reviewer) Tj
 T*
 (time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-) Tj
@@ -821,6 +778,19 @@ T*
 T*
 (Separate prediction from action. is_bot is the compatibility prediction;) Tj
 T*
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 2206 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (operational_tier is the safer business-control layer.) Tj
 T*
 () Tj
@@ -875,19 +845,6 @@ T*
 T*
 (The current operational confidence estimate is 74.49%. This is not) Tj
 T*
-ET
-endstream
-endobj
-21 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
-endobj
-22 0 obj
-<< /Length 2635 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (measured precision because the dataset has no ground-truth labels.) Tj
 T*
 () Tj
@@ -918,6 +875,19 @@ T*
 T*
 (|---|---|---|---|) Tj
 T*
+ET
+endstream
+endobj
+21 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
+endobj
+22 0 obj
+<< /Length 2545 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (| Suppress-tier bot traffic remains untreated | High | Medium to High | Strong signals) Tj
 T*
 (would continue to distort billing, reporting, and optimisation unless policy-approved) Tj
@@ -972,19 +942,6 @@ T*
 T*
 (defend but can miss novel patterns. The anomaly model broadens coverage but) Tj
 T*
-ET
-endstream
-endobj
-23 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 22 0 R >>
-endobj
-24 0 obj
-<< /Length 2040 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (needs careful interpretation because it finds unusual events, not necessarily) Tj
 T*
 (fraudulent events.) Tj
@@ -1015,6 +972,19 @@ T*
 T*
 (  for drift across future runs.) Tj
 T*
+ET
+endstream
+endobj
+23 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 22 0 R >>
+endobj
+24 0 obj
+<< /Length 2210 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (Material changes in geography, campaign volume, inventory, browser mix, or) Tj
@@ -1069,19 +1039,6 @@ T*
 T*
 (| combined_score | Weighted blend of rule and ML evidence. |) Tj
 T*
-ET
-endstream
-endobj
-25 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
-endobj
-26 0 obj
-<< /Length 2669 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (| Combined-score cutoff | Run-specific threshold used to select the top anomaly) Tj
 T*
 (population. |) Tj
@@ -1112,6 +1069,19 @@ T*
 T*
 ( Appendix B: Feature Definitions) Tj
 T*
+ET
+endstream
+endobj
+25 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
+endobj
+26 0 obj
+<< /Length 2611 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (| Feature | Meaning |) Tj
@@ -1166,19 +1136,6 @@ T*
 T*
 (isolate from the rest of the batch using random feature-space splits.) Tj
 T*
-ET
-endstream
-endobj
-27 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
-endobj
-28 0 obj
-<< /Length 2378 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 () Tj
 T*
 (In plain English, events that look very different from the main population tend) Tj
@@ -1209,6 +1166,19 @@ T*
 T*
 (into a cluster makes the output harder to explain and less reliable for rare anomalies.) Tj
 T*
+ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 2324 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (|) Tj
 T*
 (| Standard Isolation Forest | Standard Isolation Forest is a strong baseline, but its) Tj
@@ -1263,19 +1233,6 @@ T*
 T*
 (The combined-score threshold is the run-specific 97.5th-percentile cutoff. It) Tj
 T*
-ET
-endstream
-endobj
-29 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 28 0 R >>
-endobj
-30 0 obj
-<< /Length 1619 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (keeps the selected volume stable for an unlabelled dataset while letting the ML) Tj
 T*
 (model influence borderline cases.) Tj
@@ -1306,6 +1263,19 @@ T*
 T*
 (threshold, floor 600, rate guardrail 5223 |) Tj
 T*
+ET
+endstream
+endobj
+29 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 28 0 R >>
+endobj
+30 0 obj
+<< /Length 793 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (| High-volume clicked domain \(high_volume_domain\) | 2238 | 99th-percentile threshold,) Tj
 T*
 (floor 200, rate guardrail 2238 |) Tj
@@ -1359,22 +1329,22 @@ xref
 0000013275 00000 n
 0000016127 00000 n
 0000016255 00000 n
-0000019602 00000 n
-0000019730 00000 n
-0000023191 00000 n
-0000023319 00000 n
-0000025633 00000 n
-0000025761 00000 n
-0000028449 00000 n
-0000028577 00000 n
-0000030670 00000 n
-0000030798 00000 n
-0000033520 00000 n
-0000033648 00000 n
-0000036079 00000 n
-0000036207 00000 n
-0000037879 00000 n
+0000019590 00000 n
+0000019718 00000 n
+0000022725 00000 n
+0000022853 00000 n
+0000025112 00000 n
+0000025240 00000 n
+0000027838 00000 n
+0000027966 00000 n
+0000030229 00000 n
+0000030357 00000 n
+0000033021 00000 n
+0000033149 00000 n
+0000035526 00000 n
+0000035654 00000 n
+0000036499 00000 n
 trailer << /Size 32 /Root 1 0 R >>
 startxref
-38007
+36627
 %%EOF
