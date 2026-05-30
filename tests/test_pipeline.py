@@ -211,10 +211,15 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "overflow-x: auto" in html_report
     assert "max-width: 1680px" in html_report
     assert "font-size: clamp(16px" in html_report
+    assert "font-family: Arial, Helvetica, sans-serif;" in html_report
+    assert "p, ul, ol, pre, .table-wrap" in html_report
+    assert "max-width: none;" in html_report
     assert "border: 1px solid var(--border)" in html_report
     assert "<table><thead><tr>" in html_report
     assert "</thead><tbody>" in html_report
     assert "</tbody></table></div>" in html_report
+    assert '\n<div class="table-wrap"><table>' in html_report
+    assert "</tbody></table></div>\n" in html_report
     assert (
         "<p>Bot Hunter analyses fictitious ad-click traffic to identify events "
         "that look more like automated bot activity" in html_report

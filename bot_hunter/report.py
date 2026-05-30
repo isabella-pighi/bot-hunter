@@ -859,13 +859,13 @@ def _html(markdown: str) -> str:
     def close_list() -> None:
         nonlocal in_list
         if in_list:
-            body.append(f"</{list_tag}>")
+            body.append(f"</{list_tag}>\n")
             in_list = False
 
     def close_table() -> None:
         nonlocal in_table
         if in_table:
-            body.append("</tbody></table></div>")
+            body.append("</tbody></table></div>\n")
             in_table = False
 
     for line in markdown.splitlines():
@@ -873,7 +873,7 @@ def _html(markdown: str) -> str:
             flush_paragraph()
             close_table()
             close_list()
-            body.append("</pre>" if in_code else "<pre>")
+            body.append("</pre>\n" if in_code else "\n<pre>")
             in_code = not in_code
             continue
         if in_code:
@@ -894,7 +894,7 @@ def _html(markdown: str) -> str:
             close_table()
             if not in_list:
                 list_tag = "ul"
-                body.append("<ul>")
+                body.append("\n<ul>")
                 in_list = True
             body.append(f"<li>{html.escape(line[2:])}</li>")
         elif match := re.match(r"^(\d+)\. (.+)$", line):
@@ -903,7 +903,7 @@ def _html(markdown: str) -> str:
             if not in_list or list_tag != "ol":
                 close_list()
                 list_tag = "ol"
-                body.append("<ol>")
+                body.append("\n<ol>")
                 in_list = True
             body.append(f"<li>{html.escape(match.group(2))}</li>")
         elif in_list and line.startswith("  ") and line.strip():
@@ -920,7 +920,7 @@ def _html(markdown: str) -> str:
                     f"<th>{html.escape(cell)}</th>" for cell in cells
                 )
                 body.append(
-                    '<div class="table-wrap"><table><thead><tr>'
+                    '\n<div class="table-wrap"><table><thead><tr>'
                     f"{rendered_cells}</tr></thead><tbody>"
                 )
                 in_table = True
@@ -962,7 +962,7 @@ def _html(markdown: str) -> str:
     body {{
       background: #f4f7fa;
       color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       line-height: 1.55;
       margin: 0;
     }}
@@ -983,7 +983,14 @@ def _html(markdown: str) -> str:
       margin-top: 2.4rem;
       padding-top: 1.25rem;
     }}
-    p, li {{ max-width: min(100%, 104ch); }}
+    p, ul, ol, pre, .table-wrap {{
+      margin-left: 0;
+      margin-right: 0;
+      max-width: none;
+      width: 100%;
+    }}
+    p {{ margin-bottom: 1.1rem; margin-top: 0; }}
+    ul, ol {{ padding-left: 1.35rem; }}
     pre {{
       background: var(--surface);
       border: 1px solid var(--border);
@@ -995,7 +1002,7 @@ def _html(markdown: str) -> str:
     .table-wrap {{
       border: 1px solid var(--border-strong);
       border-radius: 6px;
-      margin: 1rem 0 1.6rem;
+      margin: 1.35rem 0 1.8rem;
       overflow-x: auto;
       scrollbar-gutter: stable;
       width: 100%;
