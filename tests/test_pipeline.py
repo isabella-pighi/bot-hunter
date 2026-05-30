@@ -204,8 +204,15 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     html_report = (tmp_path / "docs" / "analysis_report.html").read_text(
         encoding="utf-8"
     )
+    assert '<meta name="viewport" content="width=device-width, initial-scale=1">' in (
+        html_report
+    )
+    assert '<div class="table-wrap"><table><thead><tr>' in html_report
+    assert "overflow-x: auto" in html_report
+    assert "border: 1px solid var(--border)" in html_report
     assert "<table><thead><tr>" in html_report
     assert "</thead><tbody>" in html_report
+    assert "</tbody></table></div>" in html_report
     assert "<th>Rule</th>" in html_report
     assert "<h2>4. Anomaly Explanations &amp; Practical Guidance</h2>" in html_report
     assert "<h2>Appendix A: Metric Definitions</h2>" in html_report

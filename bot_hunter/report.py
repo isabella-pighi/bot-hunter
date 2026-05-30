@@ -847,7 +847,7 @@ def _html(markdown: str) -> str:
     for line in markdown.splitlines():
         if line.startswith("```"):
             if in_table:
-                body.append("</tbody></table>")
+                body.append("</tbody></table></div>")
                 in_table = False
             body.append("</pre>" if in_code else "<pre>")
             in_code = not in_code
@@ -857,7 +857,7 @@ def _html(markdown: str) -> str:
             continue
         if line.startswith("# "):
             if in_table:
-                body.append("</tbody></table>")
+                body.append("</tbody></table></div>")
                 in_table = False
             body.append(f"<h1>{html.escape(line[2:])}</h1>")
         elif line.startswith("## "):
@@ -865,12 +865,12 @@ def _html(markdown: str) -> str:
                 body.append("</ul>")
                 in_list = False
             if in_table:
-                body.append("</tbody></table>")
+                body.append("</tbody></table></div>")
                 in_table = False
             body.append(f"<h2>{html.escape(line[3:])}</h2>")
         elif line.startswith("- "):
             if in_table:
-                body.append("</tbody></table>")
+                body.append("</tbody></table></div>")
                 in_table = False
             if not in_list:
                 body.append("<ul>")
@@ -887,7 +887,10 @@ def _html(markdown: str) -> str:
                 rendered_cells = "".join(
                     f"<th>{html.escape(cell)}</th>" for cell in cells
                 )
-                body.append(f"<table><thead><tr>{rendered_cells}</tr></thead><tbody>")
+                body.append(
+                    '<div class="table-wrap"><table><thead><tr>'
+                    f"{rendered_cells}</tr></thead><tbody>"
+                )
                 in_table = True
             else:
                 rendered_cells = "".join(
@@ -899,32 +902,100 @@ def _html(markdown: str) -> str:
                 body.append("</ul>")
                 in_list = False
             if in_table:
-                body.append("</tbody></table>")
+                body.append("</tbody></table></div>")
                 in_table = False
             body.append(f"<p>{html.escape(line)}</p>")
     if in_list:
         body.append("</ul>")
     if in_table:
-        body.append("</tbody></table>")
+        body.append("</tbody></table></div>")
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Bot Hunter Analysis Report</title>
   <style>
-    body {{ font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.5; margin: 48px auto; max-width: 920px; color: #172026; }}
-    h1, h2 {{ line-height: 1.2; }}
-    h1 {{ font-size: 34px; }}
-    h2 {{ margin-top: 32px; border-top: 1px solid #d8dee4; padding-top: 20px; }}
-    pre {{ background: #f6f8fa; padding: 16px; overflow: auto; border-radius: 6px; }}
-    table {{ width: 100%; border-collapse: collapse; margin: 14px 0 22px; }}
-    th, td {{ border-bottom: 1px solid #d8dee4; padding: 8px; text-align: left;
-      vertical-align: top; }}
-    th {{ color: #5f6b74; }}
+    :root {{
+      color-scheme: light;
+      --border: #cfd7df;
+      --border-strong: #9eaab5;
+      --ink: #172026;
+      --muted: #52616d;
+      --page: #ffffff;
+      --surface: #f6f8fa;
+      --thead: #eef3f7;
+    }}
+    * {{ box-sizing: border-box; }}
+    html {{ font-size: clamp(15px, 1.1vw, 17px); }}
+    body {{
+      background: #f4f7fa;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+      margin: 0;
+    }}
+    main {{
+      background: var(--page);
+      box-shadow: 0 16px 48px rgba(23, 32, 38, 0.08);
+      margin: 0 auto;
+      max-width: 1120px;
+      min-height: 100vh;
+      padding: clamp(24px, 5vw, 64px);
+      width: min(100%, 1120px);
+    }}
+    h1, h2 {{ line-height: 1.2; overflow-wrap: anywhere; }}
+    h1 {{ font-size: clamp(2rem, 4vw, 2.75rem); margin: 0 0 1.25rem; }}
+    h2 {{
+      border-top: 1px solid var(--border);
+      font-size: clamp(1.35rem, 2.3vw, 1.75rem);
+      margin-top: 2.4rem;
+      padding-top: 1.25rem;
+    }}
+    p, li {{ max-width: 78ch; }}
+    pre {{
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow-x: auto;
+      padding: 1rem;
+      white-space: pre-wrap;
+    }}
+    .table-wrap {{
+      border: 1px solid var(--border-strong);
+      border-radius: 6px;
+      margin: 1rem 0 1.6rem;
+      overflow-x: auto;
+      width: 100%;
+    }}
+    table {{
+      border-collapse: collapse;
+      min-width: min(760px, 100%);
+      table-layout: auto;
+      width: 100%;
+    }}
+    th, td {{
+      border: 1px solid var(--border);
+      padding: 0.7rem 0.8rem;
+      text-align: left;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+      word-break: normal;
+    }}
+    th {{
+      background: var(--thead);
+      color: var(--muted);
+      font-weight: 700;
+    }}
+    tbody tr:nth-child(even) {{ background: #fbfcfd; }}
+    @media (max-width: 720px) {{
+      main {{ padding: 20px 14px 32px; }}
+      .table-wrap {{ border-radius: 4px; }}
+      th, td {{ padding: 0.6rem; }}
+    }}
   </style>
 </head>
-<body>{''.join(body)}</body>
+<body><main>{''.join(body)}</main></body>
 </html>"""
 
 
