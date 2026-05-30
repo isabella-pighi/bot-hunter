@@ -313,6 +313,7 @@ def _dashboard_html() -> str:
     .analysis-brief-copy { display:grid; gap:10px; width:100%; max-width:none; min-width:0; }
     .analysis-brief-copy p { margin:0; color:var(--ink); font-size:15px; line-height:1.55; overflow-wrap:anywhere; }
     .chart-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:16px; }
+    .explorer-donut-row, .explorer-filter-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
     .chart-body { display:grid; grid-template-columns:142px minmax(0,1fr); gap:14px; align-items:center; }
     .donut { width:142px; height:142px; }
     .legend { display:grid; gap:7px; }
@@ -335,6 +336,7 @@ def _dashboard_html() -> str:
     .technical-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
     .bar { height:22px; background:#e8edf0; border-radius:4px; overflow:hidden; margin:7px 0 12px; }
     .bar > span { display:block; height:100%; background:var(--accent); }
+    .domain-bar-label { display:block; width:100%; border:0; border-radius:4px; padding:5px 7px; background:#2f3b42; color:#fff; font-size:12px; text-align:left; }
     .table-wrap { overflow:auto; contain:inline-size; }
     .wrap { max-width:260px; overflow-wrap:anywhere; }
     .score { font-variant-numeric:tabular-nums; font-weight:650; }
@@ -419,7 +421,6 @@ def _dashboard_html() -> str:
       <div class="sidebar-title">Sections</div>
       <nav class="sidebar-nav">
         <button type="button" class="nav" data-page="overview" aria-current="page" onclick="showPage('overview')">Overview</button>
-        <button type="button" class="nav" data-page="breakdown" onclick="showPage('breakdown')">Method/Tier Breakdown</button>
         <button type="button" class="nav" data-page="explorer" onclick="showPage('explorer')">Traffic Explorer</button>
         <button type="button" class="nav" data-page="technical" onclick="showPage('technical')">Technical Evidence</button>
         <button type="button" class="nav" data-page="queries" onclick="showPage('queries')">Query Terms</button>
@@ -463,6 +464,14 @@ def _dashboard_html() -> str:
       <div class="label" id="classScope"></div>
       <div class="notice" id="classSelectionNote" hidden></div>
       <div class="class-grid" id="classCards"></div>
+      <div class="caveat">
+        Filtering options are review controls for similar unlabelled datasets,
+        not ground-truth fraud rules.
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Filter</th><th>Use</th></tr></thead>
+        <tbody id="filteringOptions"></tbody>
+      </table></div>
       </section>
     </section>
     <section class="page" id="page-explorer">
@@ -472,8 +481,11 @@ def _dashboard_html() -> str:
       the full selected detected-anomaly set for the current run. This is not
       the full all-traffic population, and raw `ct`/country values are not
       available through the current dashboard API.</p>
-      <div class="chart-grid">
-        <div class="card"><h3>Filtered anomaly tiers</h3><div class="chart-body" id="sampleTierChart"></div></div>
+      <div class="chart-grid explorer-donut-row">
+        <div class="card"><h3>Operational tiers</h3><div class="chart-body" id="tierChartBreakdown"></div></div>
+        <div class="card"><h3>Anomaly classes</h3><div class="chart-body" id="classChartBreakdown"></div></div>
+      </div>
+      <div class="chart-grid explorer-filter-row">
         <div class="card"><h3>Filtered anomaly method buckets</h3><div id="sampleMethodChart"></div></div>
         <div class="card"><h3>Filtered anomaly domains</h3><div id="sampleDomainChart"></div></div>
       </div>
@@ -494,27 +506,6 @@ def _dashboard_html() -> str:
         <div class="card"><h3>Top query/domain combinations</h3><div id="queryDomainPairs"></div></div>
       </div>
       <div class="panel"><h3>Summary top queries</h3><div id="summaryQueries"></div></div>
-      </section>
-    </section>
-    <section class="page" id="page-breakdown">
-      <section class="panel">
-      <h2>Method/Tier Breakdown</h2>
-      <p class="label">These are full-run aggregate charts. Use the Traffic Explorer for selected-row charts.</p>
-      <div class="chart-grid" aria-label="Breakdown charts">
-        <div class="card"><h3>Operational tiers</h3><div class="chart-body" id="tierChartBreakdown"></div></div>
-        <div class="card"><h3>Review method buckets</h3><div id="methodChartBreakdown"></div></div>
-        <div class="card"><h3>Anomaly classes</h3><div class="chart-body" id="classChartBreakdown"></div></div>
-      </div>
-      </section>
-      <section class="panel">
-      <div class="caveat">
-        Filtering options are review controls for similar unlabelled datasets,
-        not ground-truth fraud rules.
-      </div>
-      <div class="table-wrap"><table>
-        <thead><tr><th>Filter</th><th>Use</th></tr></thead>
-        <tbody id="filteringOptions"></tbody>
-      </table></div>
       </section>
     </section>
     <section class="page" id="page-technical">
@@ -584,8 +575,8 @@ def _dashboard_html() -> str:
     function jsString(value) {
       return JSON.stringify(String(value ?? ''));
     }
-    const colours = ['#0f6674', '#327a52', '#a35b00', '#4361a6',
-      '#7157a8', '#aa4238', '#61717a', '#8a6f3f'];
+    const colours = ['#b4483d', '#2f7d59', '#b26800', '#4361a6',
+      '#7157a8', '#7b6870', '#4f6f7a', '#8a6f3f'];
     let anomalyEvents = [];
     let summaryData = {};
     let lastHelpButton = null;
@@ -600,6 +591,7 @@ def _dashboard_html() -> str:
       'heuristic score': ['Evidence from transparent rules, such as repetition, bursts, or unusual timing.', 'Example: repeated query/domain pairs raise this score.'],
       'ML score': ['How unusual the event looks compared with this batch. It does not prove fraud.', 'Example: a rare combination of features can score high.'],
       'combined score': ['The score used for selection: 0.58 rule evidence plus 0.42 anomaly-model evidence.', 'Example: a high combined score can pass the run threshold.'],
+      'Combined tail': ['An event selected because its blended combined score passed the run threshold, even though neither the strong rules override nor the strongest ML-only bucket was enough on its own. Treat it as combined or borderline evidence, usually for review or quarantine rather than automatic suppression.', 'Example: a moderate rule score and moderate anomaly score can add up to a selected event.'],
       'anomaly class': ['A review group that explains the main pattern. It is not a confirmed fraud label.', 'Example: Compound burst/replay means repetition and burst timing appeared together.'],
       'operational confidence estimate': ['A signal-based review-priority estimate from agreement and score strength. It is not measured precision, recall, or calibrated fraud probability.', 'Example: use it to plan review effort, not as a fraud probability.'],
       'threshold': ['The run-specific cutoff used to select likely bot traffic.', 'Example: events above the combined-score cutoff are selected unless policy later rejects them.'],
@@ -668,7 +660,6 @@ def _dashboard_html() -> str:
       const classes = ((s.anomaly_classes || {}).classes || [])
         .map(item => [item.label, item.count]);
       renderDonut('tierChartBreakdown', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', 'tier', 'full-run aggregate; not affected by explorer filters');
-      renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown', 'full-run aggregate, not affected by explorer filters');
       renderDonut('classChartBreakdown', 'Anomaly classes', classes, 'selected', 'anomalyClass', 'full-run aggregate; not affected by explorer filters');
     }
     function renderBars(id, rows) {
@@ -904,7 +895,6 @@ def _dashboard_html() -> str:
       renderSampleCharts(rows);
     }
     function renderSampleCharts(rows) {
-      renderDonut('sampleTierChart', 'Filtered anomaly tiers', countBy(rows, e => e.operational_tier), 'rows', 'tier', 'filtered detected anomaly set');
       renderMethodChart(countBy(rows, methodBucket), 'sampleMethodChart', 'filtered detected anomaly set');
       renderCountBars('sampleDomainChart', countBy(rows, e => e.domain), rows.length, 'domain');
     }
@@ -942,7 +932,8 @@ def _dashboard_html() -> str:
       const max = Math.max(...rows.map(row => row[1]), 1);
       document.getElementById(id).innerHTML = rows.map(([label, value]) => {
         const share = total ? `${((100 * value) / total).toFixed(1)}%` : '0.0%';
-        return `<button type="button" class="label clickable" onclick="${handlerAttr(`applyBarFilter(${jsString(filterName)}, ${jsString(label)})`)}">${escapeHtml(label)} (${count(value)}, ${share})</button><div class="bar"><span style="width:${(100 * value) / max}%"></span></div>`;
+        const labelClass = id === 'sampleDomainChart' ? 'domain-bar-label clickable' : 'label clickable';
+        return `<button type="button" class="${labelClass}" onclick="${handlerAttr(`applyBarFilter(${jsString(filterName)}, ${jsString(label)})`)}">${escapeHtml(label)} (${count(value)}, ${share})</button><div class="bar"><span style="width:${(100 * value) / max}%"></span></div>`;
       }).join('');
     }
     function applyBarFilter(filterName, label) {

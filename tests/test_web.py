@@ -9,7 +9,6 @@ from bot_hunter import web
 
 SIDEBAR_LABELS = [
     "Overview",
-    "Method/Tier Breakdown",
     "Traffic Explorer",
     "Technical Evidence",
     "Query Terms",
@@ -33,6 +32,12 @@ def _overview_markup(dashboard: str) -> str:
     overview_start = dashboard.index('<section class="page active" id="page-overview">')
     overview_end = dashboard.index('<section class="page" id="page-classes">')
     return dashboard[overview_start:overview_end]
+
+
+def _page_markup(dashboard: str, page_id: str, next_page_id: str) -> str:
+    page_start = dashboard.index(f'<section class="page" id="{page_id}">')
+    page_end = dashboard.index(f'<section class="page" id="{next_page_id}">')
+    return dashboard[page_start:page_end]
 
 
 def _labels_are_ordered(markup: str, labels: list[str]) -> bool:
@@ -146,7 +151,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert 'id="classChart"' not in overview_markup
         assert "Traffic Explorer" in dashboard
         assert "Query Terms" in dashboard
-        assert "Method/Tier Breakdown" in dashboard
+        assert "Method/Tier Breakdown" not in dashboard
         assert "Help" in dashboard
         nav_markup = _sidebar_nav_markup(dashboard)
         assert _labels_are_ordered(
@@ -157,10 +162,8 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
             '<button type="button" class="nav" data-page="overview" '
             'aria-current="page" onclick="showPage(\'overview\')">Overview' in dashboard
         )
-        assert (
-            '<button type="button" class="nav" data-page="breakdown" '
-            "onclick=\"showPage('breakdown')\">Method/Tier Breakdown" in dashboard
-        )
+        assert 'data-page="breakdown"' not in nav_markup
+        assert "showPage('breakdown')" not in dashboard
         assert (
             '<button type="button" class="nav" data-page="explorer" '
             "onclick=\"showPage('explorer')\">Traffic Explorer" in dashboard
@@ -221,7 +224,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert 'id="methodChart"' not in dashboard
         assert 'id="classChart"' not in dashboard
         assert 'id="tierChartBreakdown"' in dashboard
-        assert 'id="methodChartBreakdown"' in dashboard
+        assert 'id="methodChartBreakdown"' not in dashboard
         assert 'id="classChartBreakdown"' in dashboard
         assert 'id="classCards"' in dashboard
         assert 'id="filteringOptions"' in dashboard
@@ -253,9 +256,37 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Filtered anomalies" not in dashboard
         assert "Suppress rows" not in dashboard
         assert "Unique domains" not in dashboard
-        assert 'id="sampleTierChart"' in dashboard
+        assert 'id="sampleTierChart"' not in dashboard
         assert 'id="sampleMethodChart"' in dashboard
         assert 'id="sampleDomainChart"' in dashboard
+        explorer_markup = _page_markup(dashboard, "page-explorer", "page-queries")
+        assert _labels_are_ordered(
+            explorer_markup,
+            [
+                "<h3>Operational tiers</h3>",
+                "<h3>Anomaly classes</h3>",
+                "<h3>Filtered anomaly method buckets</h3>",
+                "<h3>Filtered anomaly domains</h3>",
+            ],
+        )
+        assert 'class="chart-grid explorer-donut-row"' in explorer_markup
+        assert 'class="chart-grid explorer-filter-row"' in explorer_markup
+        assert 'id="tierChartBreakdown"' in explorer_markup
+        assert 'id="classChartBreakdown"' in explorer_markup
+        assert "Filtered anomaly tiers" not in dashboard
+        assert (
+            ".explorer-donut-row, .explorer-filter-row { "
+            "grid-template-columns:repeat(2,minmax(0,1fr)); }" in dashboard
+        )
+        assert (
+            ".domain-bar-label { display:block; width:100%; border:0; "
+            "border-radius:4px; padding:5px 7px; background:#2f3b42; "
+            "color:#fff; font-size:12px; text-align:left; }" in dashboard
+        )
+        assert (
+            "const labelClass = id === 'sampleDomainChart' ? "
+            "'domain-bar-label clickable' : 'label clickable';" in dashboard
+        )
         assert 'select id="filter-${name}" multiple size="1"' in dashboard
         assert 'id="classSelectionNote"' in dashboard
         assert "Viewing:" in dashboard
@@ -303,6 +334,16 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Evidence from transparent rules" in dashboard
         assert "How unusual the event looks" in dashboard
         assert "0.58 rule evidence plus 0.42 anomaly-model evidence" in dashboard
+        assert "'Combined tail': [" in dashboard
+        assert "blended combined score passed the run threshold" in dashboard
+        assert (
+            "neither the strong rules override nor the strongest ML-only bucket"
+            in dashboard
+        )
+        assert (
+            "usually for review or quarantine rather than automatic suppression"
+            in dashboard
+        )
         assert "A review group that explains the main pattern" in dashboard
         assert "not measured precision" in dashboard
         assert "calibrated fraud probability" in dashboard
@@ -333,14 +374,14 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Rule evidence" in dashboard
         assert "item.family || item.rule_family || 'general'" in dashboard
         assert "score +${applied} of ${raw}" in dashboard
-        assert "method_disagreement || []" in dashboard
+        assert "method_disagreement || []" not in dashboard
         assert (
             "renderMethodChart(s.method_disagreement || [], 'methodChart', "
             not in dashboard
         )
         assert (
             "renderMethodChart(s.method_disagreement || [], 'methodChartBreakdown', "
-            "'full-run aggregate, not affected by explorer filters')" in dashboard
+            not in dashboard
         )
         assert "function renderExplorer(rows)" in dashboard
         assert "arguments.length" not in dashboard
