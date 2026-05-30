@@ -169,12 +169,12 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     )
     report = (tmp_path / "docs" / "analysis_report.md").read_text(encoding="utf-8")
     assert "Extended Isolation Forest model catches" in report
-    assert "## 1. Problem Statement" in report
-    assert "## 2. Methodology And Rationale" in report
-    assert "## 3. Current Statistical Findings" in report
-    assert "## 4. Explanation Of Anomalies Found" in report
+    assert "## 1. Executive Summary & Problem Statement" in report
+    assert "## 2. Methodology & Rationale" in report
+    assert "## 3. Core Statistical Findings" in report
+    assert "## 4. Anomaly Explanations & Practical Guidance" in report
     assert "## 5. Recommended Business Actions" in report
-    assert "## 6. Probability Perspective" in report
+    assert "## 6. Probability Perspective & Risk Assessment" in report
     assert "## 7. Generalisation, Trade-Offs, And Limitations" in report
     assert "## 8. Future Work" in report
     assert "## Appendix A: Metric Definitions" in report
@@ -184,8 +184,9 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "Practical filtering options for similar unlabelled datasets" in report
     assert "Conservative suppression review" in report
     assert "ML-tail sampling" in report
-    assert "This is not measured precision" in report
-    assert "calibrated fraud probability" in report
+    assert "measured precision because the dataset has no ground-truth labels" in report
+    assert "Business interpretation" in report
+    assert "calibrated\nfraud probability" in report
     assert "Adaptive heuristic thresholds used in this run" in report
     assert (
         "Rule contributions are separated into strong and supporting evidence" in report
@@ -202,7 +203,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "<table><thead><tr>" in html_report
     assert "</thead><tbody>" in html_report
     assert "<th>Rule</th>" in html_report
-    assert "<h2>4. Explanation Of Anomalies Found</h2>" in html_report
+    assert "<h2>4. Anomaly Explanations &amp; Practical Guidance</h2>" in html_report
     assert "<h2>Appendix A: Metric Definitions</h2>" in html_report
     assert "<th>Class</th>" in html_report
     assert "Repeated query/domain pair" in html_report

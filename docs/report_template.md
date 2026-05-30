@@ -12,18 +12,19 @@ unlabelled, so probability statements are operational confidence estimates.
 
 ## Required Report Structure
 
-### 1. Problem Statement
+### 1. Executive Summary & Problem Statement
 
-State the business problem before the method.
+State the business problem before the method. The opening must be suitable for
+senior stakeholders: context first, business impact second, and analytical
+caveat third.
 
 Suggested wording:
 
 > Bot Hunter analyses fictitious ad-click traffic to identify events that look
-> more like automated bot activity than legitimate user behaviour. The input is
-> an unlabelled click log, so the task is not to prove fraud event by event. The
-> task is to find defensible anomaly patterns, explain the evidence behind
-> them, and produce a binary `submission.tsv` prediction where false positives
-> and false negatives are treated as roughly equal in cost.
+> more like automated bot activity than legitimate user behaviour. Invalid
+> clicks can inflate campaign metrics, distort billing, reduce trust in
+> performance reporting, and consume operational time that should be spent on
+> genuine customer outcomes.
 
 Include:
 
@@ -32,8 +33,10 @@ Include:
 - the fact that labels are unavailable
 - the implication: no measured precision, recall, or calibrated fraud
   probability can be claimed
+- the expected business impact: cost, revenue assurance, reputation,
+  operational efficiency, and campaign optimisation
 
-### 2. Methodology And Rationale
+### 2. Methodology & Rationale
 
 Explain the approach in plain English before giving formulas.
 
@@ -44,6 +47,9 @@ Required narrative:
 - The anomaly model catches unusual combinations that fixed rules may miss.
 - The final score blends both views, but rules are weighted slightly higher
   because they are more directly explainable.
+- The combined design is stronger than a single rule because adversarial
+  traffic can avoid one obvious threshold while still leaving a broader
+  footprint across timing, repetition, domains, and device-like context.
 
 Current method summary:
 
@@ -66,7 +72,7 @@ Include the reasons behind feature choices:
 - Raw `kp` and `sld` values remain available in `artifacts/features.tsv` for
   audit, but they are excluded from `ml_feature_names`.
 
-### 3. Current Statistical Findings
+### 3. Core Statistical Findings
 
 This section must be refreshed from `artifacts/summary.json` whenever the
 pipeline is rerun. The current baseline findings are:
@@ -120,7 +126,7 @@ Operational anomaly classes from the current run:
 | Supporting context plus combined tail | 77 | Monitor or quarantine; not standalone suppression evidence. |
 | Other combined-tail anomaly | 1 | Sample manually. |
 
-### 4. Explanation Of Anomalies Found
+### 4. Anomaly Explanations & Practical Guidance
 
 Describe the patterns as behaviours, not just model outputs.
 
@@ -161,7 +167,7 @@ State the recommendation:
 > Use `quarantine` as the default action for ambiguous or ML-only traffic. Do
 > not automatically block traffic solely because it is in the ML tail.
 
-### 6. Probability Perspective
+### 6. Probability Perspective & Risk Assessment
 
 Required narrative:
 
@@ -178,6 +184,14 @@ Explain the basis:
 - score tier
 - selected class
 - known absence of labels
+
+Include a business risk table with:
+
+- risk area
+- likelihood
+- impact
+- plain-English business interpretation
+- likely exposure if no action is taken
 
 ### 7. Generalisation, Trade-Offs, And Limitations
 
@@ -279,7 +293,7 @@ Main shortcoming:
 
 Before handoff, the UX coder and reviewer must confirm:
 
-- the report starts with the problem statement
+- the report starts with the executive summary and problem statement
 - methodology and rationale appear before detailed results
 - all statistical findings match the latest `artifacts/summary.json`
 - examples come from current artefacts, not stale notes

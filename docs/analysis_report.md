@@ -1,13 +1,13 @@
 # Bot Hunter Analysis Report
 
-## 1. Problem Statement
+## 1. Executive Summary & Problem Statement
 
 Bot Hunter analyses fictitious ad-click traffic to identify events that look
-more like automated bot activity than legitimate user behaviour. The input is
-an unlabelled click log, so the task is not to prove fraud event by event. The
-task is to find defensible anomaly patterns, explain the evidence behind them,
-and produce a binary `submission.tsv` prediction where false positives and
-false negatives are treated as roughly equal in cost.
+more like automated bot activity than legitimate user behaviour. The business
+challenge is a familiar one for advertising platforms: invalid clicks can
+inflate campaign metrics, distort billing, reduce trust in performance
+reporting, and consume operational time that should be spent on genuine
+customer outcomes.
 
 This run read `data/bot-hunter-dataset.tsv` and analysed 149,239 click
 events. Each row contains an event identifier, timestamp, region, browser,
@@ -15,21 +15,32 @@ operating system, and click URL. The URL query string carries behaviour signals
 such as clicked domain (`d`), search query (`q`), time to click (`ttc`), and
 country-like context (`ct`).
 
+Bot Hunter selected 3,731 events, or 2.50% of the batch, as
+likely bot traffic for review. This is a meaningful operational finding: even a
+small invalid-click rate can affect revenue assurance, customer confidence,
+campaign optimisation, and the credibility of downstream reporting.
+
 This report should be read as evidence for review, not as proof of fraud for
-every individual event. The dataset does not include ground-truth labels, so the
-system cannot claim measured precision, measured recall, or a calibrated fraud probability.
+every individual event. The dataset does not include ground-truth labels, so
+the system cannot claim measured precision, measured recall, or a calibrated
+fraud probability. The submitted output is `submission.tsv`. It keeps the
+required binary `is_bot` decision and adds `operational_tier` so the same
+prediction can be used carefully in business workflows.
 
-The submitted output is `submission.tsv`. It keeps the required binary
-`is_bot` decision and adds `operational_tier` so the same prediction can be
-used carefully in business workflows.
+## 2. Methodology & Rationale
 
-## 2. Methodology And Rationale
-
-Bot Hunter uses two classifiers because each covers a different risk. The
+Bot Hunter uses two classifiers because the risk has two different shapes. A
 rules classifier catches patterns that are easy to explain and audit, such as
 repeated query/domain pairs, mechanical timing, and dense bursts. The
 Extended Isolation Forest model catches unusual combinations across engineered features that
 fixed rules may miss.
+
+This combined design was chosen over a simpler single-rule approach because a
+single rule is too brittle for adversarial traffic. For example, a bot can
+avoid one obvious threshold while still leaving a broader statistical footprint
+across timing, repeated terms, clicked domains, and device-like context. The
+rules layer gives leadership an auditable explanation; the anomaly model adds
+coverage where fixed rules would otherwise be narrow.
 
 | Component | Current choice | Why this choice was made |
 |---|---|---|
@@ -114,10 +125,12 @@ High-volume domain frequency and global country frequency are down-weighted to
 `kp` and `sld` frequency features are down-weighted to 0.50 and
 0.25. Events isolated quickly by random hyperplane splits receive higher anomaly scores. EIF is the only production anomaly model; alternate ML backends and supervised pilots have been removed.
 
-## 3. Current Statistical Findings
+## 3. Core Statistical Findings
 
-Bot Hunter selected 3,731 of 149,239 events as likely bot
-traffic. That is 2.50% of the run.
+The current run shows a concentrated anomaly population rather than a broad
+quality problem across the whole dataset. Bot Hunter selected 3,731 of
+149,239 events as likely bot traffic. That is 2.50% of the
+run, leaving the large majority of traffic in the monitor population.
 
 | Metric | Current value | Plain-English meaning |
 |---|---:|---|
@@ -168,7 +181,15 @@ Operational anomaly classes from the current run:
 | Supporting context plus combined tail | 77 | Monitor or quarantine. These are useful for trend review, not standalone suppression. |
 | Other combined-tail anomaly | 1 | Sample manually before taking action. |
 
-## 4. Explanation Of Anomalies Found
+The largest pattern is repetition with supporting context. In practical terms,
+that means the same queries and clicked domains appear far more often than
+expected and are reinforced by other signals such as device-like clustering,
+country-like context, or timing behaviour. The ML-only population is also
+material, but it carries a different business meaning: those events are unusual
+in the feature space and should be sampled or quarantined rather than treated
+as automatically fraudulent.
+
+## 4. Anomaly Explanations & Practical Guidance
 
 Repetition is suspicious when the same query, clicked domain, and device-like
 context appear together. Timing matters because some click patterns are
@@ -248,9 +269,10 @@ automatically block traffic solely because it is in the ML tail.
 Filtering options are in Section 4. They are review controls for similar
 unlabelled datasets, not ground-truth fraud rules.
 
-## 6. Probability Perspective
+## 6. Probability Perspective & Risk Assessment
 
-The current operational confidence estimate is 74.49%. This is not measured precision because the dataset has no ground-truth labels.
+The current operational confidence estimate is 74.49%. This is not
+measured precision because the dataset has no ground-truth labels.
 
 Confidence is higher when independent signals agree: for example, when a
 strong repeated query/domain rule hit also lands in the upper anomaly-model
@@ -262,6 +284,18 @@ The estimate is based on rule/model agreement, strength of rule evidence,
 operational tier, selected anomaly class, and the known absence of labels. It
 should guide review priority, not replace labelled validation or policy
 approval.
+
+| Risk area | Likelihood | Impact | Business interpretation |
+|---|---|---|---|
+| Suppress-tier bot traffic remains untreated | High | Medium to High | Strong signals would continue to distort billing, reporting, and optimisation unless policy-approved action is taken. |
+| Quarantine-tier traffic is suppressed too aggressively | Medium | Medium | Ambiguous or ML-only events may include legitimate edge cases, so sampling and review should precede irreversible action. |
+| Model drift in future batches | Medium | Medium | Traffic mix, campaigns, browsers, and geographies can change; thresholds should be monitored rather than assumed permanent. |
+| Treating anomaly scores as proof of fraud | Low if governed | High | The current scores are evidence for review, not legal or contractual proof. Misuse would create customer and reputational risk. |
+
+If no action is taken, the likely exposure is continued metric inflation and
+avoidable investigation effort. The current evidence does not quantify direct
+financial loss, but it does show a reviewable population large enough to affect
+performance reporting if left unmanaged.
 
 ## 7. Generalisation, Trade-Offs, And Limitations
 
