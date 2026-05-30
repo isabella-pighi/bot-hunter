@@ -13,7 +13,7 @@ def write_reports(summary: dict[str, object], output_dir: str | Path = "docs") -
     (output / "analysis_report.md").write_text(markdown, encoding="utf-8")
     html_text = _html(markdown)
     (output / "analysis_report.html").write_text(html_text, encoding="utf-8")
-    _write_simple_pdf(output / "analysis_report.pdf", markdown)
+    _write_pdf(output / "analysis_report.pdf", markdown, html_text)
 
 
 def _markdown(summary: dict[str, object]) -> str:
@@ -1172,6 +1172,34 @@ def _html(markdown: str) -> str:
       font-weight: 700;
     }}
     tbody tr:nth-child(even) {{ background: #fbfcfd; }}
+    @page {{ size: A4; margin: 14mm; }}
+    @media print {{
+      html {{ font-size: 13px; }}
+      body {{ background: var(--page); }}
+      main {{
+        box-shadow: none;
+        max-width: none;
+        min-height: auto;
+        padding: 0;
+        width: 100%;
+      }}
+      h1 {{ font-size: 2.35rem; }}
+      h2 {{
+        break-after: avoid;
+        font-size: 1.45rem;
+        margin-top: 1.8rem;
+      }}
+      p, ul, ol, pre, .table-wrap {{ break-inside: avoid; }}
+      .table-wrap {{
+        border-color: var(--border-strong);
+        overflow: visible;
+      }}
+      table {{
+        font-size: 0.78rem;
+        min-width: 100%;
+      }}
+      tr {{ break-inside: avoid; }}
+    }}
     @media (max-width: 720px) {{
       main {{ padding: 20px 14px 32px; }}
       .table-wrap {{ border-radius: 4px; }}
@@ -1210,6 +1238,61 @@ def _render_data_backing_html(cell: str) -> str:
     if not groups:
         return html.escape(cell)
     return f"<ul class=\"cell-list\">{''.join(groups)}</ul>"
+
+
+def _write_pdf(path: Path, markdown: str, html_text: str) -> None:
+    """Write a styled PDF report, falling back to a simple PDF if needed.
+
+    Args:
+        path: Destination PDF path.
+        markdown: Markdown report text used by the fallback writer.
+        html_text: Styled HTML report text used for browser PDF rendering.
+    """
+    if _write_browser_pdf(path, html_text):
+        return
+    _write_simple_pdf(path, markdown)
+
+
+def _write_browser_pdf(path: Path, html_text: str) -> bool:
+    """Render the report PDF from the same HTML/CSS used by the web report.
+
+    Args:
+        path: Destination PDF path.
+        html_text: Styled report HTML.
+
+    Returns:
+        True when browser rendering succeeded; otherwise False.
+    """
+    try:
+        from playwright.sync_api import Error as PlaywrightError
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return False
+
+    browser = None
+    try:
+        with sync_playwright() as playwright:
+            browser = playwright.chromium.launch()
+            page = browser.new_page(
+                viewport={"width": 1440, "height": 1800},
+                device_scale_factor=1,
+            )
+            page.set_content(html_text, wait_until="load")
+            page.pdf(
+                path=str(path),
+                format="A4",
+                print_background=True,
+                prefer_css_page_size=True,
+            )
+    except PlaywrightError:
+        return False
+    finally:
+        if browser is not None:
+            try:
+                browser.close()
+            except PlaywrightError:
+                pass
+    return True
 
 
 def _write_simple_pdf(path: Path, text: str) -> None:

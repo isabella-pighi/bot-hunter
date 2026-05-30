@@ -100,6 +100,34 @@
       font-weight: 700;
     }
     tbody tr:nth-child(even) { background: #fbfcfd; }
+    @page { size: A4; margin: 14mm; }
+    @media print {
+      html { font-size: 13px; }
+      body { background: var(--page); }
+      main {
+        box-shadow: none;
+        max-width: none;
+        min-height: auto;
+        padding: 0;
+        width: 100%;
+      }
+      h1 { font-size: 2.35rem; }
+      h2 {
+        break-after: avoid;
+        font-size: 1.45rem;
+        margin-top: 1.8rem;
+      }
+      p, ul, ol, pre, .table-wrap { break-inside: avoid; }
+      .table-wrap {
+        border-color: var(--border-strong);
+        overflow: visible;
+      }
+      table {
+        font-size: 0.78rem;
+        min-width: 100%;
+      }
+      tr { break-inside: avoid; }
+    }
     @media (max-width: 720px) {
       main { padding: 20px 14px 32px; }
       .table-wrap { border-radius: 4px; }
