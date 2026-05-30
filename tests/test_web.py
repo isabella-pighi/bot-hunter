@@ -115,12 +115,12 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert 'id="confidenceExplainer"' in dashboard
         assert '<p id="confidenceExplainer"></p>' in dashboard
         assert (
-            ".analysis-brief-panel { width:100%; max-width:calc(72ch + 34px); "
-            "min-width:0; overflow:visible; }" in dashboard
+            ".analysis-brief-panel { width:100%; min-width:0; overflow:visible; }"
+            in dashboard
         )
         assert (
             ".analysis-brief-copy { display:grid; gap:10px; width:100%; "
-            "min-width:0; }" in dashboard
+            "max-width:72ch; min-width:0; }" in dashboard
         )
         assert (
             ".analysis-brief-copy p { margin:0; color:var(--ink); "
