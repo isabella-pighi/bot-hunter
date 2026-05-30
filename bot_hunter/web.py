@@ -313,17 +313,16 @@ def _dashboard_html() -> str:
     .analysis-brief-copy { display:grid; gap:10px; width:100%; max-width:none; min-width:0; }
     .analysis-brief-copy p { margin:0; color:var(--ink); font-size:15px; line-height:1.55; overflow-wrap:anywhere; }
     .chart-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:16px; }
-    .explorer-donut-row, .explorer-filter-row { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .explorer-chart-grid { grid-template-columns:repeat(2,minmax(0,1fr)); grid-template-areas:"tiers classes" "methods domains"; }
+    .explorer-card-tiers { grid-area:tiers; }
+    .explorer-card-classes { grid-area:classes; }
+    .explorer-card-methods { grid-area:methods; }
+    .explorer-card-domains { grid-area:domains; }
     .chart-body { display:grid; grid-template-columns:142px minmax(0,1fr); gap:14px; align-items:center; }
     .donut { width:142px; height:142px; }
     .legend { display:grid; gap:7px; }
     .legend-row { display:grid; grid-template-columns:14px minmax(0,1fr) auto; gap:7px; align-items:center; font-size:12px; }
     .swatch { width:12px; height:12px; border-radius:3px; }
-    .method-bars { display:grid; gap:10px; width:100%; }
-    .method-row { display:grid; grid-template-columns:minmax(120px,1fr) minmax(120px,1.4fr) auto; gap:8px; align-items:center; font-size:12px; }
-    .method-track { height:14px; background:#e8edf0; border-radius:999px; overflow:hidden; }
-    .method-fill { display:block; height:100%; min-width:2px; }
-    .chart-note { color:var(--muted); font-size:12px; line-height:1.4; margin:2px 0 0; }
     .class-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
     .class-card { display:grid; gap:8px; }
     .class-card.selected { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-weak); }
@@ -365,6 +364,7 @@ def _dashboard_html() -> str:
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
     @media (max-width: 1000px) {
       header, .app-shell, .story, .chart-grid, .technical-grid, .split { grid-template-columns:1fr; }
+      .explorer-chart-grid { grid-template-areas:"tiers" "methods" "classes" "domains"; }
       header { align-items:start; }
       .actions { width:100%; }
       .sidebar { position:relative; min-height:auto; border-right:0; border-bottom:1px solid var(--line); }
@@ -481,13 +481,11 @@ def _dashboard_html() -> str:
       the full selected detected-anomaly set for the current run. This is not
       the full all-traffic population, and raw `ct`/country values are not
       available through the current dashboard API.</p>
-      <div class="chart-grid explorer-donut-row">
-        <div class="card"><h3>Operational tiers</h3><div class="chart-body" id="tierChartBreakdown"></div></div>
-        <div class="card"><h3>Anomaly classes</h3><div class="chart-body" id="classChartBreakdown"></div></div>
-      </div>
-      <div class="chart-grid explorer-filter-row">
-        <div class="card"><h3>Filtered anomaly method buckets</h3><div id="sampleMethodChart"></div></div>
-        <div class="card"><h3>Filtered anomaly domains</h3><div id="sampleDomainChart"></div></div>
+      <div class="chart-grid explorer-chart-grid">
+        <div class="card explorer-card-tiers"><h3>Operational tiers</h3><div class="chart-body" id="tierChartBreakdown"></div></div>
+        <div class="card explorer-card-methods"><h3>Filtered anomaly method buckets</h3><div class="chart-body" id="sampleMethodChart"></div></div>
+        <div class="card explorer-card-classes"><h3>Anomaly classes</h3><div class="chart-body" id="classChartBreakdown"></div></div>
+        <div class="card explorer-card-domains"><h3>Filtered anomaly domains</h3><div id="sampleDomainChart"></div></div>
       </div>
       <div class="table-wrap"><table>
         <thead><tr><th>Event</th><th>Method</th><th>Device cluster</th><th>Domain</th><th>Query</th><th>Scores</th><th>Tier</th></tr></thead>
@@ -659,41 +657,16 @@ def _dashboard_html() -> str:
     function renderCharts(s) {
       const classes = ((s.anomaly_classes || {}).classes || [])
         .map(item => [item.label, item.count]);
-      renderDonut('tierChartBreakdown', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', 'tier', 'full-run aggregate; not affected by explorer filters');
-      renderDonut('classChartBreakdown', 'Anomaly classes', classes, 'selected', 'anomalyClass', 'full-run aggregate; not affected by explorer filters');
+      renderDonut('tierChartBreakdown', 'Operational tiers', Object.entries(s.tier_counts || {}), 'traffic', '', 'full-run aggregate; not affected by explorer filters');
+      renderDonut('classChartBreakdown', 'Anomaly classes', classes, 'selected', '', 'full-run aggregate; not affected by explorer filters');
     }
     function renderBars(id, rows) {
       const max = Math.max(...rows.map(r => r[1]), 1);
       document.getElementById(id).innerHTML = rows.map(r => `<div class="label">${escapeHtml(r[0])} (${r[1].toLocaleString()})</div><div class="bar"><span style="width:${100*r[1]/max}%"></span></div>`).join('');
     }
-    function renderMethodChart(rows, targetId = 'methodChart', scope = 'current scope') {
-      const reviewRows = rows.filter(([label]) => label !== 'Neither strong');
-      const neither = rows.find(([label]) => label === 'Neither strong');
-      const reviewTotal = reviewRows.reduce((sum, row) => sum + Number(row[1] || 0), 0);
-      const max = Math.max(...reviewRows.map(row => Number(row[1] || 0)), 1);
-      const bars = reviewRows.map(([label, raw], index) => {
-        const value = Number(raw || 0);
-        const share = reviewTotal ? `${((value / reviewTotal) * 100).toFixed(1)}%` : '0.0%';
-        return `<button type="button" class="method-row clickable" onclick="${handlerAttr(`toggleFilterValue('method', ${jsString(label)})`)}" title="${escapeHtml(label)}: ${count(value)} events (${share}); ${escapeHtml(scope)}">
-          <span>${escapeHtml(label)}</span>
-          <span class="method-track" aria-hidden="true">
-            <span class="method-fill" style="width:${(100 * value) / max}%; background:${colours[index % colours.length]}"></span>
-          </span>
-          <strong>${count(value)} (${share})</strong>
-        </button>`;
-      }).join('');
-      const neitherNote = neither
-        ? `${count(neither[1])} events were not strongly indicated by either method and are excluded from this review-bucket chart.`
-        : 'No neither-strong bucket was reported for this run.';
-      document.getElementById(targetId).innerHTML = `
-        <div class="method-bars" role="img"
-          aria-label="Method buckets bar chart for review-relevant events">
-          ${bars}
-        </div>
-        <p class="chart-note">${escapeHtml(neitherNote)}</p>`;
-    }
     function renderDonut(id, label, rows, noun, filterName = '', scope = 'current scope') {
       const total = rows.reduce((sum, row) => sum + Number(row[1] || 0), 0);
+      const interactive = Boolean(filterName);
       const radius = 46;
       const circumference = 2 * Math.PI * radius;
       let offset = 0;
@@ -702,7 +675,7 @@ def _dashboard_html() -> str:
         const length = total ? (value / total) * circumference : 0;
         const gap = total && length > 3 ? 1.2 : 0;
         const dash = `${Math.max(length - gap, 0)} ${circumference}`;
-        const click = filterName ? `onclick="${handlerAttr(`toggleFilterValue(${jsString(filterName)}, ${jsString(label)})`)}" class="clickable"` : '';
+        const click = interactive ? `onclick="${handlerAttr(`toggleFilterValue(${jsString(filterName)}, ${jsString(label)})`)}" class="clickable"` : '';
         const element = `<circle r="${radius}" cx="60" cy="60" ${click}
           fill="transparent" stroke="${colours[index % colours.length]}"
           stroke-width="22" stroke-dasharray="${dash}"
@@ -714,12 +687,15 @@ def _dashboard_html() -> str:
       const legend = rows.map(([label, raw], index) => {
         const value = Number(raw || 0);
         const share = total ? `${((value / total) * 100).toFixed(1)}%` : '0.0%';
-        const click = filterName ? ` onclick="${handlerAttr(`toggleFilterValue(${jsString(filterName)}, ${jsString(label)})`)}"` : '';
-        return `<button type="button" class="legend-row clickable"${click}>
+        const click = interactive ? ` onclick="${handlerAttr(`toggleFilterValue(${jsString(filterName)}, ${jsString(label)})`)}"` : '';
+        const legendTag = interactive ? 'button' : 'div';
+        const legendType = interactive ? ' type="button"' : '';
+        const legendClass = interactive ? 'legend-row clickable' : 'legend-row';
+        return `<${legendTag}${legendType} class="${legendClass}"${click}>
           <span class="swatch" style="background:${colours[index % colours.length]}"></span>
           <span>${escapeHtml(label)}</span>
           <strong>${count(value)} (${share})</strong>
-        </button>`;
+        </${legendTag}>`;
       }).join('');
       document.getElementById(id).innerHTML = `
         <svg class="donut" viewBox="0 0 120 120" role="img"
@@ -732,7 +708,7 @@ def _dashboard_html() -> str:
           <text x="60" y="73" text-anchor="middle" font-size="10"
             fill="#5c6870">${escapeHtml(noun)}</text>
         </svg>
-        <p class="sr-only">Use the legend buttons below to apply filters with a keyboard.</p>
+        ${interactive ? '<p class="sr-only">Use the legend buttons below to apply filters with a keyboard.</p>' : ''}
         <div class="legend">${legend}</div>`;
     }
     function renderAnomalyClasses(s) {
@@ -895,7 +871,7 @@ def _dashboard_html() -> str:
       renderSampleCharts(rows);
     }
     function renderSampleCharts(rows) {
-      renderMethodChart(countBy(rows, methodBucket), 'sampleMethodChart', 'filtered detected anomaly set');
+      renderDonut('sampleMethodChart', 'Filtered anomaly method buckets', countBy(rows, methodBucket), 'rows', '', 'filtered detected anomaly set');
       renderCountBars('sampleDomainChart', countBy(rows, e => e.domain), rows.length, 'domain');
     }
     function renderExplorer(rows) {

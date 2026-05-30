@@ -212,7 +212,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "table { table-layout:fixed; font-size:11px; }" in dashboard
         assert "header { align-items:start; }" in dashboard
         assert "Operational tiers" in dashboard
-        assert "Method buckets" in dashboard
+        assert "Filtered anomaly method buckets" in dashboard
         assert "Anomaly classes" in dashboard
         assert "Anomaly classes and handling" in dashboard
         assert "Recommended actions" in dashboard
@@ -257,26 +257,39 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "Suppress rows" not in dashboard
         assert "Unique domains" not in dashboard
         assert 'id="sampleTierChart"' not in dashboard
-        assert 'id="sampleMethodChart"' in dashboard
+        assert 'class="chart-body" id="sampleMethodChart"' in dashboard
         assert 'id="sampleDomainChart"' in dashboard
         explorer_markup = _page_markup(dashboard, "page-explorer", "page-queries")
         assert _labels_are_ordered(
             explorer_markup,
             [
                 "<h3>Operational tiers</h3>",
-                "<h3>Anomaly classes</h3>",
                 "<h3>Filtered anomaly method buckets</h3>",
+                "<h3>Anomaly classes</h3>",
                 "<h3>Filtered anomaly domains</h3>",
             ],
         )
-        assert 'class="chart-grid explorer-donut-row"' in explorer_markup
-        assert 'class="chart-grid explorer-filter-row"' in explorer_markup
+        assert 'class="chart-grid explorer-chart-grid"' in explorer_markup
+        assert 'class="card explorer-card-tiers"' in explorer_markup
+        assert 'class="card explorer-card-methods"' in explorer_markup
+        assert 'class="card explorer-card-classes"' in explorer_markup
+        assert 'class="card explorer-card-domains"' in explorer_markup
         assert 'id="tierChartBreakdown"' in explorer_markup
         assert 'id="classChartBreakdown"' in explorer_markup
+        assert explorer_markup.index('id="tierChartBreakdown"') < explorer_markup.index(
+            'id="sampleMethodChart"'
+        )
+        assert explorer_markup.index('id="sampleMethodChart"') < explorer_markup.index(
+            'id="classChartBreakdown"'
+        )
         assert "Filtered anomaly tiers" not in dashboard
         assert (
-            ".explorer-donut-row, .explorer-filter-row { "
-            "grid-template-columns:repeat(2,minmax(0,1fr)); }" in dashboard
+            ".explorer-chart-grid { grid-template-columns:repeat(2,minmax(0,1fr)); "
+            'grid-template-areas:"tiers classes" "methods domains"; }' in dashboard
+        )
+        assert (
+            '.explorer-chart-grid { grid-template-areas:"tiers" "methods" '
+            '"classes" "domains"; }' in dashboard
         )
         assert (
             ".domain-bar-label { display:block; width:100%; border:0; "
@@ -286,6 +299,27 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert (
             "const labelClass = id === 'sampleDomainChart' ? "
             "'domain-bar-label clickable' : 'label clickable';" in dashboard
+        )
+        assert "const interactive = Boolean(filterName);" in dashboard
+        assert "const legendTag = interactive ? 'button' : 'div';" in dashboard
+        assert (
+            "const legendClass = interactive ? 'legend-row clickable' : 'legend-row';"
+            in dashboard
+        )
+        assert (
+            "renderDonut('tierChartBreakdown', 'Operational tiers', "
+            "Object.entries(s.tier_counts || {}), 'traffic', '', "
+            "'full-run aggregate; not affected by explorer filters')" in dashboard
+        )
+        assert (
+            "renderDonut('classChartBreakdown', 'Anomaly classes', classes, "
+            "'selected', '', 'full-run aggregate; not affected by explorer filters')"
+            in dashboard
+        )
+        assert (
+            "renderDonut('sampleMethodChart', 'Filtered anomaly method buckets', "
+            "countBy(rows, methodBucket), 'rows', '', "
+            "'filtered detected anomaly set')" in dashboard
         )
         assert 'select id="filter-${name}" multiple size="1"' in dashboard
         assert 'id="classSelectionNote"' in dashboard
@@ -375,6 +409,7 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "item.family || item.rule_family || 'general'" in dashboard
         assert "score +${applied} of ${raw}" in dashboard
         assert "method_disagreement || []" not in dashboard
+        assert "function renderMethodChart" not in dashboard
         assert (
             "renderMethodChart(s.method_disagreement || [], 'methodChart', "
             not in dashboard
@@ -399,10 +434,10 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "filter-query" not in dashboard
         assert "filter-device" not in dashboard
         assert "filter-focus" not in dashboard
-        assert 'class="method-bars" role="img"' in dashboard
-        assert "Method buckets bar chart for review-relevant events" in dashboard
-        assert "label !== 'Neither strong'" in dashboard
-        assert "excluded from this review-bucket chart" in dashboard
+        assert 'class="method-bars" role="img"' not in dashboard
+        assert "Method buckets bar chart for review-relevant events" not in dashboard
+        assert "label !== 'Neither strong'" not in dashboard
+        assert "excluded from this review-bucket chart" not in dashboard
         assert "renderDonut('tierChart', 'Operational tiers', " not in dashboard
         assert "renderDonut('classChart', 'Anomaly classes', " not in dashboard
         assert "(s.anomaly_classes || {}).classes || []" in dashboard
