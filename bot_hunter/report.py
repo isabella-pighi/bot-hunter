@@ -665,8 +665,8 @@ The grouping is backed by full-run rule contributions, rule strength and family
 fields, heuristic and ML scores, method-agreement buckets, operational tiers,
 and the run-specific thresholds described later in this report.
 
-| Class | Selected events | Data backing | Suggested handling |
-|---|---:|---|---|
+| Class | Selected events | Data backing |
+|---|---:|---|
 {class_rows}
 
 The ML-tail population contains {ml_only_population:,} events with high anomaly
@@ -693,7 +693,7 @@ labels."""
 
 def _anomaly_class_table(classes: object) -> str:
     if not isinstance(classes, list):
-        return "| Not available | 0 | No class data reported | Review manually |"
+        return "| Not available | 0 | No class data reported |"
     rows: list[str] = []
     for item in classes:
         if not isinstance(item, dict):
@@ -701,12 +701,8 @@ def _anomaly_class_table(classes: object) -> str:
         label = _cell(str(item.get("label", item.get("class_id", "Unknown"))))
         count = int(item.get("count", 0))
         backing = _cell(_class_backing(item))
-        action = _cell(str(item.get("review_action", "Review manually.")))
-        rows.append(f"| {label} | {count:,} | {backing} | {action} |")
-    return (
-        "\n".join(rows)
-        or "| Not available | 0 | No class data reported | Review manually |"
-    )
+        rows.append(f"| {label} | {count:,} | {backing} |")
+    return "\n".join(rows) or "| Not available | 0 | No class data reported |"
 
 
 def _class_backing(item: dict[str, object]) -> str:

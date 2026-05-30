@@ -205,15 +205,15 @@ The grouping is backed by full-run rule contributions, rule strength and family
 fields, heuristic and ML scores, method-agreement buckets, operational tiers,
 and the run-specific thresholds described later in this report.
 
-| Class | Selected events | Data backing | Suggested handling |
-|---|---:|---|---|
-| Repetition with supporting context | 1,877 | tiers: suppress 1,327, quarantine 550; methods: Heuristic + ML 1,198, Heuristic only 186, Combined tail 493; top rules: repeat_query (1,877), repeat_query_domain (1,384), confirmed_query_repetition (1,384) | Review as replay-like traffic. Suppress only when the event is already in the suppress tier; otherwise quarantine or sample. |
-| Compound burst/replay | 562 | tiers: suppress 154, quarantine 408; methods: Heuristic + ML 150, Heuristic only 11, Combined tail 401; top rules: repeat_query (558), same_second_burst (441), short_query (285) | Treat suppress-tier events as strong operational candidates; quarantine the rest for timing-pattern review. |
-| ML-tail multivariate anomaly | 509 | tiers: quarantine 509; methods: ML only 509; This class is grouped by anomaly-model agreement, not by rule explanations. Low-weight rules may be present, but they do not cross the heuristic override threshold. | Quarantine or sample. Do not suppress automatically without feature-deviation review or labels. |
-| Repetition with timing anomaly | 355 | tiers: suppress 199, quarantine 156; methods: Heuristic + ML 195, Heuristic only 4, Combined tail 156; top rules: repeat_query (355), moderate_long_ttc (283), repeat_query_domain (199) | Prioritise when suppress-tier or when timing evidence is strong; otherwise quarantine for sampling. |
-| Repetition dominated | 350 | tiers: suppress 183, quarantine 167; methods: Heuristic + ML 183, Heuristic only 110, Combined tail 57; top rules: repeat_query_domain (350), repeat_query (293), confirmed_query_repetition (293) | Use as an explainable replay candidate. Quarantine lower-score cases when ML agreement is absent. |
-| Supporting context plus combined tail | 77 | tiers: quarantine 77; methods: Combined tail 77; top rules: same_second_burst (74), high_volume_domain (62), heavy_device_cluster (62) | Monitor or quarantine. These are useful for trend review, not standalone suppression. |
-| Other combined-tail anomaly | 1 | tiers: quarantine 1; methods: Combined tail 1; top rules: same_second_burst (1), fast_click (1) | Sample manually before taking action. |
+| Class | Selected events | Data backing |
+|---|---:|---|
+| Repetition with supporting context | 1,877 | tiers: suppress 1,327, quarantine 550; methods: Heuristic + ML 1,198, Heuristic only 186, Combined tail 493; top rules: repeat_query (1,877), repeat_query_domain (1,384), confirmed_query_repetition (1,384) |
+| Compound burst/replay | 562 | tiers: suppress 154, quarantine 408; methods: Heuristic + ML 150, Heuristic only 11, Combined tail 401; top rules: repeat_query (558), same_second_burst (441), short_query (285) |
+| ML-tail multivariate anomaly | 509 | tiers: quarantine 509; methods: ML only 509; This class is grouped by anomaly-model agreement, not by rule explanations. Low-weight rules may be present, but they do not cross the heuristic override threshold. |
+| Repetition with timing anomaly | 355 | tiers: suppress 199, quarantine 156; methods: Heuristic + ML 195, Heuristic only 4, Combined tail 156; top rules: repeat_query (355), moderate_long_ttc (283), repeat_query_domain (199) |
+| Repetition dominated | 350 | tiers: suppress 183, quarantine 167; methods: Heuristic + ML 183, Heuristic only 110, Combined tail 57; top rules: repeat_query_domain (350), repeat_query (293), confirmed_query_repetition (293) |
+| Supporting context plus combined tail | 77 | tiers: quarantine 77; methods: Combined tail 77; top rules: same_second_burst (74), high_volume_domain (62), heavy_device_cluster (62) |
+| Other combined-tail anomaly | 1 | tiers: quarantine 1; methods: Combined tail 1; top rules: same_second_burst (1), fast_click (1) |
 
 The ML-tail population contains 2,005 events with high anomaly
 scores and heuristic scores below the rule override threshold. Only the subset

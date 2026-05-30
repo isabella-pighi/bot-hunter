@@ -201,6 +201,10 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "Standard Isolation Forest" in report
     assert "DBSCAN" in report
     assert "random hyperplane splits" in report
+    assert "| Class | Selected events | Data backing |" in report
+    assert "| Class | Selected events | Data backing | Suggested handling |" not in (
+        report
+    )
     html_report = (tmp_path / "docs" / "analysis_report.html").read_text(
         encoding="utf-8"
     )
@@ -231,6 +235,8 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "<h2>4. Anomaly Explanations &amp; Practical Guidance</h2>" in html_report
     assert "<h2>Appendix A: Metric Definitions</h2>" in html_report
     assert "<th>Class</th>" in html_report
+    assert "<th>Data backing</th>" in html_report
+    assert "<th>Suggested handling</th>" not in html_report
     assert "Repeated query/domain pair" in html_report
     features = (
         (tmp_path / "artifacts" / "features.tsv")
