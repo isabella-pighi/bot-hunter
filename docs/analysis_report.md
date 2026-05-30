@@ -239,19 +239,6 @@ Traffic Explorer in the dashboard.
 - Supporting context plus combined tail: This example is deliberately treated as borderline. It has supporting context and a high enough blended score to cross the run threshold, but neither the rules nor the ML evidence is strong enough on its own. That is why the right action is review or quarantine rather than automatic suppression. The example event is `evt_089535`, which clicked `www.amazon.co.uk` for query `aw`.
 - Other combined-tail anomaly: This is a residual combined-tail example. It crosses the blended threshold, but it does not match the main operational classes. The fast-click and burst evidence make it worth sampling, while the borderline score argues against automatic suppression. The example event is `evt_032590`, which clicked `find.gmx.com` for query `balm thyrohyal youre eight`.
 
-Practical filtering options for similar unlabelled datasets:
-
-| Filter | Use | Caveat |
-|---|---|---|
-| Conservative suppression review: `operational_tier == 'suppress'` | Start here for the strongest operational candidates. Still requires policy approval because labels are unavailable. | Check policy, billing, and customer-impact rules before action. |
-| Quarantine for manual review: `operational_tier == 'quarantine'` | Hold, sample, or delay action on suspicious traffic that is not strong enough for direct suppression. | Use sampling to estimate likely false positives before suppression. |
-| Explainable replay review: `anomaly_class in repetition_with_supporting_context, compound_burst_replay, repetition_with_timing, repetition_dominated` | Focus reviewer time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-pattern assumptions against campaign context. |
-| ML-tail sampling: `ml_score >= 0.975 and heuristic_score < 0.62` | Sample for future feature-deviation work; do not treat as proven fraud without labels. | Needs feature-deviation review because rule evidence is below override. |
-
-Use these filters as review controls. `suppress` is the strongest operational
-tier, `quarantine` is the safer default for ambiguous or ML-only traffic, and
-`monitor` keeps non-selected traffic available for drift checks and future
-labels.
 
 ## 5. Recommended Business Actions
 
@@ -274,8 +261,20 @@ Use `suppress` for the strongest operational candidates after policy approval.
 Use `quarantine` as the default action for ambiguous or ML-only traffic. Do not
 automatically block traffic solely because it is in the ML tail.
 
-Filtering options are in Section 4. They are review controls for similar
-unlabelled datasets, not ground-truth fraud rules.
+These tiers are the recommended operating model because they keep action
+proportionate to the strength of evidence. Teams that need to go beyond the
+three-tier view can also use the more targeted filters below. Treat them as
+review controls for similar unlabelled datasets, not as ground-truth fraud
+rules.
+
+Practical filtering options for similar unlabelled datasets:
+
+| Filter | Use | Caveat |
+|---|---|---|
+| Conservative suppression review: `operational_tier == 'suppress'` | Start here for the strongest operational candidates. Still requires policy approval because labels are unavailable. | Check policy, billing, and customer-impact rules before action. |
+| Quarantine for manual review: `operational_tier == 'quarantine'` | Hold, sample, or delay action on suspicious traffic that is not strong enough for direct suppression. | Use sampling to estimate likely false positives before suppression. |
+| Explainable replay review: `anomaly_class in repetition_with_supporting_context, compound_burst_replay, repetition_with_timing, repetition_dominated` | Focus reviewer time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-pattern assumptions against campaign context. |
+| ML-tail sampling: `ml_score >= 0.975 and heuristic_score < 0.62` | Sample for future feature-deviation work; do not treat as proven fraud without labels. | Needs feature-deviation review because rule evidence is below override. |
 
 ## 6. Probability Perspective & Risk Assessment
 

@@ -688,7 +688,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
 endobj
 18 0 obj
-<< /Length 2954 >>
+<< /Length 2527 >>
 stream
 BT
 /F1 10 Tf
@@ -726,50 +726,6 @@ T*
 T*
 () Tj
 T*
-(Practical filtering options for similar unlabelled datasets:) Tj
-T*
-() Tj
-T*
-(| Filter | Use | Caveat |) Tj
-T*
-(|---|---|---|) Tj
-T*
-(| Conservative suppression review: operational_tier == 'suppress' | Start here for the) Tj
-T*
-(strongest operational candidates. Still requires policy approval because labels are) Tj
-T*
-(unavailable. | Check policy, billing, and customer-impact rules before action. |) Tj
-T*
-(| Quarantine for manual review: operational_tier == 'quarantine' | Hold, sample, or) Tj
-T*
-(delay action on suspicious traffic that is not strong enough for direct suppression. |) Tj
-T*
-(Use sampling to estimate likely false positives before suppression. |) Tj
-T*
-(| Explainable replay review: anomaly_class in repetition_with_supporting_context,) Tj
-T*
-(compound_burst_replay, repetition_with_timing, repetition_dominated | Focus reviewer) Tj
-T*
-(time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-) Tj
-T*
-(pattern assumptions against campaign context. |) Tj
-T*
-(| ML-tail sampling: ml_score >= 0.975 and heuristic_score < 0.62 | Sample for future) Tj
-T*
-(feature-deviation work; do not treat as proven fraud without labels. | Needs feature-) Tj
-T*
-(deviation review because rule evidence is below override. |) Tj
-T*
-() Tj
-T*
-(Use these filters as review controls. suppress is the strongest operational) Tj
-T*
-(tier, quarantine is the safer default for ambiguous or ML-only traffic, and) Tj
-T*
-(monitor keeps non-selected traffic available for drift checks and future) Tj
-T*
-(labels.) Tj
-T*
 () Tj
 T*
 ( 5. Recommended Business Actions) Tj
@@ -778,19 +734,6 @@ T*
 T*
 (Separate prediction from action. is_bot is the compatibility prediction;) Tj
 T*
-ET
-endstream
-endobj
-19 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
-endobj
-20 0 obj
-<< /Length 2206 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (operational_tier is the safer business-control layer.) Tj
 T*
 () Tj
@@ -833,9 +776,64 @@ T*
 T*
 () Tj
 T*
-(Filtering options are in Section 4. They are review controls for similar) Tj
+(These tiers are the recommended operating model because they keep action) Tj
 T*
-(unlabelled datasets, not ground-truth fraud rules.) Tj
+ET
+endstream
+endobj
+19 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
+endobj
+20 0 obj
+<< /Length 2670 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(proportionate to the strength of evidence. Teams that need to go beyond the) Tj
+T*
+(three-tier view can also use the more targeted filters below. Treat them as) Tj
+T*
+(review controls for similar unlabelled datasets, not as ground-truth fraud) Tj
+T*
+(rules.) Tj
+T*
+() Tj
+T*
+(Practical filtering options for similar unlabelled datasets:) Tj
+T*
+() Tj
+T*
+(| Filter | Use | Caveat |) Tj
+T*
+(|---|---|---|) Tj
+T*
+(| Conservative suppression review: operational_tier == 'suppress' | Start here for the) Tj
+T*
+(strongest operational candidates. Still requires policy approval because labels are) Tj
+T*
+(unavailable. | Check policy, billing, and customer-impact rules before action. |) Tj
+T*
+(| Quarantine for manual review: operational_tier == 'quarantine' | Hold, sample, or) Tj
+T*
+(delay action on suspicious traffic that is not strong enough for direct suppression. |) Tj
+T*
+(Use sampling to estimate likely false positives before suppression. |) Tj
+T*
+(| Explainable replay review: anomaly_class in repetition_with_supporting_context,) Tj
+T*
+(compound_burst_replay, repetition_with_timing, repetition_dominated | Focus reviewer) Tj
+T*
+(time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-) Tj
+T*
+(pattern assumptions against campaign context. |) Tj
+T*
+(| ML-tail sampling: ml_score >= 0.975 and heuristic_score < 0.62 | Sample for future) Tj
+T*
+(feature-deviation work; do not treat as proven fraud without labels. | Needs feature-) Tj
+T*
+(deviation review because rule evidence is below override. |) Tj
 T*
 () Tj
 T*
@@ -875,6 +873,8 @@ T*
 T*
 (|---|---|---|---|) Tj
 T*
+(| Suppress-tier bot traffic remains untreated | High | Medium to High | Strong signals) Tj
+T*
 ET
 endstream
 endobj
@@ -882,14 +882,12 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
 endobj
 22 0 obj
-<< /Length 2545 >>
+<< /Length 2459 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(| Suppress-tier bot traffic remains untreated | High | Medium to High | Strong signals) Tj
-T*
 (would continue to distort billing, reporting, and optimisation unless policy-approved) Tj
 T*
 (action is taken. |) Tj
@@ -972,6 +970,8 @@ T*
 T*
 (  for drift across future runs.) Tj
 T*
+() Tj
+T*
 ET
 endstream
 endobj
@@ -985,8 +985,6 @@ BT
 /F1 10 Tf
 50 780 Td
 14 TL
-() Tj
-T*
 (Material changes in geography, campaign volume, inventory, browser mix, or) Tj
 T*
 (feature extraction should trigger fresh threshold review.) Tj
@@ -1069,6 +1067,8 @@ T*
 T*
 ( Appendix B: Feature Definitions) Tj
 T*
+() Tj
+T*
 ET
 endstream
 endobj
@@ -1076,14 +1076,12 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
 endobj
 26 0 obj
-<< /Length 2611 >>
+<< /Length 2612 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-() Tj
-T*
 (| Feature | Meaning |) Tj
 T*
 (|---|---|) Tj
@@ -1166,6 +1164,8 @@ T*
 T*
 (into a cluster makes the output harder to explain and less reliable for rare anomalies.) Tj
 T*
+(|) Tj
+T*
 ET
 endstream
 endobj
@@ -1173,14 +1173,12 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
 endobj
 28 0 obj
-<< /Length 2324 >>
+<< /Length 2410 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(|) Tj
-T*
 (| Standard Isolation Forest | Standard Isolation Forest is a strong baseline, but its) Tj
 T*
 (axis-aligned splits can be less expressive when anomalous behaviour is a combination of) Tj
@@ -1263,6 +1261,8 @@ T*
 T*
 (threshold, floor 600, rate guardrail 5223 |) Tj
 T*
+(| High-volume clicked domain \(high_volume_domain\) | 2238 | 99th-percentile threshold,) Tj
+T*
 ET
 endstream
 endobj
@@ -1270,14 +1270,12 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 28 0 R >>
 endobj
 30 0 obj
-<< /Length 793 >>
+<< /Length 697 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
-(| High-volume clicked domain \(high_volume_domain\) | 2238 | 99th-percentile threshold,) Tj
-T*
 (floor 200, rate guardrail 2238 |) Tj
 T*
 (| Repeated query \(repeat_query\) | 149 | 99th-percentile threshold, floor 12, rate) Tj
@@ -1331,20 +1329,20 @@ xref
 0000016255 00000 n
 0000019590 00000 n
 0000019718 00000 n
-0000022725 00000 n
-0000022853 00000 n
-0000025112 00000 n
-0000025240 00000 n
-0000027838 00000 n
-0000027966 00000 n
-0000030229 00000 n
-0000030357 00000 n
-0000033021 00000 n
-0000033149 00000 n
-0000035526 00000 n
-0000035654 00000 n
-0000036499 00000 n
+0000022298 00000 n
+0000022426 00000 n
+0000025149 00000 n
+0000025277 00000 n
+0000027789 00000 n
+0000027917 00000 n
+0000030180 00000 n
+0000030308 00000 n
+0000032973 00000 n
+0000033101 00000 n
+0000035564 00000 n
+0000035692 00000 n
+0000036441 00000 n
 trailer << /Size 32 /Root 1 0 R >>
 startxref
-36627
+36569
 %%EOF

@@ -68,6 +68,9 @@ def _markdown(summary: dict[str, object]) -> str:
     kp_weight = float(ml_feature_weights.get("log_kp_count", 1.0))
     sld_weight = float(ml_feature_weights.get("log_sld_count", 1.0))
     anomaly_class_lines = _anomaly_class_lines(summary.get("anomaly_classes", {}))
+    filter_lines = _filtering_option_lines(
+        _filtering_options(summary.get("anomaly_classes", {}))
+    )
     statistical_findings = _statistical_findings_lines(summary)
     reason_table = _reason_table(top_reasons)
     disagreement_table = _method_agreement_table(disagreement_rows)
@@ -270,8 +273,17 @@ Use `suppress` for the strongest operational candidates after policy approval.
 Use `quarantine` as the default action for ambiguous or ML-only traffic. Do not
 automatically block traffic solely because it is in the ML tail.
 
-Filtering options are in Section 4. They are review controls for similar
-unlabelled datasets, not ground-truth fraud rules.
+These tiers are the recommended operating model because they keep action
+proportionate to the strength of evidence. Teams that need to go beyond the
+three-tier view can also use the more targeted filters below. Treat them as
+review controls for similar unlabelled datasets, not as ground-truth fraud
+rules.
+
+Practical filtering options for similar unlabelled datasets:
+
+| Filter | Use | Caveat |
+|---|---|---|
+{filter_lines}
 
 ## 6. Probability Perspective & Risk Assessment
 
@@ -663,7 +675,6 @@ def _anomaly_class_lines(anomaly_classes: object) -> str:
     ml_only_population = int(anomaly_classes.get("ml_only_population_count", 0))
     class_rows = _anomaly_class_table(anomaly_classes.get("classes", []))
     example_lines = _anomaly_example_lines(anomaly_classes.get("classes", []))
-    filter_lines = _filtering_option_lines(anomaly_classes.get("filtering_options", []))
 
     return f"""{scope}
 
@@ -687,17 +698,21 @@ event-level fields, scores, tiers, and rule evidence can be visualised in the
 Traffic Explorer in the dashboard.
 
 {example_lines}
+"""
 
-Practical filtering options for similar unlabelled datasets:
 
-| Filter | Use | Caveat |
-|---|---|---|
-{filter_lines}
+def _filtering_options(anomaly_classes: object) -> object:
+    """Return filtering options from the anomaly class summary.
 
-Use these filters as review controls. `suppress` is the strongest operational
-tier, `quarantine` is the safer default for ambiguous or ML-only traffic, and
-`monitor` keeps non-selected traffic available for drift checks and future
-labels."""
+    Args:
+        anomaly_classes: Summary section containing anomaly class metadata.
+
+    Returns:
+        The filtering options object, or an empty list when unavailable.
+    """
+    if not isinstance(anomaly_classes, dict):
+        return []
+    return anomaly_classes.get("filtering_options", [])
 
 
 def _anomaly_class_table(classes: object) -> str:

@@ -184,6 +184,21 @@ State the recommendation:
 > Use `quarantine` as the default action for ambiguous or ML-only traffic. Do
 > not automatically block traffic solely because it is in the ML tail.
 
+After the tier recommendation, include a subsection titled `Practical filtering
+options for similar unlabelled datasets`. Introduce it with narrative: the
+three operational tiers are the default operating model, but teams that need to
+go beyond the tier view can use targeted filters for review, sampling, or
+quarantine. Avoid repeating the tier table in prose.
+
+Required filtering table:
+
+| Filter | Use | Caveat |
+|---|---|---|
+| Conservative suppression review: `operational_tier == 'suppress'` | Start here for the strongest operational candidates. Still requires policy approval because labels are unavailable. | Check policy, billing, and customer-impact rules before action. |
+| Quarantine for manual review: `operational_tier == 'quarantine'` | Hold, sample, or delay action on suspicious traffic that is not strong enough for direct suppression. | Use sampling to estimate likely false positives before suppression. |
+| Explainable replay review: `anomaly_class in repetition_with_supporting_context, compound_burst_replay, repetition_with_timing, repetition_dominated` | Focus reviewer time on repeated query/domain behaviour with clear rule evidence. | Validate repeated-pattern assumptions against campaign context. |
+| ML-tail sampling: `ml_score >= 0.975 and heuristic_score < 0.62` | Sample for future feature-deviation work; do not treat as proven fraud without labels. | Needs feature-deviation review because rule evidence is below override. |
+
 ### 6. Probability Perspective & Risk Assessment
 
 Required narrative:
