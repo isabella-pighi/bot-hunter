@@ -343,16 +343,51 @@ feature extraction should trigger fresh threshold review.
 
 ## 8. Future Work
 
-The next useful improvements are:
+The roadmap should improve the system in three directions: make the current
+signals easier to explain, make the thresholds more stable across batches, and
+replace estimated confidence with measured performance once trusted labels
+exist.
 
-1. Labelled validation from manual review, chargebacks, or confirmed invalid
-   traffic feedback.
-2. Feature-deviation explanations for ML-tail events.
-3. Historical drift monitoring for flagged rates and score distributions.
-4. Campaign-level or inventory-level normalisation if metadata becomes
-   available.
-5. Calibrated probabilities once trusted labels exist.
-6. A feedback loop from reviewed `suppress` and `quarantine` decisions.
+Near-term work should focus on improvements that do not require external
+credentials or labelled data:
+
+1. Add feature-deviation explanations for ML-tail events. A reviewer should
+   see why an ML-only event was unusual, for example that its query/domain
+   repetition or same-second density sits in the top 1% of the batch.
+2. Add optional local domain reputation signals. A versioned local reputation
+   file can add useful context without making live network calls or turning a
+   broad reputation match into an automatic bot decision.
+3. Compare robust scaling or quantile transforms for heavy-tailed features.
+   This would test whether the model is too sensitive to very large domain,
+   query, or device-cluster counts.
+
+Medium-term work should make the approach safer across changing traffic mixes:
+
+4. Normalise high-volume signals by available context such as region, browser,
+   operating system, country-like `ct`, hour, and future campaign or inventory
+   metadata. High volume is more suspicious when it is concentrated in a narrow
+   footprint than when it is broad and expected.
+5. Add rolling burst features over 1-second, 10-second, and 60-second windows.
+   This would catch automation that avoids exact same-second bursts by spacing
+   clicks just far enough apart.
+6. Store compact run history for drift monitoring, including flagged rate,
+   score quantiles, tier counts, top reasons, and top domains. A sudden move
+   from a 2.5% selected rate to a much higher rate should be visible before the
+   output is treated as normal.
+
+Longer-term work needs more operational context:
+
+7. Add cached live reputation providers only when credentials, usage terms, and
+   data-handling requirements are clear. Live lookups should be optional,
+   cached by unique domain, and disabled by default.
+8. Collect labelled validation from manual review, invalid-traffic feedback,
+   chargebacks, confirmed abuse reports, or trusted campaign investigations.
+   Labels are required before reporting measured precision, recall,
+   calibration, or optimised decision thresholds.
+9. Build a feedback loop from reviewed `suppress` and `quarantine` decisions.
+   Once label quality is good enough, the team can evaluate supervised models
+   while keeping the current rules plus Extended Isolation Forest path as the
+   production baseline.
 
 ## Appendix A: Metric Definitions
 

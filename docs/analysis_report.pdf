@@ -3,7 +3,7 @@
 << /Type /Catalog /Pages 2 0 R >>
 endobj
 2 0 obj
-<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R] /Count 14 >>
+<< /Type /Pages /Kids [5 0 R 7 0 R 9 0 R 11 0 R 13 0 R 15 0 R 17 0 R 19 0 R 21 0 R 23 0 R 25 0 R 27 0 R 29 0 R 31 0 R 33 0 R] /Count 15 >>
 endobj
 3 0 obj
 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
@@ -979,7 +979,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 22 0 R >>
 endobj
 24 0 obj
-<< /Length 2210 >>
+<< /Length 2562 >>
 stream
 BT
 /F1 10 Tf
@@ -995,25 +995,108 @@ T*
 T*
 () Tj
 T*
-(The next useful improvements are:) Tj
+(The roadmap should improve the system in three directions: make the current) Tj
+T*
+(signals easier to explain, make the thresholds more stable across batches, and) Tj
+T*
+(replace estimated confidence with measured performance once trusted labels) Tj
+T*
+(exist.) Tj
 T*
 () Tj
 T*
-(1. Labelled validation from manual review, chargebacks, or confirmed invalid) Tj
+(Near-term work should focus on improvements that do not require external) Tj
 T*
-(   traffic feedback.) Tj
+(credentials or labelled data:) Tj
 T*
-(2. Feature-deviation explanations for ML-tail events.) Tj
+() Tj
 T*
-(3. Historical drift monitoring for flagged rates and score distributions.) Tj
+(1. Add feature-deviation explanations for ML-tail events. A reviewer should) Tj
 T*
-(4. Campaign-level or inventory-level normalisation if metadata becomes) Tj
+(   see why an ML-only event was unusual, for example that its query/domain) Tj
 T*
-(   available.) Tj
+(   repetition or same-second density sits in the top 1% of the batch.) Tj
 T*
-(5. Calibrated probabilities once trusted labels exist.) Tj
+(2. Add optional local domain reputation signals. A versioned local reputation) Tj
 T*
-(6. A feedback loop from reviewed suppress and quarantine decisions.) Tj
+(   file can add useful context without making live network calls or turning a) Tj
+T*
+(   broad reputation match into an automatic bot decision.) Tj
+T*
+(3. Compare robust scaling or quantile transforms for heavy-tailed features.) Tj
+T*
+(   This would test whether the model is too sensitive to very large domain,) Tj
+T*
+(   query, or device-cluster counts.) Tj
+T*
+() Tj
+T*
+(Medium-term work should make the approach safer across changing traffic mixes:) Tj
+T*
+() Tj
+T*
+(4. Normalise high-volume signals by available context such as region, browser,) Tj
+T*
+(   operating system, country-like ct, hour, and future campaign or inventory) Tj
+T*
+(   metadata. High volume is more suspicious when it is concentrated in a narrow) Tj
+T*
+(   footprint than when it is broad and expected.) Tj
+T*
+(5. Add rolling burst features over 1-second, 10-second, and 60-second windows.) Tj
+T*
+(   This would catch automation that avoids exact same-second bursts by spacing) Tj
+T*
+(   clicks just far enough apart.) Tj
+T*
+(6. Store compact run history for drift monitoring, including flagged rate,) Tj
+T*
+(   score quantiles, tier counts, top reasons, and top domains. A sudden move) Tj
+T*
+(   from a 2.5% selected rate to a much higher rate should be visible before the) Tj
+T*
+(   output is treated as normal.) Tj
+T*
+() Tj
+T*
+(Longer-term work needs more operational context:) Tj
+T*
+() Tj
+T*
+(7. Add cached live reputation providers only when credentials, usage terms, and) Tj
+T*
+(   data-handling requirements are clear. Live lookups should be optional,) Tj
+T*
+(   cached by unique domain, and disabled by default.) Tj
+T*
+ET
+endstream
+endobj
+25 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
+endobj
+26 0 obj
+<< /Length 2517 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(8. Collect labelled validation from manual review, invalid-traffic feedback,) Tj
+T*
+(   chargebacks, confirmed abuse reports, or trusted campaign investigations.) Tj
+T*
+(   Labels are required before reporting measured precision, recall,) Tj
+T*
+(   calibration, or optimised decision thresholds.) Tj
+T*
+(9. Build a feedback loop from reviewed suppress and quarantine decisions.) Tj
+T*
+(   Once label quality is good enough, the team can evaluate supervised models) Tj
+T*
+(   while keeping the current rules plus Extended Isolation Forest path as the) Tj
+T*
+(   production baseline.) Tj
 T*
 () Tj
 T*
@@ -1069,19 +1152,6 @@ T*
 T*
 () Tj
 T*
-ET
-endstream
-endobj
-25 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
-endobj
-26 0 obj
-<< /Length 2612 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (| Feature | Meaning |) Tj
 T*
 (|---|---|) Tj
@@ -1096,6 +1166,19 @@ T*
 T*
 (| log_country_count | Log-scaled frequency of ct, the country-like URL parameter. |) Tj
 T*
+ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 2724 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (| log_same_second_count | Log-scaled number of clicks sharing the same second. |) Tj
 T*
 (| log_ttc_count | Log-scaled reuse count for exact time-to-click values. |) Tj
@@ -1166,19 +1249,6 @@ T*
 T*
 (|) Tj
 T*
-ET
-endstream
-endobj
-27 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
-endobj
-28 0 obj
-<< /Length 2410 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (| Standard Isolation Forest | Standard Isolation Forest is a strong baseline, but its) Tj
 T*
 (axis-aligned splits can be less expressive when anomalous behaviour is a combination of) Tj
@@ -1193,6 +1263,19 @@ T*
 T*
 (scaling and neighbourhood parameters. With mixed count, timing, entropy, and) Tj
 T*
+ET
+endstream
+endobj
+29 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 28 0 R >>
+endobj
+30 0 obj
+<< /Length 2326 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 (categorical-frequency features, it was less stable as a default production choice for) Tj
 T*
 (repeatable local batch runs. |) Tj
@@ -1263,19 +1346,6 @@ T*
 T*
 (| High-volume clicked domain \(high_volume_domain\) | 2238 | 99th-percentile threshold,) Tj
 T*
-ET
-endstream
-endobj
-29 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 28 0 R >>
-endobj
-30 0 obj
-<< /Length 697 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (floor 200, rate guardrail 2238 |) Tj
 T*
 (| Repeated query \(repeat_query\) | 149 | 99th-percentile threshold, floor 12, rate) Tj
@@ -1290,6 +1360,19 @@ T*
 T*
 (| Same-second click burst \(same_second_burst\) | 6 | 99th-percentile threshold, floor 4 |) Tj
 T*
+ET
+endstream
+endobj
+31 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 30 0 R >>
+endobj
+32 0 obj
+<< /Length 212 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
 () Tj
 T*
 (In this run:) Tj
@@ -1305,44 +1388,46 @@ T*
 ET
 endstream
 endobj
-31 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 30 0 R >>
+33 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 32 0 R >>
 endobj
 xref
-0 32
+0 34
 0000000000 65535 f
 0000000009 00000 n
 0000000058 00000 n
-0000000205 00000 n
-0000000275 00000 n
-0000002884 00000 n
-0000003010 00000 n
-0000005334 00000 n
-0000005460 00000 n
-0000007801 00000 n
-0000007927 00000 n
-0000010412 00000 n
-0000010540 00000 n
-0000013147 00000 n
-0000013275 00000 n
-0000016127 00000 n
-0000016255 00000 n
-0000019590 00000 n
-0000019718 00000 n
-0000022298 00000 n
-0000022426 00000 n
-0000025149 00000 n
-0000025277 00000 n
-0000027789 00000 n
-0000027917 00000 n
-0000030180 00000 n
-0000030308 00000 n
-0000032973 00000 n
-0000033101 00000 n
-0000035564 00000 n
-0000035692 00000 n
-0000036441 00000 n
-trailer << /Size 32 /Root 1 0 R >>
+0000000212 00000 n
+0000000282 00000 n
+0000002891 00000 n
+0000003017 00000 n
+0000005341 00000 n
+0000005467 00000 n
+0000007808 00000 n
+0000007934 00000 n
+0000010419 00000 n
+0000010547 00000 n
+0000013154 00000 n
+0000013282 00000 n
+0000016134 00000 n
+0000016262 00000 n
+0000019597 00000 n
+0000019725 00000 n
+0000022305 00000 n
+0000022433 00000 n
+0000025156 00000 n
+0000025284 00000 n
+0000027796 00000 n
+0000027924 00000 n
+0000030539 00000 n
+0000030667 00000 n
+0000033237 00000 n
+0000033365 00000 n
+0000036142 00000 n
+0000036270 00000 n
+0000038649 00000 n
+0000038777 00000 n
+0000039041 00000 n
+trailer << /Size 34 /Root 1 0 R >>
 startxref
-36569
+39169
 %%EOF

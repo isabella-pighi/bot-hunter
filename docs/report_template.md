@@ -252,15 +252,35 @@ Required limitations:
 
 ### 8. Future Work
 
-Keep this section specific and prioritised.
+Keep this section specific, prioritised, and aligned with `TODO.md`. Do not
+list generic aspirations. Explain why each item matters and whether it needs
+labels, external credentials, or new production context.
 
-Recommended future work:
+Required structure:
 
-1. Labelled validation from manual review or confirmed invalid-traffic data.
-2. Feature-deviation explanations for ML-tail events.
-3. Historical drift monitoring for flagged rates and score distributions.
-4. Campaign or inventory normalisation if metadata becomes available.
-5. Calibrated probabilities once trusted labels exist.
+- near-term work that can be done locally without credentials or labels
+- medium-term work that improves robustness across changing traffic mixes
+- longer-term work that needs labels, provider credentials, or operational
+  feedback
+
+Recommended content:
+
+1. Feature-deviation explanations for ML-tail events, so reviewers can see why
+   an ML-only event was unusual rather than only seeing a score.
+2. Optional local domain reputation signals, kept offline and auditable before
+   any live provider is considered.
+3. Robust scaling or quantile-transform comparison for heavy-tailed features.
+4. Context-normalised high-volume signals using fields such as region, browser,
+   operating system, `ct`, hour, and future campaign or inventory metadata.
+5. Rolling burst features across 1-second, 10-second, and 60-second windows.
+6. Historical run monitoring for flagged rates, score quantiles, tier counts,
+   top reasons, and top domains.
+7. Optional cached live reputation providers, disabled by default and used only
+   when credentials, terms, and data handling are clear.
+8. Labelled validation from manual review, invalid-traffic feedback,
+   chargebacks, confirmed abuse reports, or trusted campaign investigations.
+9. A feedback loop from reviewed `suppress` and `quarantine` decisions, with
+   supervised modelling considered only after label quality is good enough.
 
 ## Appendix A: Metric Definitions
 

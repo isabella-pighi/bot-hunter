@@ -230,8 +230,9 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         "that look more like automated bot activity" in html_report
     )
     assert "<p>more like automated bot activity" not in html_report
-    assert "<ol><li>Labelled validation" in html_report
-    assert "calibration cannot be reported.</li>" in html_report
+    assert "<ol><li>Add feature-deviation explanations" in html_report
+    assert "Labels are required before reporting measured precision" in html_report
+    assert "calibration, or optimised decision thresholds.</li>" in html_report
     assert "<th>Rule</th>" in html_report
     assert "<h2>4. Anomaly Explanations &amp; Practical Guidance</h2>" in html_report
     assert "<h2>Appendix A: Metric Definitions</h2>" in html_report
