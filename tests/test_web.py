@@ -120,8 +120,9 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         )
         assert (
             ".analysis-brief-copy { display:grid; gap:10px; width:100%; "
-            "max-width:clamp(72ch,78%,104ch); min-width:0; }" in dashboard
+            "max-width:none; min-width:0; }" in dashboard
         )
+        assert "max-width:clamp(72ch,78%,104ch)" not in dashboard
         assert (
             ".analysis-brief-copy p { margin:0; color:var(--ink); "
             "font-size:15px; line-height:1.55; overflow-wrap:anywhere; }" in dashboard

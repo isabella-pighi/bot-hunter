@@ -33,6 +33,13 @@ Review stance:
   filters update visible rows; CSV export downloads; the report/features links
   work; and a narrow mobile viewport remains usable. Record the browser/tool
   used and the observed result in the review response.
+- For responsive dashboard panel work, measure the rendered layout in a real
+  browser. Panel text and panel content must share the same left and right
+  edges unless the design intentionally introduces a clearly justified inset.
+  A text-to-panel width ratio such as `0.759` is not acceptable evidence of
+  responsiveness. Treat ratios below `0.95`, visibly unequal margins, or fixed
+  character caps that stop text from using the panel width as blocking
+  findings.
 - When validation uses Python or browser automation from the shell, require a
   quote-safe, directly executable command. For multi-line Python, prefer a
   heredoc or a checked-in temporary script over `python -c "..."`. Treat shell

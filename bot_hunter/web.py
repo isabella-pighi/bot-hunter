@@ -310,7 +310,7 @@ def _dashboard_html() -> str:
     .metric-value { font-size:28px; font-weight:750; font-variant-numeric:tabular-nums; margin:6px 0; }
     .metric-label, .label { color:var(--muted); font-size:13px; }
     .analysis-brief-panel { width:100%; min-width:0; overflow:visible; }
-    .analysis-brief-copy { display:grid; gap:10px; width:100%; max-width:clamp(72ch,78%,104ch); min-width:0; }
+    .analysis-brief-copy { display:grid; gap:10px; width:100%; max-width:none; min-width:0; }
     .analysis-brief-copy p { margin:0; color:var(--ink); font-size:15px; line-height:1.55; overflow-wrap:anywhere; }
     .chart-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:16px; }
     .chart-body { display:grid; grid-template-columns:142px minmax(0,1fr); gap:14px; align-items:center; }
