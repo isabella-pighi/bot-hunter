@@ -309,6 +309,8 @@ def _dashboard_html() -> str:
     .metric { border:1px solid var(--line); border-radius:8px; padding:13px; background:#fff; min-height:104px; }
     .metric-value { font-size:28px; font-weight:750; font-variant-numeric:tabular-nums; margin:6px 0; }
     .metric-label, .label { color:var(--muted); font-size:13px; }
+    .analysis-brief-copy { display:grid; gap:10px; max-width:920px; }
+    .analysis-brief-copy p { margin:0; color:var(--ink); font-size:15px; line-height:1.55; }
     .chart-grid { grid-template-columns:repeat(3,minmax(0,1fr)); margin-bottom:16px; }
     .chart-body { display:grid; grid-template-columns:142px minmax(0,1fr); gap:14px; align-items:center; }
     .donut { width:142px; height:142px; }
@@ -440,8 +442,10 @@ def _dashboard_html() -> str:
     <section class="page active" id="page-overview">
       <div class="panel">
         <h2>Analysis Brief</h2>
-        <p id="storyLead" class="loading">Loading current run...</p>
-        <p id="confidenceExplainer" class="label"></p>
+        <div class="analysis-brief-copy">
+          <p id="storyLead">Loading current run...</p>
+          <p id="confidenceExplainer"></p>
+        </div>
       </div>
       <div class="panel">
         <h2>Analysis Scorecard</h2>
