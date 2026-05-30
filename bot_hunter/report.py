@@ -369,6 +369,20 @@ behaviour rather than confirmed fraud. The model output is strongest when it
 agrees with transparent rule evidence and weakest when it stands alone without
 feature-deviation review.
 
+Methods evaluated but not selected:
+
+| Method | Why it was not preferred |
+|---|---|
+| K-means clustering | K-means is useful when compact, roughly spherical clusters are expected. Bot-click traffic is sparse, skewed, and heavy-tailed, so forcing every event into a cluster makes the output harder to explain and less reliable for rare anomalies. |
+| Standard Isolation Forest | Standard Isolation Forest is a strong baseline, but its axis-aligned splits can be less expressive when anomalous behaviour is a combination of several weak signals. Extended Isolation Forest uses random hyperplane splits, which better matches the multivariate footprint of repeated, bursty, and concentrated traffic. |
+| DBSCAN | DBSCAN can find dense groups and outliers, but it is sensitive to distance scaling and neighbourhood parameters. With mixed count, timing, entropy, and categorical-frequency features, it was less stable as a default production choice for repeatable local batch runs. |
+
+Extended Isolation Forest was preferred because it preserves the main advantage
+of unsupervised Isolation Forest-style detection while giving a more flexible
+view of multivariate anomalies. It also fits the operating constraints of this
+project: no labels, a local batch pipeline, explainable feature engineering,
+and a need to combine model scores with transparent rules.
+
 ## Appendix D: Thresholds And Decision Logic
 
 An event is selected as a bot when either condition is true:

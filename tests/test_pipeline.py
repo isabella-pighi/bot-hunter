@@ -196,7 +196,11 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "99th-percentile threshold" in report
     assert "% percentile" not in report
     assert "alternate ML backends and supervised pilots have been removed" in report
-    assert "Methods evaluated but not included" not in report
+    assert "Methods evaluated but not selected" in report
+    assert "K-means clustering" in report
+    assert "Standard Isolation Forest" in report
+    assert "DBSCAN" in report
+    assert "random hyperplane splits" in report
     html_report = (tmp_path / "docs" / "analysis_report.html").read_text(
         encoding="utf-8"
     )

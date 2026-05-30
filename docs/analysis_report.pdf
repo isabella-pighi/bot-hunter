@@ -1076,7 +1076,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
 endobj
 26 0 obj
-<< /Length 2140 >>
+<< /Length 2648 >>
 stream
 BT
 /F1 10 Tf
@@ -1119,6 +1119,67 @@ T*
 (agrees with transparent rule evidence and weakest when it stands alone without) Tj
 T*
 (feature-deviation review.) Tj
+T*
+() Tj
+T*
+(Methods evaluated but not selected:) Tj
+T*
+() Tj
+T*
+(| Method | Why it was not preferred |) Tj
+T*
+(|---|---|) Tj
+T*
+(| K-means clustering | K-means is useful when compact, roughly spherical clusters are) Tj
+T*
+(expected. Bot-click traffic is sparse, skewed, and heavy-tailed, so forcing every event) Tj
+T*
+(into a cluster makes the output harder to explain and less reliable for rare anomalies.) Tj
+T*
+(|) Tj
+T*
+(| Standard Isolation Forest | Standard Isolation Forest is a strong baseline, but its) Tj
+T*
+(axis-aligned splits can be less expressive when anomalous behaviour is a combination of) Tj
+T*
+(several weak signals. Extended Isolation Forest uses random hyperplane splits, which) Tj
+T*
+(better matches the multivariate footprint of repeated, bursty, and concentrated traffic.) Tj
+T*
+(|) Tj
+T*
+(| DBSCAN | DBSCAN can find dense groups and outliers, but it is sensitive to distance) Tj
+T*
+(scaling and neighbourhood parameters. With mixed count, timing, entropy, and) Tj
+T*
+(categorical-frequency features, it was less stable as a default production choice for) Tj
+T*
+(repeatable local batch runs. |) Tj
+T*
+() Tj
+T*
+(Extended Isolation Forest was preferred because it preserves the main advantage) Tj
+T*
+(of unsupervised Isolation Forest-style detection while giving a more flexible) Tj
+T*
+(view of multivariate anomalies. It also fits the operating constraints of this) Tj
+T*
+(project: no labels, a local batch pipeline, explainable feature engineering,) Tj
+T*
+ET
+endstream
+endobj
+27 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
+endobj
+28 0 obj
+<< /Length 2019 >>
+stream
+BT
+/F1 10 Tf
+50 780 Td
+14 TL
+(and a need to combine model scores with transparent rules.) Tj
 T*
 () Tj
 T*
@@ -1166,19 +1227,6 @@ T*
 T*
 (| Concentrated ct context \(concentrated_ct_context\) | 29013 | 99th-percentile threshold,) Tj
 T*
-ET
-endstream
-endobj
-27 0 obj
-<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
-endobj
-28 0 obj
-<< /Length 981 >>
-stream
-BT
-/F1 10 Tf
-50 780 Td
-14 TL
 (floor 1000, rate guardrail 14923 |) Tj
 T*
 (| Heavy region/browser/OS cluster \(heavy_device_cluster\) | 43674 | 99th-percentile) Tj
@@ -1248,10 +1296,10 @@ xref
 0000027665 00000 n
 0000030200 00000 n
 0000030328 00000 n
-0000032521 00000 n
-0000032649 00000 n
-0000033682 00000 n
+0000033029 00000 n
+0000033157 00000 n
+0000035229 00000 n
 trailer << /Size 30 /Root 1 0 R >>
 startxref
-33810
+35357
 %%EOF

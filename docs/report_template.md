@@ -283,6 +283,18 @@ Why it was chosen:
 - it handles several behavioural features at once
 - it is suitable for local batch processing
 - it complements explainable rules by finding unusual combinations
+- it was preferred to K-means, standard Isolation Forest, and DBSCAN because
+  the current feature space is mixed, sparse, skewed, and better suited to a
+  flexible multivariate anomaly detector than to fixed cluster geometry or
+  highly parameter-sensitive density thresholds
+
+Methods evaluated but not selected:
+
+| Method | Why it was not preferred |
+|---|---|
+| K-means clustering | Forces events into clusters and assumes compact cluster shapes, which is a poor fit for rare bot anomalies in skewed click-log data. |
+| Standard Isolation Forest | A strong baseline, but axis-aligned splits are less expressive when the suspicious footprint is a combination of weaker timing, repetition, and concentration signals. |
+| DBSCAN | Sensitive to distance scaling and neighbourhood parameters, especially with mixed count, timing, entropy, and categorical-frequency features. |
 
 Main shortcoming:
 
