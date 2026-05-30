@@ -114,6 +114,14 @@ Method agreement from the current run:
 | ML only | 2,005 | Multivariate anomalies that need careful sampling or review. |
 | Neither strong | 145,197 | Traffic not strongly indicated by either method. |
 
+Define `Combined tail` whenever it appears in the class or method breakdowns:
+
+- selected because the blended `combined_score` crossed the run threshold
+- neither strong rules nor the strongest ML-only evidence was enough on its
+  own
+- treat as combined or borderline evidence for review or quarantine, not
+  automatic suppression
+
 Operational anomaly classes from the current run:
 
 | Class | Selected events | Recommended handling |

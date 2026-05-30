@@ -222,6 +222,12 @@ Method agreement from the current run:
 |---|---:|---|
 {disagreement_table}
 
+`Combined tail` is the borderline evidence bucket. It means the event was
+selected because the blended `combined_score` crossed the run threshold, while
+neither strong rules nor the strongest ML-only evidence was enough on its own.
+Treat these events as combined evidence for review or quarantine, not as
+automatic suppression candidates.
+
 Operational anomaly classes from the current run:
 
 {_anomaly_class_summary_table(summary.get("anomaly_classes", {}))}
@@ -349,6 +355,7 @@ The next useful improvements are:
 | Operational tier | Business action layer: `suppress`, `quarantine`, or `monitor`. |
 | Operational confidence estimate | Signal-based estimate from method agreement; not measured precision. |
 | Method bucket | Agreement category showing whether rules, ML, both, or neither were strong. |
+| `Combined tail` | Borderline method bucket selected by the blended `combined_score`; neither strong rules nor strongest ML-only evidence was enough alone, so use it for review or quarantine rather than automatic suppression. |
 | Anomaly class | Human-readable grouping of selected events by dominant evidence pattern. |
 
 ## Appendix B: Feature Definitions
