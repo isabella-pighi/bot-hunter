@@ -706,8 +706,8 @@ def _anomaly_class_table(classes: object) -> str:
 
 
 def _class_backing(item: dict[str, object]) -> str:
-    tier_counts = _count_dict(item.get("tier_counts", {}))
-    method_counts = _count_dict(item.get("method_counts", {}))
+    tier_counts = _count_dict(item.get("tier_counts", {}), separator=" / ")
+    method_counts = _count_dict(item.get("method_counts", {}), separator=" / ")
     dominant_rules = item.get("dominant_rules", [])
     rules = []
     if isinstance(dominant_rules, list):
@@ -722,10 +722,10 @@ def _class_backing(item: dict[str, object]) -> str:
     if method_counts:
         parts.append(f"methods: {method_counts}")
     if rules:
-        parts.append(f"top rules: {', '.join(rules)}")
+        parts.append(f"top rules: {' / '.join(rules)}")
     note = item.get("rule_evidence_note")
     if isinstance(note, str) and note:
-        parts.append(note)
+        parts.append(f"top rules: {note}")
     return "; ".join(parts) or str(item.get("description", "No backing reported."))
 
 
@@ -794,10 +794,10 @@ def _filter_caveat(name: str) -> str:
     return "Validate repeated-pattern assumptions against campaign context."
 
 
-def _count_dict(value: object) -> str:
+def _count_dict(value: object, separator: str = ", ") -> str:
     if not isinstance(value, dict):
         return ""
-    return ", ".join(f"{key} {int(count):,}" for key, count in value.items())
+    return separator.join(f"{key} {int(count):,}" for key, count in value.items())
 
 
 def _cell(value: str) -> str:
@@ -842,6 +842,7 @@ def _html(markdown: str) -> str:
     in_code = False
     in_table = False
     list_tag = "ul"
+    table_headers: list[str] = []
     paragraph_lines: list[str] = []
 
     def flush_paragraph() -> None:
@@ -859,10 +860,11 @@ def _html(markdown: str) -> str:
             in_list = False
 
     def close_table() -> None:
-        nonlocal in_table
+        nonlocal in_table, table_headers
         if in_table:
             body.append("</tbody></table></div>\n")
             in_table = False
+            table_headers = []
 
     for line in markdown.splitlines():
         if line.startswith("```"):
@@ -912,6 +914,7 @@ def _html(markdown: str) -> str:
             if all(cell.replace("-", "").replace(":", "") == "" for cell in cells):
                 continue
             if not in_table:
+                table_headers = cells
                 rendered_cells = "".join(
                     f"<th>{html.escape(cell)}</th>" for cell in cells
                 )
@@ -922,7 +925,10 @@ def _html(markdown: str) -> str:
                 in_table = True
             else:
                 rendered_cells = "".join(
-                    f"<td>{html.escape(cell)}</td>" for cell in cells
+                    _render_table_data_cell(
+                        cell, table_headers[index] if index < len(table_headers) else ""
+                    )
+                    for index, cell in enumerate(cells)
                 )
                 body.append(f"<tr>{rendered_cells}</tr>")
         elif line.strip():
@@ -1023,6 +1029,20 @@ def _html(markdown: str) -> str:
       color: var(--muted);
       font-weight: 700;
     }}
+    .cell-list {{
+      margin: 0;
+      padding-left: 1rem;
+    }}
+    .cell-list ul {{
+      margin: 0.3rem 0 0.75rem;
+      padding-left: 1.15rem;
+      width: auto;
+    }}
+    .cell-list > li:last-child ul {{ margin-bottom: 0; }}
+    .cell-list-label {{
+      color: var(--ink);
+      font-weight: 700;
+    }}
     tbody tr:nth-child(even) {{ background: #fbfcfd; }}
     @media (max-width: 720px) {{
       main {{ padding: 20px 14px 32px; }}
@@ -1034,6 +1054,34 @@ def _html(markdown: str) -> str:
 </head>
 <body><main>{''.join(body)}</main></body>
 </html>"""
+
+
+def _render_table_data_cell(cell: str, header: str) -> str:
+    if header == "Data backing":
+        return f"<td>{_render_data_backing_html(cell)}</td>"
+    return f"<td>{html.escape(cell)}</td>"
+
+
+def _render_data_backing_html(cell: str) -> str:
+    groups = []
+    for part in cell.split("; "):
+        if ": " not in part:
+            continue
+        label, values = part.split(": ", 1)
+        nested_items = [
+            f"<li>{html.escape(value.strip())}</li>"
+            for value in values.split(" / ")
+            if value.strip()
+        ]
+        if nested_items:
+            groups.append(
+                "<li>"
+                f'<span class="cell-list-label">{html.escape(label)}</span>'
+                f"<ul>{''.join(nested_items)}</ul></li>"
+            )
+    if not groups:
+        return html.escape(cell)
+    return f"<ul class=\"cell-list\">{''.join(groups)}</ul>"
 
 
 def _write_simple_pdf(path: Path, text: str) -> None:

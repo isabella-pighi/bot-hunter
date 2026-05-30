@@ -18,6 +18,7 @@ from bot_hunter.pipeline import (
     _selected_method_counts,
     run_pipeline,
 )
+from bot_hunter.report import _render_data_backing_html
 
 
 class FakeEIF:
@@ -237,6 +238,7 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
     assert "<th>Class</th>" in html_report
     assert "<th>Data backing</th>" in html_report
     assert "<th>Suggested handling</th>" not in html_report
+    assert '<ul class="cell-list">' in html_report
     assert "Repeated query/domain pair" in html_report
     features = (
         (tmp_path / "artifacts" / "features.tsv")
@@ -294,6 +296,22 @@ def test_pipeline_writes_submission(monkeypatch, tmp_path: Path) -> None:
         "1.098612",
         "2.521641",
     ]
+
+
+def test_report_data_backing_cell_uses_nested_lists() -> None:
+    rendered = _render_data_backing_html(
+        "tiers: suppress 1,327 / quarantine 550; "
+        "methods: Heuristic + ML 1,198 / Heuristic only 186; "
+        "top rules: repeat_query (1,877) / repeat_query_domain (1,384)"
+    )
+
+    assert '<ul class="cell-list">' in rendered
+    assert '<span class="cell-list-label">tiers</span>' in rendered
+    assert '<span class="cell-list-label">methods</span>' in rendered
+    assert '<span class="cell-list-label">top rules</span>' in rendered
+    assert "<li>suppress 1,327</li>" in rendered
+    assert "<li>Heuristic + ML 1,198</li>" in rendered
+    assert "<li>repeat_query_domain (1,384)</li>" in rendered
 
 
 def test_anomaly_classes_use_selected_counts_and_ml_only_population() -> None:

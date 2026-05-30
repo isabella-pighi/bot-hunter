@@ -494,7 +494,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 12 0 R >>
 endobj
 14 0 obj
-<< /Length 2951 >>
+<< /Length 2910 >>
 stream
 BT
 /F1 10 Tf
@@ -550,39 +550,39 @@ T*
 T*
 (|---|---:|---|) Tj
 T*
-(| Repetition with supporting context | 1,877 | tiers: suppress 1,327, quarantine 550;) Tj
+(| Repetition with supporting context | 1,877 | tiers: suppress 1,327 / quarantine 550;) Tj
 T*
-(methods: Heuristic + ML 1,198, Heuristic only 186, Combined tail 493; top rules:) Tj
+(methods: Heuristic + ML 1,198 / Heuristic only 186 / Combined tail 493; top rules:) Tj
 T*
-(repeat_query \(1,877\), repeat_query_domain \(1,384\), confirmed_query_repetition \(1,384\) |) Tj
+(repeat_query \(1,877\) / repeat_query_domain \(1,384\) / confirmed_query_repetition \(1,384\)) Tj
 T*
-(| Compound burst/replay | 562 | tiers: suppress 154, quarantine 408; methods: Heuristic) Tj
+(|) Tj
 T*
-(+ ML 150, Heuristic only 11, Combined tail 401; top rules: repeat_query \(558\),) Tj
+(| Compound burst/replay | 562 | tiers: suppress 154 / quarantine 408; methods: Heuristic) Tj
 T*
-(same_second_burst \(441\), short_query \(285\) |) Tj
+(+ ML 150 / Heuristic only 11 / Combined tail 401; top rules: repeat_query \(558\) /) Tj
 T*
-(| ML-tail multivariate anomaly | 509 | tiers: quarantine 509; methods: ML only 509; This) Tj
+(same_second_burst \(441\) / short_query \(285\) |) Tj
 T*
-(class is grouped by anomaly-model agreement, not by rule explanations. Low-weight rules) Tj
+(| ML-tail multivariate anomaly | 509 | tiers: quarantine 509; methods: ML only 509; top) Tj
 T*
-(may be present, but they do not cross the heuristic override threshold. |) Tj
+(rules: This class is grouped by anomaly-model agreement, not by rule explanations. Low-) Tj
 T*
-(| Repetition with timing anomaly | 355 | tiers: suppress 199, quarantine 156; methods:) Tj
+(weight rules may be present, but they do not cross the heuristic override threshold. |) Tj
 T*
-(Heuristic + ML 195, Heuristic only 4, Combined tail 156; top rules: repeat_query \(355\),) Tj
+(| Repetition with timing anomaly | 355 | tiers: suppress 199 / quarantine 156; methods:) Tj
 T*
-(moderate_long_ttc \(283\), repeat_query_domain \(199\) |) Tj
+(Heuristic + ML 195 / Heuristic only 4 / Combined tail 156; top rules: repeat_query \(355\)) Tj
 T*
-(| Repetition dominated | 350 | tiers: suppress 183, quarantine 167; methods: Heuristic +) Tj
+(/ moderate_long_ttc \(283\) / repeat_query_domain \(199\) |) Tj
 T*
-(ML 183, Heuristic only 110, Combined tail 57; top rules: repeat_query_domain \(350\),) Tj
+(| Repetition dominated | 350 | tiers: suppress 183 / quarantine 167; methods: Heuristic) Tj
 T*
-(repeat_query \(293\), confirmed_query_repetition \(293\) |) Tj
+(+ ML 183 / Heuristic only 110 / Combined tail 57; top rules: repeat_query_domain \(350\) /) Tj
+T*
+(repeat_query \(293\) / confirmed_query_repetition \(293\) |) Tj
 T*
 (| Supporting context plus combined tail | 77 | tiers: quarantine 77; methods: Combined) Tj
-T*
-(tail 77; top rules: same_second_burst \(74\), high_volume_domain \(62\),) Tj
 T*
 ET
 endstream
@@ -591,17 +591,19 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 14 0 R >>
 endobj
 16 0 obj
-<< /Length 2908 >>
+<< /Length 2958 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(tail 77; top rules: same_second_burst \(74\) / high_volume_domain \(62\) /) Tj
+T*
 (heavy_device_cluster \(62\) |) Tj
 T*
 (| Other combined-tail anomaly | 1 | tiers: quarantine 1; methods: Combined tail 1; top) Tj
 T*
-(rules: same_second_burst \(1\), fast_click \(1\) |) Tj
+(rules: same_second_burst \(1\) / fast_click \(1\) |) Tj
 T*
 () Tj
 T*
@@ -679,8 +681,6 @@ T*
 T*
 () Tj
 T*
-(| Filter | Use | Caveat |) Tj
-T*
 ET
 endstream
 endobj
@@ -688,12 +688,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 16 0 R >>
 endobj
 18 0 obj
-<< /Length 2545 >>
+<< /Length 2493 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(| Filter | Use | Caveat |) Tj
+T*
 (|---|---|---|) Tj
 T*
 (| Conservative suppression review: operational_tier == 'suppress' | Start here for the) Tj
@@ -776,8 +778,6 @@ T*
 T*
 (Use suppress for the strongest operational candidates after policy approval.) Tj
 T*
-(Use quarantine as the default action for ambiguous or ML-only traffic. Do not) Tj
-T*
 ET
 endstream
 endobj
@@ -785,12 +785,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 18 0 R >>
 endobj
 20 0 obj
-<< /Length 2508 >>
+<< /Length 2538 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(Use quarantine as the default action for ambiguous or ML-only traffic. Do not) Tj
+T*
 (automatically block traffic solely because it is in the ML tail.) Tj
 T*
 () Tj
@@ -873,8 +875,6 @@ T*
 T*
 () Tj
 T*
-( 7. Generalisation, Trade-Offs, And Limitations) Tj
-T*
 ET
 endstream
 endobj
@@ -882,12 +882,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 20 0 R >>
 endobj
 22 0 obj
-<< /Length 2102 >>
+<< /Length 2149 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+( 7. Generalisation, Trade-Offs, And Limitations) Tj
+T*
 () Tj
 T*
 (The approach should generalise to bot traffic that is repetitive,) Tj
@@ -970,8 +972,6 @@ T*
 T*
 ( Appendix A: Metric Definitions) Tj
 T*
-() Tj
-T*
 ET
 endstream
 endobj
@@ -985,6 +985,8 @@ BT
 /F1 10 Tf
 50 780 Td
 14 TL
+() Tj
+T*
 (| Metric | Definition |) Tj
 T*
 (|---|---|) Tj
@@ -1067,8 +1069,6 @@ T*
 T*
 (| query_entropy | Text randomness measure for the search query. |) Tj
 T*
-() Tj
-T*
 ET
 endstream
 endobj
@@ -1076,12 +1076,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 24 0 R >>
 endobj
 26 0 obj
-<< /Length 2501 >>
+<< /Length 2497 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+() Tj
+T*
 ( Appendix C: Model Definition) Tj
 T*
 () Tj
@@ -1164,8 +1166,6 @@ T*
 T*
 () Tj
 T*
-(text) Tj
-T*
 ET
 endstream
 endobj
@@ -1173,12 +1173,14 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 3 0 R >> >> /Contents 26 0 R >>
 endobj
 28 0 obj
-<< /Length 1792 >>
+<< /Length 1805 >>
 stream
 BT
 /F1 10 Tf
 50 780 Td
 14 TL
+(text) Tj
+T*
 (combined_score > 0.568053) Tj
 T*
 (or heuristic_score >= 0.62) Tj
@@ -1270,22 +1272,22 @@ xref
 0000010533 00000 n
 0000013170 00000 n
 0000013298 00000 n
-0000016302 00000 n
-0000016430 00000 n
-0000019391 00000 n
-0000019519 00000 n
-0000022117 00000 n
-0000022245 00000 n
-0000024806 00000 n
-0000024934 00000 n
-0000027089 00000 n
-0000027217 00000 n
-0000029828 00000 n
-0000029956 00000 n
-0000032510 00000 n
-0000032638 00000 n
-0000034483 00000 n
+0000016261 00000 n
+0000016389 00000 n
+0000019400 00000 n
+0000019528 00000 n
+0000022074 00000 n
+0000022202 00000 n
+0000024793 00000 n
+0000024921 00000 n
+0000027123 00000 n
+0000027251 00000 n
+0000029862 00000 n
+0000029990 00000 n
+0000032540 00000 n
+0000032668 00000 n
+0000034526 00000 n
 trailer << /Size 30 /Root 1 0 R >>
 startxref
-34611
+34654
 %%EOF
