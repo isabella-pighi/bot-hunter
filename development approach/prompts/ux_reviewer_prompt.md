@@ -33,6 +33,11 @@ Review stance:
   filters update visible rows; CSV export downloads; the report/features links
   work; and a narrow mobile viewport remains usable. Record the browser/tool
   used and the observed result in the review response.
+- When validation uses Python or browser automation from the shell, require a
+  quote-safe, directly executable command. For multi-line Python, prefer a
+  heredoc or a checked-in temporary script over `python -c "..."`. Treat shell
+  parse failures such as unmatched quotes as validation failures, not as
+  acceptable reviewer evidence.
 - Enforce the repository's existing documentation structure. Documentation must
   use clear narrative, plain British English, and language suitable for a wide
   technical audience.

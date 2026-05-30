@@ -305,6 +305,10 @@ The reviewer must check:
 - for dashboard changes, whether tabs switch pages, Help opens and closes,
   filters update rows, CSV export downloads, report/features links work, and a
   mobile viewport remains usable
+- whether shell validation commands are quote-safe and directly executable.
+  Multi-line Python or browser automation should use a heredoc or script file
+  rather than fragile `python -c "..."` quoting. Shell parse failures such as
+  unmatched quotes are failed validation, not acceptable evidence.
 
 Static HTML markers, string assertions, or visual reasoning from the diff do
 not prove the frontend works. They are useful supporting checks, but the UX

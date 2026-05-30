@@ -35,6 +35,10 @@ Responsibilities:
   `pageerror` or console errors, expected handlers are defined, tabs switch
   pages, Help modal opens and closes, filters update rows, CSV export downloads,
   and a mobile viewport is usable.
+- Require validation commands to be quote-safe and directly executable. If an
+  agent needs multi-line Python or browser automation, instruct it to use a
+  heredoc or script file rather than fragile `python -c "..."` quoting. Shell
+  parse errors are failed validation, not evidence of correctness.
 - For analysis report tasks, explicitly require the UX coder and reviewer to
   use `docs/report_template.md`, refresh run-specific findings from current
   artefacts, and keep the appendices for metric, feature, and model
