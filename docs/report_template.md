@@ -152,12 +152,22 @@ Required narrative points:
 Include at least one concrete example from `artifacts/sample_events.json` for
 each major anomaly class. Each example should include:
 
+- one or two sentences explaining what the example represents and why the
+  pattern matters in business terms
+- a clear link between the narrative and the fields that describe it, such as
+  repetition, timing, method bucket, tier, and score evidence
 - `event_id`
 - domain and query
 - operational tier
 - method bucket
 - combined, heuristic, and ML scores
 - short explanation of the rule or feature evidence
+
+Do not list examples as raw data only. A reader should understand the behaviour
+before they see the numbers. For example, explain that a compound burst/replay
+case is suspicious because repeated query/domain evidence appears inside a
+same-second burst, then cite the event, scores, tier, method bucket, and rules
+that support that interpretation.
 
 ### 5. Recommended Business Actions
 

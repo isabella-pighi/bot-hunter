@@ -758,11 +758,14 @@ def _anomaly_example_lines(classes: object) -> str:
         population_text = ""
         if population is not None:
             population_text = f" ({int(population):,} events in the wider population)"
+        class_id = str(item.get("class_id", ""))
+        narrative = _example_narrative(class_id, label, example)
         lines.append(
             "- "
-            f"{label}{population_text}: `{example.get('event_id', 'unknown')}` "
-            f"clicked `{example.get('domain', '')}` for query "
-            f"`{example.get('query', '')}`; combined "
+            f"{label}{population_text}: {narrative} The example event is "
+            f"`{example.get('event_id', 'unknown')}`, which clicked "
+            f"`{example.get('domain', '')}` for query "
+            f"`{example.get('query', '')}`. The supporting data is: combined "
             f"{float(example.get('combined_score', 0.0)):.4f}, rules "
             f"{float(example.get('heuristic_score', 0.0)):.4f}, ML "
             f"{float(example.get('ml_score', 0.0)):.4f}, tier "
@@ -770,6 +773,81 @@ def _anomaly_example_lines(classes: object) -> str:
             f"`{example.get('method_bucket', '')}`{rule_text}."
         )
     return "\n".join(lines) or "- No anomaly class examples were reported."
+
+
+def _example_narrative(
+    class_id: str,
+    label: str,
+    example: dict[str, object],
+) -> str:
+    """Return a stakeholder-friendly explanation for an anomaly example.
+
+    Args:
+        class_id: Stable anomaly class identifier.
+        label: Human-readable anomaly class label.
+        example: Example event dictionary from the summary artefact.
+
+    Returns:
+        Plain-English narrative describing what the example represents.
+    """
+    domain = str(example.get("domain", "the clicked domain"))
+    query = str(example.get("query", "the query"))
+    narratives = {
+        "repetition_with_supporting_context": (
+            "This is a replay-like example rather than a single odd click. "
+            f"The same query/domain pattern around `{query}` and `{domain}` is "
+            "reinforced by broader context such as domain volume, device-like "
+            "clustering, and country-like concentration. That combination is "
+            "stronger than repetition alone because several independent fields "
+            "point in the same direction."
+        ),
+        "compound_burst_replay": (
+            "This example shows repetition happening inside a burst. The key "
+            "concern is not only that the query and domain repeat, but that the "
+            "click pattern also appears in same-second or dense burst evidence. "
+            "That is more consistent with automated replay than with ordinary "
+            "human browsing."
+        ),
+        "ml_tail_multivariate": (
+            "This is an unusual multivariate event rather than a clean rule hit. "
+            "The rules did not provide enough strong evidence for automatic "
+            "suppression, but the event sits far enough into the anomaly-model "
+            "tail to justify quarantine or sampling. In business terms, this is "
+            "a review candidate, not proof of fraud."
+        ),
+        "repetition_with_timing": (
+            "This example combines repeated query/domain behaviour with unusual "
+            "timing. Repetition explains why the event resembles replay; the "
+            "timing evidence makes the case stronger because the click cadence "
+            "does not look like normal human variation."
+        ),
+        "repetition_dominated": (
+            "This is the simplest explainable replay pattern. The main evidence "
+            "is repeated query/domain behaviour with confirmed query repetition, "
+            "without needing burst or broader context to carry the decision."
+        ),
+        "supporting_context_combined_tail": (
+            "This example is deliberately treated as borderline. It has "
+            "supporting context and a high enough blended score to cross the run "
+            "threshold, but neither the rules nor the ML evidence is strong "
+            "enough on its own. That is why the right action is review or "
+            "quarantine rather than automatic suppression."
+        ),
+        "other_combined_tail": (
+            "This is a residual combined-tail example. It crosses the blended "
+            "threshold, but it does not match the main operational classes. The "
+            "fast-click and burst evidence make it worth sampling, while the "
+            "borderline score argues against automatic suppression."
+        ),
+    }
+    return narratives.get(
+        class_id,
+        (
+            f"This example represents the `{label}` class. The event is included "
+            "because its combined behavioural evidence is stronger than ordinary "
+            "traffic in the current batch."
+        ),
+    )
 
 
 def _filtering_option_lines(options: object) -> str:
