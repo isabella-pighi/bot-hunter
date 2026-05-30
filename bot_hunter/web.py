@@ -441,23 +441,7 @@ def _dashboard_html() -> str:
       <div class="panel">
         <h2>Analysis Brief</h2>
         <p id="storyLead" class="loading">Loading current run...</p>
-        <div class="three">
-          <div class="card">
-            <h3>Business problem</h3>
-            <p>Find traffic that looks automated enough to review, without
-            claiming each event is proven fraud.</p>
-          </div>
-          <div class="card">
-            <h3>What was analysed</h3>
-            <p id="storyAnalysed">Current click-log artefacts from the latest
-            pipeline run.</p>
-          </div>
-          <div class="card">
-            <h3>How to act</h3>
-            <p>Use the operational tier first: suppress needs policy approval,
-            quarantine means review or sample, monitor stays in trend tracking.</p>
-          </div>
-        </div>
+        <p id="confidenceExplainer" class="label"></p>
       </div>
       <div class="panel">
         <h2>Analysis Scorecard</h2>
@@ -644,24 +628,26 @@ def _dashboard_html() -> str:
         `${count(selected)} (${pct(s.bot_rate)}) as likely bot traffic for ` +
         `operational review. The current operational confidence estimate is ` +
         `${confidence}; it is not measured precision or a fraud probability.`;
-      document.getElementById('storyAnalysed').textContent =
-        `Input ${escapeHtml(s.input_path || 'current dataset')}; selected ` +
-        `traffic uses threshold ${threshold} and the heuristic override.`;
+      document.getElementById('confidenceExplainer').textContent =
+        `Operational confidence is estimated from how often selected events ` +
+        `have both strong rule evidence and anomaly-model support. The ` +
+        `selection threshold is this run's 97.5th-percentile combined score ` +
+        `(${threshold}); events above it are selected, and strong heuristic ` +
+        `matches can also be selected by override.`;
       const metrics = [
-        ['Events analysed', count(total), 'Click events in the current run.'],
-        ['Selected as likely bot', count(selected), '`is_bot = 1` events.'],
-        ['Selected rate', pct(s.bot_rate), 'Share of traffic selected.'],
-        ['Operational confidence estimate', confidence, 'Review-priority signal, not measured precision or calibrated fraud probability.'],
-        ['Selection threshold', threshold, 'Run-specific combined-score cutoff.'],
-        ['Suppress tier', count((s.tier_counts || {}).suppress), 'Policy approval required.'],
-        ['Quarantine tier', count((s.tier_counts || {}).quarantine), 'Review or sample first.'],
-        ['Monitor tier', count((s.tier_counts || {}).monitor), 'Keep for trend tracking.']
+        ['Events analysed', count(total)],
+        ['Selected as likely bot', count(selected)],
+        ['Selected rate', pct(s.bot_rate)],
+        ['Operational confidence estimate', confidence],
+        ['Selection threshold', threshold],
+        ['Suppress tier', count((s.tier_counts || {}).suppress)],
+        ['Quarantine tier', count((s.tier_counts || {}).quarantine)],
+        ['Monitor tier', count((s.tier_counts || {}).monitor)]
       ];
-      document.getElementById('metrics').innerHTML = metrics.map(([k, v, note]) => `
+      document.getElementById('metrics').innerHTML = metrics.map(([k, v]) => `
         <div class="metric">
           <div class="metric-label">${escapeHtml(k)}</div>
           <div class="metric-value">${escapeHtml(v)}</div>
-          <div class="label">${escapeHtml(note)}</div>
         </div>`).join('');
       renderBars('reasons', s.top_reasons || []);
       renderBars('regions', s.bot_regions || []);

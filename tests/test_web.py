@@ -105,9 +105,15 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert ".table-wrap { overflow:auto; contain:inline-size; }" in dashboard
         assert "Analysis Brief" in dashboard
         assert "What this run says" not in dashboard
-        assert "Business problem" in dashboard
-        assert "What was analysed" in dashboard
-        assert "How to act" in dashboard
+        assert "Business problem" not in dashboard
+        assert "What was analysed" not in dashboard
+        assert "How to act" not in dashboard
+        assert 'id="storyAnalysed"' not in dashboard
+        assert 'id="confidenceExplainer"' in dashboard
+        assert "Operational confidence is estimated from how often" in dashboard
+        assert "strong rule evidence and anomaly-model support" in dashboard
+        assert "97.5th-percentile combined score" in dashboard
+        assert "strong heuristic" in dashboard
         assert "Analysis Scorecard" in dashboard
         assert "Run at a glance" not in dashboard
         overview_markup = _overview_markup(dashboard)
@@ -283,7 +289,14 @@ def test_web_serves_feature_page_and_api(monkeypatch, tmp_path: Path) -> None:
         assert "A review group that explains the main pattern" in dashboard
         assert "not measured precision" in dashboard
         assert "calibrated fraud probability" in dashboard
-        assert "Review-priority signal" in dashboard
+        assert "Review-priority signal" not in dashboard
+        assert "Click events in the current run." not in dashboard
+        assert "`is_bot = 1` events." not in dashboard
+        assert "Share of traffic selected." not in dashboard
+        assert "Run-specific combined-score cutoff." not in dashboard
+        assert "Policy approval required." not in dashboard
+        assert "Keep for trend tracking." not in dashboard
+        assert '<div class="label">${escapeHtml(note)}</div>' not in dashboard
         assert "The run-specific cutoff" in dashboard
         assert "Data without known right answers" in dashboard
         assert "Anomaly classes are operational review groups" not in dashboard
