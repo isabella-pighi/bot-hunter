@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import re
 from pathlib import Path
 from textwrap import wrap
 
@@ -844,11 +845,34 @@ def _html(markdown: str) -> str:
     in_list = False
     in_code = False
     in_table = False
+    list_tag = "ul"
+    paragraph_lines: list[str] = []
+
+    def flush_paragraph() -> None:
+        if not paragraph_lines:
+            return
+        text = " ".join(part.strip() for part in paragraph_lines if part.strip())
+        if text:
+            body.append(f"<p>{html.escape(text)}</p>")
+        paragraph_lines.clear()
+
+    def close_list() -> None:
+        nonlocal in_list
+        if in_list:
+            body.append(f"</{list_tag}>")
+            in_list = False
+
+    def close_table() -> None:
+        nonlocal in_table
+        if in_table:
+            body.append("</tbody></table></div>")
+            in_table = False
+
     for line in markdown.splitlines():
         if line.startswith("```"):
-            if in_table:
-                body.append("</tbody></table></div>")
-                in_table = False
+            flush_paragraph()
+            close_table()
+            close_list()
             body.append("</pre>" if in_code else "<pre>")
             in_code = not in_code
             continue
@@ -856,30 +880,38 @@ def _html(markdown: str) -> str:
             body.append(f"{html.escape(line)}\n")
             continue
         if line.startswith("# "):
-            if in_table:
-                body.append("</tbody></table></div>")
-                in_table = False
+            flush_paragraph()
+            close_table()
+            close_list()
             body.append(f"<h1>{html.escape(line[2:])}</h1>")
         elif line.startswith("## "):
-            if in_list:
-                body.append("</ul>")
-                in_list = False
-            if in_table:
-                body.append("</tbody></table></div>")
-                in_table = False
+            flush_paragraph()
+            close_list()
+            close_table()
             body.append(f"<h2>{html.escape(line[3:])}</h2>")
         elif line.startswith("- "):
-            if in_table:
-                body.append("</tbody></table></div>")
-                in_table = False
+            flush_paragraph()
+            close_table()
             if not in_list:
+                list_tag = "ul"
                 body.append("<ul>")
                 in_list = True
             body.append(f"<li>{html.escape(line[2:])}</li>")
+        elif match := re.match(r"^(\d+)\. (.+)$", line):
+            flush_paragraph()
+            close_table()
+            if not in_list or list_tag != "ol":
+                close_list()
+                list_tag = "ol"
+                body.append("<ol>")
+                in_list = True
+            body.append(f"<li>{html.escape(match.group(2))}</li>")
+        elif in_list and line.startswith("  ") and line.strip():
+            if body and body[-1].endswith("</li>"):
+                body[-1] = f"{body[-1][:-5]} {html.escape(line.strip())}</li>"
         elif line.startswith("|") and line.endswith("|"):
-            if in_list:
-                body.append("</ul>")
-                in_list = False
+            flush_paragraph()
+            close_list()
             cells = [cell.strip() for cell in line.strip("|").split("|")]
             if all(cell.replace("-", "").replace(":", "") == "" for cell in cells):
                 continue
@@ -898,17 +930,16 @@ def _html(markdown: str) -> str:
                 )
                 body.append(f"<tr>{rendered_cells}</tr>")
         elif line.strip():
-            if in_list:
-                body.append("</ul>")
-                in_list = False
-            if in_table:
-                body.append("</tbody></table></div>")
-                in_table = False
-            body.append(f"<p>{html.escape(line)}</p>")
-    if in_list:
-        body.append("</ul>")
-    if in_table:
-        body.append("</tbody></table></div>")
+            close_table()
+            close_list()
+            paragraph_lines.append(line)
+        else:
+            flush_paragraph()
+            close_table()
+            close_list()
+    flush_paragraph()
+    close_list()
+    close_table()
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -927,7 +958,7 @@ def _html(markdown: str) -> str:
       --thead: #eef3f7;
     }}
     * {{ box-sizing: border-box; }}
-    html {{ font-size: clamp(15px, 1.1vw, 17px); }}
+    html {{ font-size: clamp(16px, 0.72vw + 0.45rem, 22px); }}
     body {{
       background: #f4f7fa;
       color: var(--ink);
@@ -939,20 +970,20 @@ def _html(markdown: str) -> str:
       background: var(--page);
       box-shadow: 0 16px 48px rgba(23, 32, 38, 0.08);
       margin: 0 auto;
-      max-width: 1120px;
+      max-width: 1680px;
       min-height: 100vh;
-      padding: clamp(24px, 5vw, 64px);
-      width: min(100%, 1120px);
+      padding: clamp(24px, 4.5vw, 88px);
+      width: min(100%, 1680px);
     }}
     h1, h2 {{ line-height: 1.2; overflow-wrap: anywhere; }}
-    h1 {{ font-size: clamp(2rem, 4vw, 2.75rem); margin: 0 0 1.25rem; }}
+    h1 {{ font-size: clamp(2.2rem, 3.2vw, 4.25rem); margin: 0 0 1.25rem; }}
     h2 {{
       border-top: 1px solid var(--border);
-      font-size: clamp(1.35rem, 2.3vw, 1.75rem);
+      font-size: clamp(1.45rem, 1.45vw, 2.35rem);
       margin-top: 2.4rem;
       padding-top: 1.25rem;
     }}
-    p, li {{ max-width: 78ch; }}
+    p, li {{ max-width: min(100%, 104ch); }}
     pre {{
       background: var(--surface);
       border: 1px solid var(--border);
@@ -966,11 +997,13 @@ def _html(markdown: str) -> str:
       border-radius: 6px;
       margin: 1rem 0 1.6rem;
       overflow-x: auto;
+      scrollbar-gutter: stable;
       width: 100%;
     }}
     table {{
       border-collapse: collapse;
-      min-width: min(760px, 100%);
+      font-size: clamp(0.86rem, 0.55vw + 0.45rem, 1rem);
+      min-width: min(1040px, 100%);
       table-layout: auto;
       width: 100%;
     }}
@@ -991,6 +1024,7 @@ def _html(markdown: str) -> str:
     @media (max-width: 720px) {{
       main {{ padding: 20px 14px 32px; }}
       .table-wrap {{ border-radius: 4px; }}
+      table {{ min-width: 760px; }}
       th, td {{ padding: 0.6rem; }}
     }}
   </style>
